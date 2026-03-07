@@ -1,0 +1,1 @@
+"""VeraMarket — Core package."""
