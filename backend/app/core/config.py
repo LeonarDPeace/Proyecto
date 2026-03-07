@@ -25,6 +25,15 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     TZ: str = "America/Bogota"
 
+    # --- Email / OTP (Sprint 1 — HU 1.1) ---
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_FROM: str = "noreply@veramarket.co"
+    OTP_EXPIRATION_MINUTES: int = 10
+    OTP_LENGTH: int = 6
+
     # --- Integraciones (Sprint 3) ---
     OPENAI_API_KEY: str = ""
     SENTRY_DSN: str = ""

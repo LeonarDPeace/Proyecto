@@ -1,4 +1,4 @@
-# VeraMarket Backend — Dependencias Python (Sprint 0)
+# VeraMarket Backend — Dependencias Python (Sprint 1)
 # Instalar con: pip install -r requirements.txt
 
 # --- Framework ---
@@ -17,7 +17,9 @@ pydantic-settings>=2.0
 
 # --- Seguridad ---
 python-jose[cryptography]>=3.3
-passlib[bcrypt]>=1.7
+
+# --- Email / OTP (Sprint 1) ---
+aiosmtplib>=3.0
 
 # --- HTTP Client ---
 httpx>=0.27.0
