@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --vera-primary: #2563eb;
+  --vera-primary-light: #3b82f6;
+  --vera-bg: #ffffff;
+  --vera-text: #0f172a;
+}
+
+body {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  color: var(--vera-text);
+  background-color: var(--vera-bg);
+}
+
+/* PWA — Evitar selección de texto no deseada en mobile */
+.pwa-no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}
