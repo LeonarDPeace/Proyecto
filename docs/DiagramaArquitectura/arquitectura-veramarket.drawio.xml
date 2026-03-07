@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
+  <diagram name="VeraMarket - Arquitectura MVP" id="kl-T7WJliPtUFjl0oFtN">
+    <mxGraphModel dx="658" dy="880" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2205" pageHeight="984" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="HYf47puikAZ70yU_mli2-63" value="" style="group" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="40" y="40" width="2140" height="895" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-2" value="ZONA CLIENTE — Dispositivo del Estudiante" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;rounded=1;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+          <mxGeometry y="180" width="460" height="500" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-3" value="PWA Shell (React / Vite)&#xa;• Instalable (manifest.json)&#xa;• No ocupa espacio nativo" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="HYf47puikAZ70yU_mli2-2" vertex="1">
+          <mxGeometry x="250" y="59" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-4" value="Service Worker&lt;br&gt;• Network-only para catálogo&lt;br&gt;• Background Sync para posts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="HYf47puikAZ70yU_mli2-2" vertex="1">
+          <mxGeometry x="30" y="59" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-6" value="Auth&lt;br&gt;(correo @uni)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-2" vertex="1">
+          <mxGeometry x="30" y="319" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-7" value="Catálogo&lt;br&gt;P2P" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-2" vertex="1">
+          <mxGeometry x="165" y="319" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-8" value="Búsqueda&lt;br&gt;Semántica IA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-2" vertex="1">
+          <mxGeometry x="300" y="319" width="135" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-9" value="Chat P2P&lt;br&gt;(WebSocket)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-2" vertex="1">
+          <mxGeometry x="30" y="409" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-10" value="Mis&lt;br&gt;Intereses" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-2" vertex="1">
+          <mxGeometry x="165" y="409" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-11" value="Mapa Campus&lt;br&gt;OpenStreetMap" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-2" vertex="1">
+          <mxGeometry x="300" y="409" width="135" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-15" value="API GATEWAY — Punto de Entrada Único" style="swimlane;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=13;rounded=1;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+          <mxGeometry x="566" y="170" width="260" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-16" value="API Gateway / Reverse Proxy&#xa;(Nginx / Traefik)&#xa;&#xa;• Rate Limiting&#xa;• JWT Validation&#xa;• HTTPS / TLS&#xa;• CORS Policy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" parent="HYf47puikAZ70yU_mli2-15" vertex="1">
+          <mxGeometry x="20" y="50" width="220" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-17" value="ZONA BACKEND — Microservicios / Módulos (Node.js / FastAPI)" style="swimlane;startSize=30;fillColor=#f0e6ff;strokeColor=#9673a6;fontStyle=1;fontSize=13;rounded=1;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+          <mxGeometry x="960" y="100" width="620" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-18" value="Auth Service&lt;br&gt;(Node.js / JWT)&lt;br&gt;• Validar @uni.edu.co&lt;br&gt;• bcrypt + JWT&lt;br&gt;• Refresh Tokens" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-17" vertex="1">
+          <mxGeometry x="20" y="122" width="165" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-19" value="Catalog Service&lt;br&gt;(CRUD Productos)&lt;br&gt;• RF02: Crear/Editar/Borrar&lt;br&gt;• Categorías + Imágenes&lt;br&gt;• RNF04: RESTful API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-17" vertex="1">
+          <mxGeometry x="210" y="122" width="165" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-20" value="Search &amp;amp; AI Service&lt;br&gt;(Patrón: Adapter)&lt;br&gt;• Búsqueda semántica&lt;br&gt;• Primary: Llama 3 local&lt;br&gt;• Fallback: Full-text / API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" parent="HYf47puikAZ70yU_mli2-17" vertex="1">
+          <mxGeometry x="400" y="122" width="195" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-25" value="ZONA DE DATOS" style="swimlane;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=13;rounded=1;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+          <mxGeometry x="1660" width="460" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-26" value="PostgreSQL&lt;br&gt;(Neon / Supabase Free Tier)&lt;br&gt;&lt;br&gt;• Users &amp;amp; Auth&lt;br&gt;• Products &amp;amp; Categories&lt;br&gt;• Chat Messages&lt;br&gt;• Wishlist&lt;br&gt;&lt;br&gt;Row-Level Security (RLS)&lt;br&gt;para cumplimiento de Ley 1581" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;size=15;" parent="HYf47puikAZ70yU_mli2-25" vertex="1">
+          <mxGeometry x="22.5" y="60" width="160" height="221" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-27" value="Redis / Upstash&lt;br&gt;(Free Tier)&lt;br&gt;&lt;br&gt;• Session cache&lt;br&gt;• Rate limiting&lt;br&gt;• Search index cache" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#ffcccc;strokeColor=#b85450;fontSize=11;size=10;" parent="HYf47puikAZ70yU_mli2-25" vertex="1">
+          <mxGeometry x="280" y="50" width="155" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-28" value="Object Storage&lt;br&gt;(Cloudinary / Supabase)&lt;br&gt;&lt;br&gt;• Fotos de productos&lt;br&gt;• CDN automático" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#ffcccc;strokeColor=#b85450;fontSize=11;size=10;" parent="HYf47puikAZ70yU_mli2-25" vertex="1">
+          <mxGeometry x="283" y="240" width="155" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-29" value="Cumplimiento Ley 1581/2012&lt;br&gt;Mínimo PII | Cifrado en reposo | Sin datos financieros" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;fontStyle=2;" parent="HYf47puikAZ70yU_mli2-25" vertex="1">
+          <mxGeometry x="62.5" y="454" width="335" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-30" value="CAPA IA — Patrón Adapter (Resiliencia)" style="swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=13;rounded=1;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+          <mxGeometry x="1660" y="540" width="380" height="270" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-31" value="AI Adapter Interface&#xa;(Patrón: Adapter + Strategy)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" parent="HYf47puikAZ70yU_mli2-30" vertex="1">
+          <mxGeometry x="90" y="40" width="200" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-32" value="PRIMARY&lt;br&gt;OpenAI (GPT-4o-mini)&lt;br&gt;(Ollama / Render.com)&lt;br&gt;Búsqueda semántica" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-30" vertex="1">
+          <mxGeometry x="20" y="120" width="155" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-33" value="FALLBACK 1&lt;br&gt;Full-Text Search&lt;br&gt;(PostgreSQL tsvector)&lt;br&gt;Sin latencia de IA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="HYf47puikAZ70yU_mli2-30" vertex="1">
+          <mxGeometry x="195" y="120" width="155" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-34" value="Circuit Breaker&lt;br&gt;Auto-fallback si Llama falla" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;fontStyle=2;" parent="HYf47puikAZ70yU_mli2-30" vertex="1">
+          <mxGeometry x="60" y="220" width="250" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-35" value="CI/CD &amp; INFRA (Free Tier)" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;rounded=1;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+          <mxGeometry x="566" y="405" width="260" height="450" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-36" value="GitHub&#xa;(Source Control&#xa;+ Actions CI/CD)" style="shape=mxgraph.logos.github;fillColor=#24292e;strokeColor=none;fontSize=10;fontColor=#ffffff;whiteSpace=wrap;html=1;" parent="HYf47puikAZ70yU_mli2-35" vertex="1">
+          <mxGeometry x="80" y="50" width="100" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-37" value="Render.com&lt;br&gt;(Free Tier)&lt;br&gt;Backend Deploy&lt;br&gt;+ OpenAI (GPT-4o-mini)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="HYf47puikAZ70yU_mli2-35" vertex="1">
+          <mxGeometry x="65" y="150" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-38" value="Vercel / Netlify&lt;br&gt;(Free Tier)&lt;br&gt;PWA Frontend&lt;br&gt;+ CDN Global" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="HYf47puikAZ70yU_mli2-35" vertex="1">
+          <mxGeometry x="65" y="250" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-39" value="Sentry (Free)&lt;br&gt;Error Monitoring&lt;br&gt;+ Performance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="HYf47puikAZ70yU_mli2-35" vertex="1">
+          <mxGeometry x="65" y="350" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="HYf47puikAZ70yU_mli2-63" source="HYf47puikAZ70yU_mli2-3" target="HYf47puikAZ70yU_mli2-16" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="433" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-41" value="HTTPS / REST&#xa;+ WebSocket" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=9;" parent="HYf47puikAZ70yU_mli2-40" vertex="1" connectable="0">
+          <mxGeometry x="-0.1" relative="1" as="geometry">
+            <mxPoint x="20" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-42" style="edgeStyle=orthogonalEdgeStyle;" parent="HYf47puikAZ70yU_mli2-63" source="HYf47puikAZ70yU_mli2-16" target="HYf47puikAZ70yU_mli2-18" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="863" y="280" />
+              <mxPoint x="863" y="180" />
+              <mxPoint x="1115" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-43" style="edgeStyle=orthogonalEdgeStyle;" parent="HYf47puikAZ70yU_mli2-63" source="HYf47puikAZ70yU_mli2-16" target="HYf47puikAZ70yU_mli2-19" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="863" y="280" />
+              <mxPoint x="863" y="180" />
+              <mxPoint x="1305" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-44" style="edgeStyle=orthogonalEdgeStyle;" parent="HYf47puikAZ70yU_mli2-63" source="HYf47puikAZ70yU_mli2-16" target="HYf47puikAZ70yU_mli2-20" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="863" y="280" />
+              <mxPoint x="863" y="160" />
+              <mxPoint x="1511" y="160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-45" style="edgeStyle=orthogonalEdgeStyle;" parent="HYf47puikAZ70yU_mli2-63" source="HYf47puikAZ70yU_mli2-16" target="HYf47puikAZ70yU_mli2-21" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="863" y="280" />
+              <mxPoint x="863" y="460" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-46" style="edgeStyle=orthogonalEdgeStyle;" parent="HYf47puikAZ70yU_mli2-63" source="HYf47puikAZ70yU_mli2-18" target="HYf47puikAZ70yU_mli2-26" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1062" y="370" />
+              <mxPoint x="1833" y="370" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-47" style="edgeStyle=orthogonalEdgeStyle;" parent="HYf47puikAZ70yU_mli2-63" source="HYf47puikAZ70yU_mli2-19" target="HYf47puikAZ70yU_mli2-26" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1290" y="370" />
+              <mxPoint x="1833" y="370" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-48" style="edgeStyle=orthogonalEdgeStyle;" parent="HYf47puikAZ70yU_mli2-63" source="HYf47puikAZ70yU_mli2-21" target="HYf47puikAZ70yU_mli2-27" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1063" y="370" />
+              <mxPoint x="1890" y="370" />
+              <mxPoint x="1890" y="110" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-49" style="edgeStyle=orthogonalEdgeStyle;" parent="HYf47puikAZ70yU_mli2-63" source="HYf47puikAZ70yU_mli2-19" target="HYf47puikAZ70yU_mli2-28" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1290" y="370" />
+              <mxPoint x="1890" y="370" />
+              <mxPoint x="1890" y="295" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-50" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#d6b656;strokeWidth=2;" parent="HYf47puikAZ70yU_mli2-63" source="HYf47puikAZ70yU_mli2-20" target="HYf47puikAZ70yU_mli2-31" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1620" y="272" />
+              <mxPoint x="1620" y="605" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-51" value="AI Request" style="edgeLabel;html=1;align=center;fontSize=9;" parent="HYf47puikAZ70yU_mli2-50" vertex="1" connectable="0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-52" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#82b366;" parent="HYf47puikAZ70yU_mli2-63" source="HYf47puikAZ70yU_mli2-31" target="HYf47puikAZ70yU_mli2-32" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-53" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#d79b00;" parent="HYf47puikAZ70yU_mli2-63" source="HYf47puikAZ70yU_mli2-31" target="HYf47puikAZ70yU_mli2-33" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-54" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" parent="HYf47puikAZ70yU_mli2-63" source="HYf47puikAZ70yU_mli2-33" target="HYf47puikAZ70yU_mli2-26" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2140" y="710" />
+              <mxPoint x="2140" y="196" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-55" style="edgeStyle=orthogonalEdgeStyle;dashed=1;strokeColor=#6c8ebf;" parent="HYf47puikAZ70yU_mli2-63" source="HYf47puikAZ70yU_mli2-37" target="HYf47puikAZ70yU_mli2-19" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="903" y="595" />
+              <mxPoint x="903" y="350" />
+              <mxPoint x="1305" y="350" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-56" value="Deploy" style="edgeLabel;html=1;align=center;fontSize=9;" parent="HYf47puikAZ70yU_mli2-55" vertex="1" connectable="0">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-21" y="55" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-57" value="LEYENDA" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;fontSize=12;fontStyle=1;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+          <mxGeometry y="750" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-58" value="🟡  Patrón Crítico / IA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+          <mxGeometry y="785" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-59" value="🟢  Módulo Funcional" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+          <mxGeometry x="175" y="785" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-60" value="🔴  Persistencia de Datos" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+          <mxGeometry y="825" width="160" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-61" value="🟠  Restricción / Cumplimiento" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+          <mxGeometry x="175" y="825" width="175" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-62" value="- - -  Flujo de Fallback / Dashed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#d6b656;dashed=1;fontSize=10;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+          <mxGeometry y="865" width="350" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-21" value="Chat Service&lt;br&gt;(WebSocket / Socket.io)&lt;br&gt;• Mensajes directos P2P&lt;br&gt;• RF05: Acordar entrega" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+          <mxGeometry x="980" y="414" width="165" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-22" value="User Service&lt;br&gt;• Perfil del vendedor&lt;br&gt;• Mis Intereses (RF04)&lt;br&gt;• Historial de actividad" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+          <mxGeometry x="1170" y="414" width="165" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-23" value="Notification Service&lt;br&gt;• Web Push (Service Worker)&lt;br&gt;• Alertas de nuevos productos" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+          <mxGeometry x="1360" y="414" width="195" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-24" value="Patrones Aplicados: Strangler Fig (migración a cloud)&lt;br&gt;Sidecar (logging)&lt;br&gt;Retry + Circuit Breaker (IA Adapter)&lt;br&gt;BFF (Backend for Frontend)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;fontStyle=2;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+          <mxGeometry x="980" y="524" width="575" height="66" as="geometry" />
+        </mxCell>
+        <mxCell id="HYf47puikAZ70yU_mli2-1" value="VeraMarket MVP — Diagrama de Arquitectura (PWA Offline-First + IA Semántica)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontColor=#1a1a2e;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+          <mxGeometry x="697.5" width="730" height="40" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
