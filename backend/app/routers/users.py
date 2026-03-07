@@ -46,7 +46,7 @@ async def get_user(
 
     Solo muestra nombre, rol y reputación.
     Email y phone solo visibles si el usuario lo permite en su configuración
-    de privacidad (HU 1.3) o hay negociación aceptada.
+    de privacidad (HU 1.3). Por defecto se enmascaran (Privacy by Design).
     """
     user = await get_user_by_id(db, user_id)
     if not user:
@@ -54,7 +54,17 @@ async def get_user(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Usuario no encontrado",
         )
-    return user
+
+    # HU 1.3: enmascarar campos de contacto según configuración de privacidad
+    return UserPublic(
+        id=user.id,
+        name=user.name,
+        role=user.role,
+        reputation=user.reputation,
+        is_verified=user.is_verified,
+        email=user.email if user.show_email else None,
+        phone=user.phone if user.show_phone else None,
+    )
 
 
 # ---------------------------------------------------------------------------

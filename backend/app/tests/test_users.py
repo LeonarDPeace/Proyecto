@@ -113,7 +113,7 @@ async def test_get_me_with_invalid_token():
 @pytest.mark.asyncio
 async def test_get_user_public_profile():
     """GET /api/v1/users/{user_id} — perfil público visible."""
-    fake_user = _make_user()
+    fake_user = _make_user(show_email=False, show_phone=False)
 
     with patch(
         "app.routers.users.get_user_by_id",
@@ -129,6 +129,34 @@ async def test_get_user_public_profile():
     assert data["name"] == "Test User"
     assert data["role"] == "comprador"
     assert "is_verified" in data
+    # HU 1.3: email y phone ocultos por defecto (Privacy by Design)
+    assert data["email"] is None
+    assert data["phone"] is None
+
+
+@pytest.mark.asyncio
+async def test_get_user_public_profile_shows_contact_when_allowed():
+    """GET /api/v1/users/{user_id} — muestra contacto si privacidad lo permite."""
+    fake_user = _make_user(
+        show_email=True,
+        show_phone=True,
+        email="visible@uao.edu.co",
+        phone="3009999999",
+    )
+
+    with patch(
+        "app.routers.users.get_user_by_id",
+        new_callable=AsyncMock,
+        return_value=fake_user,
+    ):
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            response = await client.get(f"/api/v1/users/{fake_user.id}")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["email"] == "visible@uao.edu.co"
+    assert data["phone"] == "3009999999"
 
 
 @pytest.mark.asyncio
