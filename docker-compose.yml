@@ -1,0 +1,83 @@
+# ==============================================================================
+# VeraMarket — Docker Compose (Desarrollo Local)
+# ==============================================================================
+# Uso:
+#   docker compose up -d          → Levantar todos los servicios
+#   docker compose down           → Detener servicios
+#   docker compose logs -f backend → Ver logs del backend
+# ==============================================================================
+
+version: "3.9"
+
+services:
+  # ============================================================================
+  # PostgreSQL 15 + PostGIS
+  # ============================================================================
+  db:
+    image: postgis/postgis:15-3.4
+    container_name: veramarket-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: veramarket
+      POSTGRES_PASSWORD: veramarket_dev
+      POSTGRES_DB: veramarket
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U veramarket"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================================
+  # Backend — FastAPI
+  # ============================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: veramarket-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql+asyncpg://veramarket:veramarket_dev@db:5432/veramarket"
+      JWT_SECRET: "dev-secret-change-in-production"
+      ALLOWED_ORIGINS: "http://localhost:3000"
+      ENVIRONMENT: "development"
+      TZ: "America/Bogota"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # ============================================================================
+  # Frontend — Next.js 14
+  # ============================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: veramarket-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: "http://localhost:8000/api/v1"
+      NEXT_PUBLIC_DEFAULT_LAT: "3.3516"
+      NEXT_PUBLIC_DEFAULT_LNG: "-76.5320"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+
+volumes:
+  pgdata:
+    driver: local
