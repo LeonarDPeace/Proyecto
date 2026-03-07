@@ -5,7 +5,7 @@ Los correos deben terminar en .edu.co (validación institucional).
 """
 
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -34,7 +34,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
         Token JWT codificado.
     """
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (
+    expire = datetime.now(UTC) + (
         expires_delta or timedelta(minutes=settings.JWT_EXPIRATION_MINUTES)
     )
     to_encode.update({"exp": expire})
@@ -114,7 +114,7 @@ async def get_current_user(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Identificador de usuario inválido en token",
-        )
+        ) from None
 
     user = await get_user_by_id(db, user_id)
     if user is None:

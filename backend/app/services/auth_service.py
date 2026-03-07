@@ -4,7 +4,7 @@ Lógica de autenticación OTP y gestión de perfiles de usuario.
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -53,7 +53,7 @@ async def create_user(
         institutional_id=institutional_id.strip(),
         phone=phone,
         role=role,
-        accepted_terms_at=datetime.now(timezone.utc),
+        accepted_terms_at=datetime.now(UTC),
         is_verified=True,  # Verificado por OTP al email institucional
     )
     db.add(user)
@@ -108,6 +108,6 @@ async def update_user_profile(
     if show_phone is not None:
         user.show_phone = show_phone
 
-    user.updated_at = datetime.now(timezone.utc)
+    user.updated_at = datetime.now(UTC)
     await db.flush()
     return user

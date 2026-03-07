@@ -8,7 +8,7 @@ Verifica:
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -17,7 +17,6 @@ from httpx import ASGITransport, AsyncClient
 from app.core.security import create_access_token
 from app.main import app
 from app.models.user import User
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -36,8 +35,8 @@ def _make_user(**overrides) -> User:
         "phone": None,
         "show_email": False,
         "show_phone": False,
-        "accepted_terms_at": datetime.now(timezone.utc),
-        "created_at": datetime.now(timezone.utc),
+        "accepted_terms_at": datetime.now(UTC),
+        "created_at": datetime.now(UTC),
     }
     defaults.update(overrides)
     user = MagicMock(spec=User)

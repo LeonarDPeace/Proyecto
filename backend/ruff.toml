@@ -1,0 +1,21 @@
+# Ruff — Configuración de linting para VeraMarket Backend
+# https://docs.astral.sh/ruff/configuration/
+
+line-length = 120          # HTML inline en email templates requiere líneas más largas
+target-version = "py311"
+
+[lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+ignore = [
+    "B008", # do not perform function calls in argument defaults (FastAPI Depends)
+]
+
+[lint.isort]
+known-first-party = ["app"]

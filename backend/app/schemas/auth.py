@@ -7,7 +7,6 @@ HU 1.3: Configuración de privacidad.
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
-
 # ---------------------------------------------------------------------------
 # OTP — Request / Verify (HU 1.1)
 # ---------------------------------------------------------------------------

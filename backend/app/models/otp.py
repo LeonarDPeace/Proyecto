@@ -5,7 +5,7 @@ Cada código tiene un TTL configurable y máximo 3 intentos de verificación.
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import Boolean, DateTime, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
@@ -33,12 +33,12 @@ class OTPCode(Base):
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
     )
 
     def is_expired(self) -> bool:
         """Verifica si el OTP ha expirado."""
-        return datetime.now(timezone.utc) > self.expires_at
+        return datetime.now(UTC) > self.expires_at
 
     def is_valid(self) -> bool:
         """Verifica si el OTP es válido (no usado, no expirado, < 3 intentos)."""

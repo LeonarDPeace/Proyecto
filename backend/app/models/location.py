@@ -5,7 +5,7 @@ Coordenadas por defecto: UAO, Cali (3.3516, -76.5320).
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from geoalchemy2 import Geometry
 from sqlalchemy import DateTime, ForeignKey, String
@@ -39,8 +39,8 @@ class Location(Base):
 
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
     )
 
     # --- Relationships ---

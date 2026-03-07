@@ -1,6 +1,6 @@
 """Utilidades generales del backend."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 
 def now_bogota() -> datetime:
@@ -8,4 +8,4 @@ def now_bogota() -> datetime:
 
     Nota: Se almacena en UTC y se presenta en America/Bogota en el frontend.
     """
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)

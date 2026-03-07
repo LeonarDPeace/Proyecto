@@ -6,7 +6,7 @@ Sprint 1: Autenticación OTP (sin contraseña). Privacy-first (HU 1.3).
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import Boolean, CheckConstraint, DateTime, Enum, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -57,12 +57,12 @@ class User(Base):
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
     )
 
     # --- Relationships ---

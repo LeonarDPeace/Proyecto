@@ -6,7 +6,7 @@ En entorno de desarrollo, imprime el OTP en consola sin enviar email.
 
 import random
 import string
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from email.message import EmailMessage
 
 import aiosmtplib
@@ -43,7 +43,7 @@ async def create_otp(db: AsyncSession, email: str) -> OTPCode:
     )
 
     code = _generate_otp()
-    expires_at = datetime.now(timezone.utc) + timedelta(
+    expires_at = datetime.now(UTC) + timedelta(
         minutes=settings.OTP_EXPIRATION_MINUTES
     )
 
@@ -77,7 +77,7 @@ async def verify_otp(db: AsyncSession, email: str, code: str) -> bool:
         .where(
             OTPCode.email == email,
             OTPCode.is_used == False,  # noqa: E712
-            OTPCode.expires_at > datetime.now(timezone.utc),
+            OTPCode.expires_at > datetime.now(UTC),
         )
         .order_by(OTPCode.created_at.desc())
         .limit(1)
