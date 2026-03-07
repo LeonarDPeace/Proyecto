@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Dependencias
 COPY package.json package-lock.json* ./
-RUN npm ci --prefer-offline
+RUN npm install
 
 # Código fuente
 COPY . .
