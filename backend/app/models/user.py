@@ -2,6 +2,7 @@
 
 Cumple con Ley 1581/2012: campo accepted_terms_at obligatorio para operar.
 Correos validados contra dominio .edu.co (institucional).
+Sprint 1: Autenticación OTP (sin contraseña). Privacy-first (HU 1.3).
 """
 
 import uuid
@@ -35,7 +36,6 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(150), nullable=False)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     phone: Mapped[str | None] = mapped_column(String(20), nullable=True)
-    hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
 
     role: Mapped[str] = mapped_column(
         Enum("vendedor", "comprador", name="user_role_enum", create_type=False),
@@ -45,6 +45,10 @@ class User(Base):
         Numeric(3, 2), server_default="0.00"
     )
     is_verified: Mapped[bool] = mapped_column(Boolean, server_default="false")
+
+    # --- Privacy settings (HU 1.3) ---
+    show_email: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    show_phone: Mapped[bool] = mapped_column(Boolean, server_default="false")
 
     # Ley 1581/2012 — Consentimiento explícito de tratamiento de datos
     accepted_terms_at: Mapped[datetime | None] = mapped_column(

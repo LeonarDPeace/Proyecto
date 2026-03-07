@@ -4,7 +4,7 @@ Endpoints RESTful para gestión de productos.
 Sprint 0: Estructura base con stubs. Lógica completa en Sprint 1.
 """
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, HTTPException, status
 
 from app.schemas.product import ProductCreate, ProductRead
 from app.schemas.response import MessageResponse
@@ -23,11 +23,11 @@ async def list_products():
 
 @router.get("/{product_id}", response_model=ProductRead)
 async def get_product(product_id: str):
-    """Obtiene el detalle de un producto por ID.
-
-    TODO (Sprint 1): Implementar con BD.
-    """
-    return MessageResponse(message="Pendiente Sprint 1")
+    """Obtiene el detalle de un producto por ID."""
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Producto {product_id} no encontrado",
+    )
 
 
 @router.post(
