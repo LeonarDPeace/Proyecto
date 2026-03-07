@@ -1,0 +1,12 @@
+# VeraMarket Backend — Configuración de Ruff (linter Python)
+# Reemplaza Flake8 + Black + isort en una sola herramienta.
+
+line-length = 88
+target-version = "py311"
+
+[lint]
+select = ["E", "F", "I", "N", "W"]
+
+[format]
+quote-style = "double"
+indent-style = "space"

@@ -1,0 +1,2 @@
+# Alembic versions — Las migraciones se generan aquí con:
+# alembic revision --autogenerate -m "descripción"
