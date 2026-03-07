@@ -1,4 +1,4 @@
-# 🛒 VeraMarket
+# VeraMarket
 
 **Marketplace universitario geolocalizado** para la compra y venta de productos entre estudiantes, con mapa interactivo del campus, negociación directa y recomendaciones por IA.
 
@@ -6,21 +6,31 @@
 
 ---
 
-## 📋 Tabla de contenidos
+## Tabla de contenidos
 
-- [Stack tecnológico](#-stack-tecnológico)
-- [Estructura del monorepo](#-estructura-del-monorepo)
-- [Requisitos previos](#-requisitos-previos)
-- [Instalación y desarrollo local](#-instalación-y-desarrollo-local)
-- [Variables de entorno](#-variables-de-entorno)
-- [Flujo de trabajo Git](#-flujo-de-trabajo-git)
-- [CI/CD](#-cicd)
-- [Despliegue](#-despliegue)
-- [Roadmap](#-roadmap)
+- [VeraMarket](#veramarket)
+  - [Tabla de contenidos](#tabla-de-contenidos)
+  - [Stack tecnológico](#stack-tecnológico)
+  - [Estructura del monorepo](#estructura-del-monorepo)
+  - [Requisitos previos](#requisitos-previos)
+  - [Instalación y desarrollo local](#instalación-y-desarrollo-local)
+    - [Opción 1 — Docker Compose (recomendada)](#opción-1--docker-compose-recomendada)
+    - [Opción 2 — Manual](#opción-2--manual)
+      - [Backend](#backend)
+      - [Frontend](#frontend)
+  - [Variables de entorno](#variables-de-entorno)
+  - [Flujo de trabajo Git](#flujo-de-trabajo-git)
+    - [Convención de commits](#convención-de-commits)
+  - [CI/CD](#cicd)
+  - [Despliegue](#despliegue)
+    - [Configuración Cloudflare](#configuración-cloudflare)
+  - [Roadmap](#roadmap)
+  - [Licencia](#licencia)
+  - [👥 Equipo](#-equipo)
 
 ---
 
-## 🧩 Stack tecnológico
+## Stack tecnológico
 
 | Capa          | Tecnología                                      |
 |---------------|--------------------------------------------------|
@@ -38,7 +48,7 @@
 
 ---
 
-## 📁 Estructura del monorepo
+## Estructura del monorepo
 
 ```
 Proyecto/
@@ -83,7 +93,7 @@ Proyecto/
 
 ---
 
-## ✅ Requisitos previos
+## Requisitos previos
 
 | Herramienta    | Versión mínima |
 |----------------|---------------|
@@ -96,7 +106,7 @@ Proyecto/
 
 ---
 
-## 🚀 Instalación y desarrollo local
+## Instalación y desarrollo local
 
 ### Opción 1 — Docker Compose (recomendada)
 
@@ -162,7 +172,7 @@ npm run dev
 
 ---
 
-## 🔐 Variables de entorno
+## Variables de entorno
 
 Ver archivos `.env.example` en la raíz, `backend/` y `frontend/` para la lista completa de variables.
 
@@ -177,7 +187,7 @@ Variables críticas:
 
 ---
 
-## 🌿 Flujo de trabajo Git
+## Flujo de trabajo Git
 
 - **`main`** — Producción. Solo recibe merges de `develop` vía PR.
 - **`develop`** — Staging / integración. Rama base para features.
@@ -202,7 +212,7 @@ docs: update README with setup instructions
 
 ---
 
-## ⚙️ CI/CD
+## CI/CD
 
 El pipeline de GitHub Actions (`.github/workflows/ci-cd.yml`) ejecuta:
 
@@ -213,7 +223,7 @@ El pipeline de GitHub Actions (`.github/workflows/ci-cd.yml`) ejecuta:
 
 ---
 
-## 🌐 Despliegue
+## Despliegue
 
 | Servicio     | Plataforma     | Tier    | Notas                              |
 |-------------|----------------|---------|-------------------------------------|
@@ -231,7 +241,7 @@ El pipeline de GitHub Actions (`.github/workflows/ci-cd.yml`) ejecuta:
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
 | Sprint | Entregable                                           | Estado    |
 |--------|------------------------------------------------------|-----------|
@@ -244,7 +254,7 @@ El pipeline de GitHub Actions (`.github/workflows/ci-cd.yml`) ejecuta:
 
 ---
 
-## 📄 Licencia
+## Licencia
 
 Proyecto académico — **Universidad Autónoma de Occidente**, 8vo Semestre, 2025.
 
