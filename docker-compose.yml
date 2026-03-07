@@ -7,8 +7,6 @@
 #   docker compose logs -f backend → Ver logs del backend
 # ==============================================================================
 
-version: "3.9"
-
 services:
   # ============================================================================
   # PostgreSQL 15 + PostGIS
@@ -73,10 +71,6 @@ services:
       NEXT_PUBLIC_DEFAULT_LNG: "-76.5320"
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
 
 volumes:
   pgdata:
