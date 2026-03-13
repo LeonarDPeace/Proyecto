@@ -10,6 +10,8 @@
 
 **Épicas (Scrum)**
 
+**Sprint 1: HU 0.1, HU 0.2, HU 0.3**
+
 - **EP-00: Arquitectura Base y Flujos del Sistema**
 
   - **HU 0.1:** Inicialización del monorepo (Frontend Next.js, Backend FastAPI) y configuración del pipeline CI/CD.
@@ -18,19 +20,19 @@
 
   - **HU 0.3:** Configuración de dominios, certificados SSL y entornos de Staging/Producción.
 
-<!-- -->
+**Sprint 2: HU 1.1, HU 1.2, HU 1.3, HU 1.4, HU 1.5, HU 2.1, HU 2.2, HU 2.3**
 
-- **EP-01: Autenticación Segura y Perfilamiento (Privacy-First)**
+**EP-01: Autenticación Segura y Perfilamiento (Privacy-First)**
 
-  - **HU 1.1:** Inicio de sesión en la plataforma usando un código de un solo uso (OTP) enviado al correo.
+- **HU 1.1:** Inicio de sesión en la plataforma usando un código de un solo uso (OTP) enviado al correo.
 
-  - [**HU 1.2:** Creación de perfil de usuario (por defecto: Rol Comprador).]{.mark}
+- [**HU 1.2:** Creación de perfil de usuario (por defecto: Rol Comprador).]{.mark}
 
-  - **HU 1.3:** Configuración de privacidad para mostrar u ocultar información de contacto directo.
+- **HU 1.3:** Configuración de privacidad para mostrar u ocultar información de contacto directo.
 
-  - [**HU 1.4:** Solicitud de Rol Vendedor: El sistema debe permitir a un usuario solicitar ser vendedor ingresando su ID o código de registro de Sinapsis.]{.mark}
+- [**HU 1.4:** Solicitud de Rol Vendedor: El sistema debe permitir a un usuario solicitar ser vendedor ingresando su ID o código de registro de Sinapsis.]{.mark}
 
-  - [**HU 1.5:** Validación Sinapsis (Whitelist): El sistema debe contrastar la solicitud del usuario con un listado (archivo CSV o endpoint) provisto por Sinapsis para aprobar automáticamente la creación del perfil de vendedor.]{.mark}
+- [**HU 1.5:** Validación Sinapsis (Whitelist): El sistema debe contrastar la solicitud del usuario con un listado (archivo CSV o endpoint) provisto por Sinapsis para aprobar automáticamente la creación del perfil de vendedor.]{.mark}
 
 **  
 **
@@ -43,6 +45,8 @@
 
   - **HU 2.3:** Configuración de notificaciones push web para alertas del sistema.
 
+**Sprint 3: HU 3.1, HU 3.2, HU 3.3**
+
 - **EP-03: Gestión del Catálogo P2P**
 
   - **HU 3.1:** Creación de publicaciones con imágenes, descripción, categoría y precio en COP.
@@ -51,6 +55,8 @@
 
   - **HU 3.3:** Eliminación o pausa temporal de publicaciones activas.
 
+**Sprint 4: HU 4.1, HU 4.2, HU 4.3**
+
 - **EP-04: Búsqueda Inteligente (MVP - Motor Open Source)**
 
   - **HU 4.1:** Búsqueda tradicional por palabras clave y filtros de categoría.
@@ -58,6 +64,8 @@
   - **HU 4.2:** Búsqueda semántica usando el motor IA integrado para identificar intenciones o modismos.
 
   - **HU 4.3:** Visualización de recomendaciones de productos similares (\"VeraMatch\" MVP).
+
+**Sprint 5: HU 5.1, HU 5.2, HU 5.3, HU 6.1, HU 6.2, HU 6.3, HU 6.4, HU 6.5**
 
 - **EP-05: Geolocalización Hiper-Local (Campus UAO)**
 
@@ -82,6 +90,8 @@
 
   - [**HU 6.5:** Registro automático en base de datos del valor en COP del producto al momento de confirmar una transacción, para la generación del cálculo de GMV (Gross Merchandise Value).]{.mark}
 
+**Sprint 6: HU 7.1, HU 7.2, HU 7.3**
+
 - **EP-07: Moderación y Reputación Comunitaria**
 
   - **HU 7.1:** Calificación de transacciones (1 a 5 estrellas) post-compra.
@@ -95,7 +105,7 @@
 
 **Requerimientos Funcionales (F)**
 
-- **RF-01 (Gestión de Identidad):** El sistema debe validar que los correos electrónicos ingresados en el registro pertenezcan al dominio de la institución (ej. @uao.edu.co).
+- **RF-01 (Gestión de Identidad):** El sistema debe validar que los correos electrónicos ingresados en el registro pertenezcan a los registros dados por sinapsis uao (archivos .csv)
 
 - **RF-02 (Autenticación OTP):** El sistema debe enviar un código numérico temporal al correo del usuario para autenticar su acceso, prescindiendo de contraseñas.
 

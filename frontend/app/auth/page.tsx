@@ -33,11 +33,6 @@ export default function AuthPage() {
     e.preventDefault();
     setError(null);
 
-    if (!email.trim().toLowerCase().endsWith(".edu.co")) {
-      setError("Solo se permiten correos institucionales (.edu.co)");
-      return;
-    }
-
     setLoading(true);
     try {
       const response = await requestOTP(email.trim().toLowerCase());
@@ -115,15 +110,15 @@ export default function AuthPage() {
                 Iniciar sesión
               </h2>
               <p className="mt-1 text-sm text-gray-500">
-                Ingresa tu correo institucional (.edu.co) y te enviaremos un
-                código de acceso.
+                Ingresa tu correo electrónico y te enviaremos un
+                código de acceso seguro.
               </p>
             </div>
 
             <Input
-              label="Correo institucional"
+              label="Correo electrónico"
               type="email"
-              placeholder="tu.nombre@uao.edu.co"
+              placeholder="tu.nombre@ejemplo.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               error={error || undefined}

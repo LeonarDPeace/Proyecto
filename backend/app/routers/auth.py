@@ -1,7 +1,7 @@
 """Router — Auth (Autenticación OTP — Sprint 1).
 
-HU 1.1: Login con código OTP enviado al correo institucional.
-HU 1.2: Creación de perfil (por defecto rol Comprador).
+HU 1.1: Login con código OTP enviado al correo electrónico.
+HU 1.2: Creación de perfil.
 Flujo: request OTP → verify OTP → (si nuevo usuario) complete profile → JWT.
 """
 
@@ -42,7 +42,7 @@ async def request_otp(
     payload: OTPRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    """Envía un código OTP de 6 dígitos al correo institucional.
+    """Envía un código OTP de 6 dígitos al correo electrónico.
 
     El código expira según OTP_EXPIRATION_MINUTES (por defecto 10 min).
     Funciona tanto para usuarios existentes como nuevos.

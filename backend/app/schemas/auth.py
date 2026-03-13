@@ -18,11 +18,8 @@ class OTPRequest(BaseModel):
 
     @field_validator("email")
     @classmethod
-    def validate_institutional_email(cls, v: str) -> str:
-        """El correo debe ser institucional (.edu.co)."""
-        if not v.strip().lower().endswith(".edu.co"):
-            msg = "Solo se permiten correos institucionales (.edu.co)"
-            raise ValueError(msg)
+    def format_email(cls, v: str) -> str:
+        """Formatea el correo a minúsculas."""
         return v.strip().lower()
 
 
@@ -34,10 +31,8 @@ class OTPVerify(BaseModel):
 
     @field_validator("email")
     @classmethod
-    def validate_institutional_email(cls, v: str) -> str:
-        if not v.strip().lower().endswith(".edu.co"):
-            msg = "Solo se permiten correos institucionales (.edu.co)"
-            raise ValueError(msg)
+    def format_email(cls, v: str) -> str:
+        """Formatea el correo a minúsculas."""
         return v.strip().lower()
 
 

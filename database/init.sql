@@ -28,8 +28,7 @@ CREATE TABLE IF NOT EXISTS users (
     id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     institutional_id VARCHAR(50) NOT NULL UNIQUE,
     name            VARCHAR(150) NOT NULL,
-    email           VARCHAR(255) NOT NULL UNIQUE
-                    CHECK (email ~* '^.+\.edu\.co$'),
+    email           VARCHAR(255) NOT NULL UNIQUE,
     phone           VARCHAR(20),
     role            user_role NOT NULL DEFAULT 'comprador',
     reputation      NUMERIC(3,2) DEFAULT 0.00,
@@ -45,7 +44,7 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at      TIMESTAMPTZ DEFAULT NOW()
 );
 
-COMMENT ON COLUMN users.email IS 'Solo correos institucionales .edu.co (Ley 1581/2012).';
+COMMENT ON COLUMN users.email IS 'Correo electrónico del usuario registrado.';
 COMMENT ON COLUMN users.accepted_terms_at IS 'Registro de aceptación de términos según Ley 1581.';
 COMMENT ON COLUMN users.show_email IS 'Privacidad: mostrar email en perfil público (HU 1.3).';
 COMMENT ON COLUMN users.show_phone IS 'Privacidad: mostrar teléfono en perfil público (HU 1.3).';
