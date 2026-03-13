@@ -63,7 +63,7 @@ async def test_get_me_returns_private_profile():
     fake_user = _make_user()
 
     with patch(
-        "app.core.security.get_user_by_id",
+        "app.services.auth_service.get_user_by_id",
         new_callable=AsyncMock,
         return_value=fake_user,
     ):
@@ -186,7 +186,7 @@ async def test_get_privacy_settings():
     fake_user = _make_user(show_email=True, show_phone=False)
 
     with patch(
-        "app.core.security.get_user_by_id",
+        "app.services.auth_service.get_user_by_id",
         new_callable=AsyncMock,
         return_value=fake_user,
     ):
@@ -210,7 +210,7 @@ async def test_update_privacy_settings():
     updated_user = _make_user(show_email=True, show_phone=True)
 
     with patch(
-        "app.core.security.get_user_by_id",
+        "app.services.auth_service.get_user_by_id",
         new_callable=AsyncMock,
         return_value=fake_user,
     ), patch(

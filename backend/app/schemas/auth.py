@@ -107,3 +107,17 @@ class OTPSentResponse(BaseModel):
     message: str = "Código OTP enviado al correo"
     email: str
     expires_in_minutes: int
+
+
+class VendorRoleRequest(BaseModel):
+    """Solicita rol de vendedor usando código Sinapsis."""
+    
+    sinapsis_code: str = Field(..., min_length=1, max_length=50)
+
+
+class VendorRoleResponse(BaseModel):
+    """Respuesta a solicitud de rol vendedor."""
+    
+    message: str
+    vendor_status: str
+    role: str

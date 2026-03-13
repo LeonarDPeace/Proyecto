@@ -16,6 +16,11 @@ EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 DO $$ BEGIN
+    CREATE TYPE vendor_status_type AS ENUM ('pending', 'approved', 'rejected');
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+
+DO $$ BEGIN
     CREATE TYPE negotiation_status AS ENUM ('pending', 'accepted', 'rejected', 'completed');
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
@@ -31,6 +36,8 @@ CREATE TABLE IF NOT EXISTS users (
     email           VARCHAR(255) NOT NULL UNIQUE,
     phone           VARCHAR(20),
     role            user_role NOT NULL DEFAULT 'comprador',
+    vendor_status   vendor_status_type NOT NULL DEFAULT 'pending',
+    sinapsis_code   VARCHAR(50) UNIQUE,
     reputation      NUMERIC(3,2) DEFAULT 0.00,
     is_verified     BOOLEAN DEFAULT FALSE,
 

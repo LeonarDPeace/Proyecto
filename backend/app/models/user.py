@@ -1,7 +1,6 @@
 """Modelo ORM — User (usuarios de la plataforma).
 
 Cumple con Ley 1581/2012: campo accepted_terms_at obligatorio para operar.
-Correos validados contra dominio .edu.co (institucional).
 Sprint 1: Autenticación OTP (sin contraseña). Privacy-first (HU 1.3).
 """
 
@@ -18,12 +17,6 @@ class User(Base):
     """Representa un usuario (vendedor o comprador) de VeraMarket."""
 
     __tablename__ = "users"
-    __table_args__ = (
-        CheckConstraint(
-            "email ~* '^.+\\.edu\\.co$'",
-            name="ck_users_email_edu_co",
-        ),
-    )
 
     id: Mapped[uuid.UUID] = mapped_column(
         primary_key=True,
@@ -38,9 +31,15 @@ class User(Base):
     phone: Mapped[str | None] = mapped_column(String(20), nullable=True)
 
     role: Mapped[str] = mapped_column(
-        Enum("vendedor", "comprador", name="user_role_enum", create_type=False),
+        Enum("vendedor", "comprador", name="user_role", create_type=False),
         server_default="comprador",
     )
+    vendor_status: Mapped[str] = mapped_column(
+        Enum("pending", "approved", "rejected", name="vendor_status_type", create_type=False),
+        server_default="pending",
+    )
+    sinapsis_code: Mapped[str | None] = mapped_column(String(50), unique=True, nullable=True)
+
     reputation: Mapped[float] = mapped_column(
         Numeric(3, 2), server_default="0.00"
     )

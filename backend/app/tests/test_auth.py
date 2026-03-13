@@ -83,17 +83,24 @@ async def test_otp_request_valid_email():
 
 
 @pytest.mark.asyncio
-async def test_otp_request_non_institutional_email():
-    """POST /api/v1/auth/otp/request — email NO institucional → 422."""
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        response = await client.post(
-            "/api/v1/auth/otp/request",
-            json={"email": "user@gmail.com"},
-        )
+async def test_otp_request_any_valid_email():
+    """POST /api/v1/auth/otp/request — cualquier email válido → 200."""
+    with (
+        patch("app.routers.auth.create_otp", new_callable=AsyncMock) as mock_create,
+        patch("app.routers.auth.send_otp_email", new_callable=AsyncMock),
+    ):
+        mock_otp = MagicMock()
+        mock_otp.code = "123456"
+        mock_create.return_value = mock_otp
 
-    assert response.status_code == 422
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            response = await client.post(
+                "/api/v1/auth/otp/request",
+                json={"email": "usuario@gmail.com"},
+            )
 
+    assert response.status_code == 200
 
 @pytest.mark.asyncio
 async def test_otp_request_invalid_email_format():
@@ -216,7 +223,7 @@ async def test_complete_profile_success():
     )
 
     with patch(
-        "app.core.security.get_user_by_id",
+        "app.services.auth_service.get_user_by_id",
         new_callable=AsyncMock,
         return_value=fake_user,
     ), patch(
@@ -265,7 +272,7 @@ async def test_complete_profile_without_terms():
     fake_user = _make_user()
 
     with patch(
-        "app.core.security.get_user_by_id",
+        "app.services.auth_service.get_user_by_id",
         new_callable=AsyncMock,
         return_value=fake_user,
     ):

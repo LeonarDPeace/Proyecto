@@ -18,15 +18,6 @@ class UserBase(BaseModel):
     institutional_id: str = Field(..., min_length=1, max_length=50)
     role: str = Field(default="comprador", pattern="^(vendedor|comprador)$")
 
-    @field_validator("email")
-    @classmethod
-    def validate_institutional_email(cls, v: str) -> str:
-        """El correo debe pertenecer a un dominio institucional .edu.co."""
-        if not v.strip().lower().endswith(".edu.co"):
-            msg = "Solo se permiten correos institucionales (.edu.co)"
-            raise ValueError(msg)
-        return v.strip().lower()
-
 
 class UserCreate(UserBase):
     """Datos requeridos para crear un usuario (registro OTP)."""

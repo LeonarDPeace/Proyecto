@@ -5,6 +5,8 @@ HU 1.2: Creación de perfil.
 Flujo: request OTP → verify OTP → (si nuevo usuario) complete profile → JWT.
 """
 
+from datetime import UTC, datetime
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,6 +21,8 @@ from app.schemas.auth import (
     ProfileCreate,
     ProfileUpdate,
     TokenResponse,
+    VendorRoleRequest,
+    VendorRoleResponse,
 )
 from app.schemas.user import UserPrivate
 from app.services.auth_service import (
@@ -28,6 +32,7 @@ from app.services.auth_service import (
     update_user_profile,
 )
 from app.services.email_service import create_otp, send_otp_email, verify_otp
+from app.services.sinapsis_service import request_vendor_role
 
 router = APIRouter()
 
@@ -49,6 +54,8 @@ async def request_otp(
     """
     otp = await create_otp(db, payload.email)
     await send_otp_email(payload.email, otp.code)
+
+    await db.commit()
 
     return OTPSentResponse(
         email=payload.email,
@@ -92,6 +99,8 @@ async def verify_otp_code(
             institutional_id=f"temp-{payload.email.split('@')[0]}",
         )
 
+    await db.commit()
+
     tokens = generate_tokens(user)
     return TokenResponse(
         access_token=tokens["access_token"],
@@ -123,7 +132,9 @@ async def complete_profile(
         phone=payload.phone,
     )
     user.institutional_id = payload.institutional_id
-    await db.flush()
+    user.accepted_terms_at = datetime.now(UTC)
+    
+    await db.commit()
 
     return user
 
@@ -146,4 +157,31 @@ async def update_profile(
         name=payload.name,
         phone=payload.phone,
     )
+    await db.commit()
     return user
+
+
+@router.post(
+    "/vendor/request",
+    response_model=VendorRoleResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Solicitar rol de vendedor con código Sinapsis (HU 1.4)",
+)
+async def vendor_role_request(
+    request: VendorRoleRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """HU 1.4 y 1.5: El usuario autenticado solicita el rol de vendedor.
+    
+    El sistema valida el código ingresado contra la whitelist (CSV) y
+    actualiza su rol si es correcto.
+    """
+    vendor_status, new_role = await request_vendor_role(
+        db=db, user=current_user, sinapsis_code=request.sinapsis_code
+    )
+    return VendorRoleResponse(
+        message="Solicitud procesada correctamente.",
+        vendor_status=vendor_status,
+        role=new_role,
+    )

@@ -1,7 +1,6 @@
 """VeraMarket — Utilidades de seguridad: JWT y validaciones.
 
 Sprint 1: Autenticación OTP (sin contraseñas). JWT para sesiones.
-Los correos deben terminar en .edu.co (validación institucional).
 """
 
 import uuid
@@ -53,16 +52,6 @@ def decode_access_token(token: str) -> dict | None:
         )
     except JWTError:
         return None
-
-
-# ---------------------------------------------------------------------------
-# Validación institucional
-# ---------------------------------------------------------------------------
-
-
-def is_institutional_email(email: str) -> bool:
-    """Verifica que el correo pertenezca a un dominio institucional (.edu.co)."""
-    return email.strip().lower().endswith(".edu.co")
 
 
 # ---------------------------------------------------------------------------

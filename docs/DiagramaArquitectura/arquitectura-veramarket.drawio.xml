@@ -11,7 +11,7 @@
         <mxCell id="HYf47puikAZ70yU_mli2-2" value="ZONA CLIENTE — Dispositivo del Estudiante" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;rounded=1;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
           <mxGeometry y="180" width="460" height="500" as="geometry" />
         </mxCell>
-        <mxCell id="HYf47puikAZ70yU_mli2-3" value="PWA Shell (React / Vite)&#xa;• Instalable (manifest.json)&#xa;• No ocupa espacio nativo" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="HYf47puikAZ70yU_mli2-2" vertex="1">
+        <mxCell id="HYf47puikAZ70yU_mli2-3" value="PWA Shell (Next.js 14 / App Router)&#xa;• Instalable (manifest.json)&#xa;• No ocupa espacio nativo" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="HYf47puikAZ70yU_mli2-2" vertex="1">
           <mxGeometry x="250" y="59" width="200" height="80" as="geometry" />
         </mxCell>
         <mxCell id="HYf47puikAZ70yU_mli2-4" value="Service Worker&lt;br&gt;• Network-only para catálogo&lt;br&gt;• Background Sync para posts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="HYf47puikAZ70yU_mli2-2" vertex="1">
@@ -38,19 +38,19 @@
         <mxCell id="HYf47puikAZ70yU_mli2-15" value="API GATEWAY — Punto de Entrada Único" style="swimlane;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=13;rounded=1;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
           <mxGeometry x="566" y="170" width="260" height="200" as="geometry" />
         </mxCell>
-        <mxCell id="HYf47puikAZ70yU_mli2-16" value="API Gateway / Reverse Proxy&#xa;(Nginx / Traefik)&#xa;&#xa;• Rate Limiting&#xa;• JWT Validation&#xa;• HTTPS / TLS&#xa;• CORS Policy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" parent="HYf47puikAZ70yU_mli2-15" vertex="1">
+        <mxCell id="HYf47puikAZ70yU_mli2-16" value="FastAPI CORS Middleware&#xa;&#xa;• Rate Limiting (futuro)&#xa;• JWT Validation&#xa;• HTTPS / TLS&#xa;• CORS Policy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" parent="HYf47puikAZ70yU_mli2-15" vertex="1">
           <mxGeometry x="20" y="50" width="220" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="HYf47puikAZ70yU_mli2-17" value="ZONA BACKEND — Microservicios / Módulos (Node.js / FastAPI)" style="swimlane;startSize=30;fillColor=#f0e6ff;strokeColor=#9673a6;fontStyle=1;fontSize=13;rounded=1;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+        <mxCell id="HYf47puikAZ70yU_mli2-17" value="ZONA BACKEND — Monolito Modular (FastAPI)" style="swimlane;startSize=30;fillColor=#f0e6ff;strokeColor=#9673a6;fontStyle=1;fontSize=13;rounded=1;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
           <mxGeometry x="960" y="100" width="620" height="520" as="geometry" />
         </mxCell>
-        <mxCell id="HYf47puikAZ70yU_mli2-18" value="Auth Service&lt;br&gt;(Node.js / JWT)&lt;br&gt;• Validar @uni.edu.co&lt;br&gt;• bcrypt + JWT&lt;br&gt;• Refresh Tokens" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-17" vertex="1">
+        <mxCell id="HYf47puikAZ70yU_mli2-18" value="Auth Service&lt;br&gt;(FastAPI / JWT + OTP)&lt;br&gt;• Verificación OTP&lt;br&gt;• bcrypt (futuro)&lt;br&gt;• JWT Sessions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-17" vertex="1">
           <mxGeometry x="20" y="122" width="165" height="100" as="geometry" />
         </mxCell>
         <mxCell id="HYf47puikAZ70yU_mli2-19" value="Catalog Service&lt;br&gt;(CRUD Productos)&lt;br&gt;• RF02: Crear/Editar/Borrar&lt;br&gt;• Categorías + Imágenes&lt;br&gt;• RNF04: RESTful API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-17" vertex="1">
           <mxGeometry x="210" y="122" width="165" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="HYf47puikAZ70yU_mli2-20" value="Search &amp;amp; AI Service&lt;br&gt;(Patrón: Adapter)&lt;br&gt;• Búsqueda semántica&lt;br&gt;• Primary: Llama 3 local&lt;br&gt;• Fallback: Full-text / API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" parent="HYf47puikAZ70yU_mli2-17" vertex="1">
+        <mxCell id="HYf47puikAZ70yU_mli2-20" value="Search &amp;amp; AI Service&lt;br&gt;(Patrón: Adapter)&lt;br&gt;• Búsqueda semántica&lt;br&gt;• Primary: OpenAI (GPT-4o-mini)&lt;br&gt;• Fallback: Full-text / API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" parent="HYf47puikAZ70yU_mli2-17" vertex="1">
           <mxGeometry x="400" y="122" width="195" height="100" as="geometry" />
         </mxCell>
         <mxCell id="HYf47puikAZ70yU_mli2-25" value="ZONA DE DATOS" style="swimlane;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=13;rounded=1;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
@@ -59,7 +59,7 @@
         <mxCell id="HYf47puikAZ70yU_mli2-26" value="PostgreSQL&lt;br&gt;(Neon / Supabase Free Tier)&lt;br&gt;&lt;br&gt;• Users &amp;amp; Auth&lt;br&gt;• Products &amp;amp; Categories&lt;br&gt;• Chat Messages&lt;br&gt;• Wishlist&lt;br&gt;&lt;br&gt;Row-Level Security (RLS)&lt;br&gt;para cumplimiento de Ley 1581" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;size=15;" parent="HYf47puikAZ70yU_mli2-25" vertex="1">
           <mxGeometry x="22.5" y="60" width="160" height="221" as="geometry" />
         </mxCell>
-        <mxCell id="HYf47puikAZ70yU_mli2-27" value="Redis / Upstash&lt;br&gt;(Free Tier)&lt;br&gt;&lt;br&gt;• Session cache&lt;br&gt;• Rate limiting&lt;br&gt;• Search index cache" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#ffcccc;strokeColor=#b85450;fontSize=11;size=10;" parent="HYf47puikAZ70yU_mli2-25" vertex="1">
+        <mxCell id="HYf47puikAZ70yU_mli2-27" value="Service Cache&lt;br&gt;(En memoria)&lt;br&gt;&lt;br&gt;• Cache local&lt;br&gt;• Optimizaciones futuras" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#ffcccc;strokeColor=#b85450;fontSize=11;size=10;" parent="HYf47puikAZ70yU_mli2-25" vertex="1">
           <mxGeometry x="280" y="50" width="155" height="120" as="geometry" />
         </mxCell>
         <mxCell id="HYf47puikAZ70yU_mli2-28" value="Object Storage&lt;br&gt;(Cloudinary / Supabase)&lt;br&gt;&lt;br&gt;• Fotos de productos&lt;br&gt;• CDN automático" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#ffcccc;strokeColor=#b85450;fontSize=11;size=10;" parent="HYf47puikAZ70yU_mli2-25" vertex="1">
