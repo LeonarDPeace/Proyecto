@@ -8,6 +8,7 @@ import uuid
 from datetime import UTC, datetime
 
 from sqlalchemy import Boolean, CheckConstraint, DateTime, Enum, Numeric, String
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -48,6 +49,8 @@ class User(Base):
     # --- Privacy settings (HU 1.3) ---
     show_email: Mapped[bool] = mapped_column(Boolean, server_default="false")
     show_phone: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    
+    push_subscriptions: Mapped[list] = mapped_column(JSONB, server_default="'[]'::jsonb")
 
     # Ley 1581/2012 — Consentimiento explícito de tratamiento de datos
     accepted_terms_at: Mapped[datetime | None] = mapped_column(

@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.routers import auth, health, products, users
+from app.routers import auth, health, products, users, push
 
 
 @asynccontextmanager
@@ -52,3 +52,4 @@ app.include_router(health.router)
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
 app.include_router(products.router, prefix="/api/v1/products", tags=["Products"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
+app.include_router(push.router, prefix="/api/v1/push", tags=["Push"])

@@ -45,6 +45,9 @@ CREATE TABLE IF NOT EXISTS users (
     show_email      BOOLEAN DEFAULT FALSE,
     show_phone      BOOLEAN DEFAULT FALSE,
 
+    -- Push Notification (HU 2.3)
+    push_subscriptions JSONB DEFAULT '[]'::JSONB,
+
     -- Ley 1581/2012 — Consentimiento explícito
     accepted_terms_at TIMESTAMPTZ,
     created_at      TIMESTAMPTZ DEFAULT NOW(),
