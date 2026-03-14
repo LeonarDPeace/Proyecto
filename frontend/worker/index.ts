@@ -1,5 +1,6 @@
 /// <reference lib="webworker" />
 
+export {};
 declare const self: ServiceWorkerGlobalScope;
 
 // Escuchar eventos de Push enviados por el backend (pywebpush)

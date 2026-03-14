@@ -43,9 +43,7 @@ async def create_otp(db: AsyncSession, email: str) -> OTPCode:
     )
 
     code = _generate_otp()
-    expires_at = datetime.now(UTC) + timedelta(
-        minutes=settings.OTP_EXPIRATION_MINUTES
-    )
+    expires_at = datetime.now(UTC) + timedelta(minutes=settings.OTP_EXPIRATION_MINUTES)
 
     otp = OTPCode(
         email=email,
@@ -116,9 +114,9 @@ async def send_otp_email(email: str, code: str) -> None:
         code: Código OTP a enviar.
     """
     if settings.ENVIRONMENT == "development" or not settings.SMTP_USER:
-        print(f"\n{'='*50}")
+        print(f"\n{'=' * 50}")
         print(f"📧 OTP para {email}: {code}")
-        print(f"{'='*50}\n")
+        print(f"{'=' * 50}\n")
         return
 
     msg = EmailMessage()

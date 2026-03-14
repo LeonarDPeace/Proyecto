@@ -23,9 +23,7 @@ class UserCreate(UserBase):
     """Datos requeridos para crear un usuario (registro OTP)."""
 
     phone: str | None = Field(default=None, max_length=20)
-    accept_terms: bool = Field(
-        ..., description="Aceptación explícita de T&C (Ley 1581/2012)"
-    )
+    accept_terms: bool = Field(..., description="Aceptación explícita de T&C (Ley 1581/2012)")
 
     @field_validator("accept_terms")
     @classmethod

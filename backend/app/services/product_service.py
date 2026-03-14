@@ -6,7 +6,7 @@ HU 3.3: Soft-delete y pausar (toggle).
 """
 
 import uuid
-from typing import Sequence
+from collections.abc import Sequence
 
 from fastapi import HTTPException, status
 from sqlalchemy import select
@@ -16,9 +16,7 @@ from app.models.product import Product
 from app.schemas.product import ProductCreate, ProductUpdate
 
 
-async def create_product(
-    db: AsyncSession, seller_id: uuid.UUID, data: ProductCreate
-) -> Product:
+async def create_product(db: AsyncSession, seller_id: uuid.UUID, data: ProductCreate) -> Product:
     """Crea un nuevo producto en BD (solo rol Vendedor)."""
     product = Product(
         seller_id=seller_id,
@@ -33,9 +31,7 @@ async def create_product(
     return product
 
 
-async def get_product_by_id(
-    db: AsyncSession, product_id: uuid.UUID, active_only: bool = True
-) -> Product:
+async def get_product_by_id(db: AsyncSession, product_id: uuid.UUID, active_only: bool = True) -> Product:
     """Busca un producto por ID."""
     query = select(Product).where(Product.id == product_id)
     if active_only:
@@ -43,7 +39,7 @@ async def get_product_by_id(
 
     result = await db.execute(query)
     product = result.scalar_one_or_none()
-    
+
     if not product:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -90,9 +86,7 @@ async def update_product(
     return product
 
 
-async def soft_delete_product(
-    db: AsyncSession, product_id: uuid.UUID, seller_id: uuid.UUID
-) -> None:
+async def soft_delete_product(db: AsyncSession, product_id: uuid.UUID, seller_id: uuid.UUID) -> None:
     """Aplica soft-delete (eliminación lógica) desactivando el producto."""
     product = await get_product_by_id(db, product_id, active_only=False)
 
@@ -106,9 +100,7 @@ async def soft_delete_product(
     await db.flush()
 
 
-async def toggle_product_status(
-    db: AsyncSession, product_id: uuid.UUID, seller_id: uuid.UUID
-) -> Product:
+async def toggle_product_status(db: AsyncSession, product_id: uuid.UUID, seller_id: uuid.UUID) -> Product:
     """Alterna el estado is_active (Disponible/Agotado o Pausado)."""
     product = await get_product_by_id(db, product_id, active_only=False)
 

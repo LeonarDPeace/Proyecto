@@ -22,6 +22,7 @@ from app.models.user import User
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_user(**overrides) -> User:
     """Crea un mock de User con valores por defecto."""
     defaults = {
@@ -193,9 +194,7 @@ async def test_get_privacy_settings():
         headers = _auth_header(user_id=fake_user.id)
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            response = await client.get(
-                "/api/v1/users/me/privacy", headers=headers
-            )
+            response = await client.get("/api/v1/users/me/privacy", headers=headers)
 
     assert response.status_code == 200
     data = response.json()
@@ -209,14 +208,17 @@ async def test_update_privacy_settings():
     fake_user = _make_user(show_email=False, show_phone=False)
     updated_user = _make_user(show_email=True, show_phone=True)
 
-    with patch(
-        "app.services.auth_service.get_user_by_id",
-        new_callable=AsyncMock,
-        return_value=fake_user,
-    ), patch(
-        "app.routers.users.update_user_profile",
-        new_callable=AsyncMock,
-        return_value=updated_user,
+    with (
+        patch(
+            "app.services.auth_service.get_user_by_id",
+            new_callable=AsyncMock,
+            return_value=fake_user,
+        ),
+        patch(
+            "app.routers.users.update_user_profile",
+            new_callable=AsyncMock,
+            return_value=updated_user,
+        ),
     ):
         headers = _auth_header(user_id=fake_user.id)
         transport = ASGITransport(app=app)

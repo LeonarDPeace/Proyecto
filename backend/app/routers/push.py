@@ -13,6 +13,7 @@ router = APIRouter()
 
 class PushSubscription(BaseModel):
     """Schema para una suscripción Web Push que viene del Service Worker."""
+
     endpoint: str = Field(..., description="URL del servicio push (FCM, Autopush, etc)")
     keys: dict = Field(..., description="Claves de encriptación (p256dh, auth)")
 
@@ -25,14 +26,14 @@ async def subscribe_push(
 ):
     """Registra o actualiza la suscripción del usuario a las notificaciones Push."""
     subs = list(current_user.push_subscriptions) if current_user.push_subscriptions else []
-    
+
     # Evitar duplicados revisando si el endpoint ya existe.
     exists = any(s.get("endpoint") == subscription.endpoint for s in subs)
-    
+
     if not exists:
         subs.append(subscription.model_dump())
         # Re-asignar para disparar la detección de cambio de SQLAlchemy en JSONB.
         current_user.push_subscriptions = subs
         await db.commit()
-    
+
     return {"message": "Suscripción guardada correctamente"}

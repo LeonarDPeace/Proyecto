@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.routers import auth, health, products, users, push
+from app.routers import auth, health, products, push, users
 
 
 @asynccontextmanager
@@ -23,8 +23,7 @@ async def lifespan(application: FastAPI):
 app = FastAPI(
     title="VeraMarket API",
     description=(
-        "API REST para VeraMarket — Marketplace P2P hiper-local "
-        "para campus universitarios en Cali, Colombia."
+        "API REST para VeraMarket — Marketplace P2P hiper-local para campus universitarios en Cali, Colombia."
     ),
     version="0.1.0",
     lifespan=lifespan,

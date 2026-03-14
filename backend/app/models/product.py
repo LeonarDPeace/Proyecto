@@ -26,23 +26,17 @@ class Product(Base):
     """Representa un producto publicado por un vendedor."""
 
     __tablename__ = "products"
-    __table_args__ = (
-        CheckConstraint("price > 0", name="ck_products_price_positive"),
-    )
+    __table_args__ = (CheckConstraint("price > 0", name="ck_products_price_positive"),)
 
     id: Mapped[uuid.UUID] = mapped_column(
         primary_key=True,
         default=uuid.uuid4,
         server_default="uuid_generate_v4()",
     )
-    seller_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), nullable=False
-    )
+    seller_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     name: Mapped[str] = mapped_column(String(200), nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
-    price: Mapped[float] = mapped_column(
-        Numeric(12, 2), nullable=False, comment="Precio en COP"
-    )
+    price: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False, comment="Precio en COP")
     category: Mapped[str | None] = mapped_column(String(50), nullable=True)
     image_urls: Mapped[list] = mapped_column(JSONB, server_default="'[]'::jsonb")
     is_active: Mapped[bool] = mapped_column(Boolean, server_default="true")

@@ -22,6 +22,7 @@ from app.models.user import User
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_user(**overrides) -> User:
     """Crea un mock de User con valores por defecto."""
     defaults = {
@@ -101,6 +102,7 @@ async def test_otp_request_any_valid_email():
             )
 
     assert response.status_code == 200
+
 
 @pytest.mark.asyncio
 async def test_otp_request_invalid_email_format():
@@ -222,14 +224,17 @@ async def test_complete_profile_success():
         institutional_id="2210099",
     )
 
-    with patch(
-        "app.services.auth_service.get_user_by_id",
-        new_callable=AsyncMock,
-        return_value=fake_user,
-    ), patch(
-        "app.routers.auth.update_user_profile",
-        new_callable=AsyncMock,
-        return_value=fake_user,
+    with (
+        patch(
+            "app.services.auth_service.get_user_by_id",
+            new_callable=AsyncMock,
+            return_value=fake_user,
+        ),
+        patch(
+            "app.routers.auth.update_user_profile",
+            new_callable=AsyncMock,
+            return_value=fake_user,
+        ),
     ):
         headers = _auth_header(user_id=fake_user.id)
         transport = ASGITransport(app=app)

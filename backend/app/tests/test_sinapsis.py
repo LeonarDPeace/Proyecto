@@ -22,6 +22,7 @@ from app.models.user import User
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_user(**overrides) -> User:
     """Crea un mock de User con valores por defecto."""
     defaults = {
@@ -52,9 +53,11 @@ def _auth_header(user_id: uuid.UUID | None = None, role: str = "comprador") -> d
     token = create_access_token(data={"sub": str(uid), "role": role})
     return {"Authorization": f"Bearer {token}"}
 
+
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.asyncio
 async def test_vendor_request_valid_code():
@@ -80,6 +83,7 @@ async def test_vendor_request_valid_code():
     assert data["vendor_status"] == "approved"
     assert data["role"] == "vendedor"
 
+
 @pytest.mark.asyncio
 async def test_vendor_request_invalid_code():
     """POST /api/v1/auth/vendor/request — código Sinapsis inválido."""
@@ -104,6 +108,7 @@ async def test_vendor_request_invalid_code():
 
     assert response.status_code == 400
     assert response.json()["detail"] == "Código Sinapsis inválido o inactivo."
+
 
 @pytest.mark.asyncio
 async def test_vendor_request_already_vendor():

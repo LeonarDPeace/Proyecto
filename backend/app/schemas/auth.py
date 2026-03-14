@@ -11,6 +11,7 @@ from pydantic import BaseModel, EmailStr, Field, field_validator
 # OTP — Request / Verify (HU 1.1)
 # ---------------------------------------------------------------------------
 
+
 class OTPRequest(BaseModel):
     """Solicitud de código OTP al correo institucional."""
 
@@ -40,15 +41,14 @@ class OTPVerify(BaseModel):
 # Profile — Registro completo (HU 1.2)
 # ---------------------------------------------------------------------------
 
+
 class ProfileCreate(BaseModel):
     """Datos para completar el perfil de usuario (primer inicio de sesión)."""
 
     name: str = Field(..., min_length=2, max_length=150)
     institutional_id: str = Field(..., min_length=1, max_length=50)
     phone: str | None = Field(default=None, max_length=20)
-    accept_terms: bool = Field(
-        ..., description="Aceptación explícita de T&C (Ley 1581/2012)"
-    )
+    accept_terms: bool = Field(..., description="Aceptación explícita de T&C (Ley 1581/2012)")
 
     @field_validator("accept_terms")
     @classmethod
@@ -69,6 +69,7 @@ class ProfileUpdate(BaseModel):
 # ---------------------------------------------------------------------------
 # Privacy settings (HU 1.3)
 # ---------------------------------------------------------------------------
+
 
 class PrivacySettings(BaseModel):
     """Configuración de privacidad del usuario."""
@@ -93,6 +94,7 @@ class PrivacySettingsRead(PrivacySettings):
 # Auth Responses
 # ---------------------------------------------------------------------------
 
+
 class TokenResponse(BaseModel):
     """Respuesta con token JWT tras autenticación exitosa."""
 
@@ -111,13 +113,13 @@ class OTPSentResponse(BaseModel):
 
 class VendorRoleRequest(BaseModel):
     """Solicita rol de vendedor usando código Sinapsis."""
-    
+
     sinapsis_code: str = Field(..., min_length=1, max_length=50)
 
 
 class VendorRoleResponse(BaseModel):
     """Respuesta a solicitud de rol vendedor."""
-    
+
     message: str
     vendor_status: str
     role: str

@@ -20,12 +20,9 @@ class OpenAIAdapter(IAIAdapter):
     async def semantic_search(self, query: str, context: dict) -> list[dict]:
         """Búsqueda semántica — pendiente Sprint 3."""
         raise NotImplementedError(
-            "OpenAI semantic_search será implementado en Sprint 3. "
-            "Usa filtros tradicionales por ahora."
+            "OpenAI semantic_search será implementado en Sprint 3. Usa filtros tradicionales por ahora."
         )
 
     async def generate_recommendation(self, user_id: str) -> list[dict]:
         """Recomendaciones personalizadas — pendiente Sprint 3."""
-        raise NotImplementedError(
-            "OpenAI generate_recommendation será implementado en Sprint 3."
-        )
+        raise NotImplementedError("OpenAI generate_recommendation será implementado en Sprint 3.")

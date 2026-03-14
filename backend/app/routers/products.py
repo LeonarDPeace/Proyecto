@@ -6,7 +6,7 @@ HU 3.3: Eliminar producto (soft-delete) y pausar.
 """
 
 import uuid
-from typing import Sequence
+from collections.abc import Sequence
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -29,9 +29,7 @@ async def list_products(
     db: AsyncSession = Depends(get_db),
 ) -> Sequence[ProductRead]:
     """Lista productos activos del catálogo (Paginación y Filtros)."""
-    return await product_service.list_products(
-        db, category=category, limit=limit, offset=offset
-    )
+    return await product_service.list_products(db, category=category, limit=limit, offset=offset)
 
 
 @router.get("/{product_id}", response_model=ProductRead)
@@ -74,9 +72,7 @@ async def update_product(
     db: AsyncSession = Depends(get_db),
 ) -> ProductRead:
     """Actualiza un producto existente (solo el dueño)."""
-    product = await product_service.update_product(
-        db, product_id, current_user.id, product_data
-    )
+    product = await product_service.update_product(db, product_id, current_user.id, product_data)
     await db.commit()
     await db.refresh(product)
     return product
@@ -109,9 +105,7 @@ async def toggle_product_status(
     db: AsyncSession = Depends(get_db),
 ) -> ProductRead:
     """Alterna el estado del producto (Pausar/Activar)."""
-    product = await product_service.toggle_product_status(
-        db, product_id, current_user.id
-    )
+    product = await product_service.toggle_product_status(db, product_id, current_user.id)
     await db.commit()
     await db.refresh(product)
     return product

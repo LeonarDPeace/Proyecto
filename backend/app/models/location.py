@@ -24,18 +24,10 @@ class Location(Base):
         default=uuid.uuid4,
         server_default="uuid_generate_v4()",
     )
-    user_id: Mapped[uuid.UUID] = mapped_column(
-        ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False
-    )
-    campus: Mapped[str] = mapped_column(
-        String(100), nullable=False, server_default="'UAO'"
-    )
-    coordinates = mapped_column(
-        Geometry(geometry_type="POINT", srid=4326), nullable=False
-    )
-    label: Mapped[str | None] = mapped_column(
-        String(200), nullable=True, comment="Ej: Cafetería Central, Sinapsis"
-    )
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
+    campus: Mapped[str] = mapped_column(String(100), nullable=False, server_default="'UAO'")
+    coordinates = mapped_column(Geometry(geometry_type="POINT", srid=4326), nullable=False)
+    label: Mapped[str | None] = mapped_column(String(200), nullable=True, comment="Ej: Cafetería Central, Sinapsis")
 
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

@@ -7,7 +7,7 @@ Sprint 1: Autenticación OTP (sin contraseña). Privacy-first (HU 1.3).
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import Boolean, CheckConstraint, DateTime, Enum, Numeric, String
+from sqlalchemy import Boolean, DateTime, Enum, Numeric, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -24,9 +24,7 @@ class User(Base):
         default=uuid.uuid4,
         server_default="uuid_generate_v4()",
     )
-    institutional_id: Mapped[str] = mapped_column(
-        String(50), unique=True, nullable=False
-    )
+    institutional_id: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     name: Mapped[str] = mapped_column(String(150), nullable=False)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     phone: Mapped[str | None] = mapped_column(String(20), nullable=True)
@@ -41,21 +39,17 @@ class User(Base):
     )
     sinapsis_code: Mapped[str | None] = mapped_column(String(50), unique=True, nullable=True)
 
-    reputation: Mapped[float] = mapped_column(
-        Numeric(3, 2), server_default="0.00"
-    )
+    reputation: Mapped[float] = mapped_column(Numeric(3, 2), server_default="0.00")
     is_verified: Mapped[bool] = mapped_column(Boolean, server_default="false")
 
     # --- Privacy settings (HU 1.3) ---
     show_email: Mapped[bool] = mapped_column(Boolean, server_default="false")
     show_phone: Mapped[bool] = mapped_column(Boolean, server_default="false")
-    
+
     push_subscriptions: Mapped[list] = mapped_column(JSONB, server_default="'[]'::jsonb")
 
     # Ley 1581/2012 — Consentimiento explícito de tratamiento de datos
-    accepted_terms_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    accepted_terms_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

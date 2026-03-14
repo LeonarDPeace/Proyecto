@@ -14,6 +14,7 @@ from app.models.user import User
 
 # --- Helpers ---
 
+
 def _mock_user(user_id: uuid.UUID | None = None, role: str = "vendedor") -> User:
     """Mock User dependiente para saltar verificación de JWT/DB."""
     u = MagicMock(spec=User)
@@ -43,14 +44,17 @@ def _make_product_dict(id=None, seller_id=None, **overrides) -> dict:
 
 class MockProduct:
     """Simula un objeto Product ORM antes de la serialización pydantic."""
+
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
+
 
 async def override_get_db():
     yield AsyncMock()
 
 
 # --- Tests ---
+
 
 @pytest.mark.asyncio
 async def test_list_products():
@@ -89,19 +93,18 @@ async def test_create_product_vendedor():
     """POST /api/v1/products/ crea producto si es vendedor."""
     seller_id = uuid.uuid4()
     fake_prod = MockProduct(**_make_product_dict(seller_id=seller_id, name="Empanada", price=2500.0))
-    
+
     app.dependency_overrides[get_current_user] = lambda: _mock_user(seller_id, role="vendedor")
     app.dependency_overrides[get_db] = override_get_db
-    
+
     with patch("app.routers.products.product_service.create_product", new_callable=AsyncMock) as mock_create:
         mock_create.return_value = fake_prod
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
             response = await client.post(
-                "/api/v1/products/", 
-                json={"name": "Empanada", "price": 2500, "category": "comida"}
+                "/api/v1/products/", json={"name": "Empanada", "price": 2500, "category": "comida"}
             )
-            
+
     app.dependency_overrides.clear()
     assert response.status_code == 201
     assert response.json()["name"] == "Empanada"
@@ -112,14 +115,11 @@ async def test_create_product_vendedor():
 async def test_create_product_comprador_forbidden():
     """POST /api/v1/products/ retorna 403 si el rol es comprador."""
     app.dependency_overrides[get_current_user] = lambda: _mock_user(role="comprador")
-    
+
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        response = await client.post(
-            "/api/v1/products/", 
-            json={"name": "Empanada", "price": 2500}
-        )
-        
+        response = await client.post("/api/v1/products/", json={"name": "Empanada", "price": 2500})
+
     app.dependency_overrides.clear()
     assert response.status_code == 403
     assert "vendedores" in response.json()["detail"]
@@ -129,14 +129,11 @@ async def test_create_product_comprador_forbidden():
 async def test_create_product_invalid_price():
     """POST /api/v1/products/ valida precio > 0 (Pydantic)."""
     app.dependency_overrides[get_current_user] = lambda: _mock_user(role="vendedor")
-    
+
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        response = await client.post(
-            "/api/v1/products/", 
-            json={"name": "Mal Precio", "price": -500}
-        )
-        
+        response = await client.post("/api/v1/products/", json={"name": "Mal Precio", "price": -500})
+
     app.dependency_overrides.clear()
     assert response.status_code == 422
 
@@ -145,18 +142,14 @@ async def test_create_product_invalid_price():
 async def test_create_product_max_images():
     """POST /api/v1/products/ lanza 422 si hay más de 5 imágenes."""
     app.dependency_overrides[get_current_user] = lambda: _mock_user(role="vendedor")
-    
+
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.post(
-            "/api/v1/products/", 
-            json={
-                "name": "Fotos Extra", 
-                "price": 1000, 
-                "image_urls": ["url1", "url2", "url3", "url4", "url5", "url6"]
-            }
+            "/api/v1/products/",
+            json={"name": "Fotos Extra", "price": 1000, "image_urls": ["url1", "url2", "url3", "url4", "url5", "url6"]},
         )
-        
+
     app.dependency_overrides.clear()
     assert response.status_code == 422
 
@@ -167,19 +160,18 @@ async def test_update_product_success():
     prod_id = uuid.uuid4()
     seller_id = uuid.uuid4()
     fake_prod = MockProduct(**_make_product_dict(id=prod_id, seller_id=seller_id, name="Nombre Actualizado"))
-    
+
     app.dependency_overrides[get_current_user] = lambda: _mock_user(seller_id, role="vendedor")
     app.dependency_overrides[get_db] = override_get_db
-    
+
     with patch("app.routers.products.product_service.update_product", new_callable=AsyncMock) as mock_upd:
         mock_upd.return_value = fake_prod
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
             response = await client.put(
-                f"/api/v1/products/{prod_id}", 
-                json={"name": "Nombre Actualizado", "price": 3000}
+                f"/api/v1/products/{prod_id}", json={"name": "Nombre Actualizado", "price": 3000}
             )
-            
+
     app.dependency_overrides.clear()
     assert response.status_code == 200
     assert response.json()["name"] == "Nombre Actualizado"
@@ -190,15 +182,15 @@ async def test_delete_product():
     """DELETE /api/v1/products/{id} retorna confirmación de soft-delete."""
     prod_id = uuid.uuid4()
     seller_id = uuid.uuid4()
-    
+
     app.dependency_overrides[get_current_user] = lambda: _mock_user(seller_id, role="vendedor")
     app.dependency_overrides[get_db] = override_get_db
-    
+
     with patch("app.routers.products.product_service.soft_delete_product", new_callable=AsyncMock):
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
             response = await client.delete(f"/api/v1/products/{prod_id}")
-            
+
     app.dependency_overrides.clear()
     assert response.status_code == 200
     assert "exitosamente" in response.json()["message"]
@@ -210,16 +202,16 @@ async def test_toggle_status_product():
     prod_id = uuid.uuid4()
     seller_id = uuid.uuid4()
     fake_prod = MockProduct(**_make_product_dict(id=prod_id, seller_id=seller_id, is_active=False))
-    
+
     app.dependency_overrides[get_current_user] = lambda: _mock_user(seller_id, role="vendedor")
     app.dependency_overrides[get_db] = override_get_db
-    
+
     with patch("app.routers.products.product_service.toggle_product_status", new_callable=AsyncMock) as mock_tog:
         mock_tog.return_value = fake_prod
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
             response = await client.patch(f"/api/v1/products/{prod_id}/status")
-            
+
     app.dependency_overrides.clear()
     assert response.status_code == 200
     assert response.json()["is_active"] is False

@@ -133,7 +133,7 @@ async def complete_profile(
     )
     user.institutional_id = payload.institutional_id
     user.accepted_terms_at = datetime.now(UTC)
-    
+
     await db.commit()
 
     return user
@@ -173,13 +173,11 @@ async def vendor_role_request(
     db: AsyncSession = Depends(get_db),
 ):
     """HU 1.4 y 1.5: El usuario autenticado solicita el rol de vendedor.
-    
+
     El sistema valida el código ingresado contra la whitelist (CSV) y
     actualiza su rol si es correcto.
     """
-    vendor_status, new_role = await request_vendor_role(
-        db=db, user=current_user, sinapsis_code=request.sinapsis_code
-    )
+    vendor_status, new_role = await request_vendor_role(db=db, user=current_user, sinapsis_code=request.sinapsis_code)
     return VendorRoleResponse(
         message="Solicitud procesada correctamente.",
         vendor_status=vendor_status,
