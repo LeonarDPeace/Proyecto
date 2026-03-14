@@ -4,17 +4,31 @@ declare const self: ServiceWorkerGlobalScope;
 
 // Escuchar eventos de Push enviados por el backend (pywebpush)
 self.addEventListener("push", (event) => {
-  const data = event.data?.json() || { 
+  let data = { 
     title: "VeraMarket", 
     body: "Tienes una nueva notificación." 
   };
+
+  try {
+    if (event.data) {
+      data = event.data.json();
+    }
+  } catch (e) {
+    // Si no es JSON, intentar como texto
+    data.body = event.data?.text() || data.body;
+  }
+
+  if (Notification.permission !== "granted") {
+    console.warn("Permiso de notificaciones no concedido.");
+    return;
+  }
 
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
       icon: "/icons/icon-192x192.png",
       badge: "/icons/icon-192x192.png",
-      data: data.url || "/",
+      data: (data as any).url || "/",
     })
   );
 });

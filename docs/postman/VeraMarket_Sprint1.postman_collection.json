@@ -1,0 +1,113 @@
+{
+  "info": {
+    "name": "VeraMarket Sprint 1 & 2 API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/health"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "1. Solicitar OTP",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"{{test_email}}\"}"
+            },
+            "url": "{{base_url}}/api/v1/auth/otp/request"
+          }
+        },
+        {
+          "name": "2. Verificar OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if(jsonData.access_token) pm.environment.set(\"token\", jsonData.access_token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"{{test_email}}\", \"code\": \"{{otp_code}}\"}"
+            },
+            "url": "{{base_url}}/api/v1/auth/otp/verify"
+          }
+        },
+        {
+          "name": "3. Completar Perfil",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"institutional_id\": \"123456\",\n  \"name\": \"User\",\n  \"phone\": \"3001\",\n  \"accept_terms\": true\n}"
+            },
+            "url": "{{base_url}}/api/v1/auth/profile/complete"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Listar Productos",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/v1/products"
+          }
+        },
+        {
+          "name": "Crear Producto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if(jsonData.id) pm.environment.set(\"product_id\", jsonData.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"name\": \"Test\", \"description\": \"Desc\", \"price\": 100, \"category\": \"comida\", \"image_urls\": [\"http://img.com/1.jpg\"]}"
+            },
+            "url": "{{base_url}}/api/v1/products"
+          }
+        }
+      ]
+    }
+  ]
+}

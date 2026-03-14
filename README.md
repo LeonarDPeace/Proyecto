@@ -113,7 +113,7 @@ Proyecto/
 ```bash
 # Clonar el repositorio
 git clone https://github.com/<tu-org>/veramarket.git
-cd veramarket
+cd veramarket_proyecto
 
 # Copiar variables de entorno
 cp .env.example .env
@@ -245,12 +245,12 @@ El pipeline de GitHub Actions (`.github/workflows/ci-cd.yml`) ejecuta:
 
 | Sprint | Entregable                                           | Estado    |
 |--------|------------------------------------------------------|-----------|
-| 0      | Setup monorepo, modelos, esqueletos, CI/CD           | ✅ Actual |
-| 1      | Auth (JWT + .edu.co), CRUD productos, perfil usuario | 🔲        |
-| 2      | Mapa interactivo (Leaflet/PostGIS), negociación      | 🔲        |
-| 3      | IA — búsqueda semántica + recomendaciones (Adapter)  | 🔲        |
-| 4      | PWA offline, notificaciones, reputación              | 🔲        |
-| 5      | QA, tests E2E, deploy producción, documentación      | 🔲        |
+| 0      | Setup monorepo, modelos, esqueletos, CI/CD           | ✅ Finalizado |
+| 1      | Auth (OTP, Sinapsis), CRUD productos, perfil usuario | ✅ Finalizado |
+| 2      | Core PWA, notificaciones push, UX Offline loaders    | ✅ Finalizado |
+| 3      | Mapa interactivo (Leaflet/PostGIS), negociación      | 🔲        |
+| 4      | IA — búsqueda semántica + recomendaciones (Adapter)  | 🔲        |
+| 5      | QA, tests E2E, deploy producción, reputación         | 🔲        |
 
 ---
 
