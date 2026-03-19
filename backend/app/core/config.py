@@ -42,6 +42,9 @@ class Settings(BaseSettings):
     OAUTH_CLIENT_ID: str = ""
     OAUTH_CLIENT_SECRET: str = ""
 
+    # --- Sinapsis (HU 1.4) ---
+    SINAPSIS_CSV_PATH: str = "data/sinapsis_data.csv"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
