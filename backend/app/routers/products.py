@@ -32,6 +32,15 @@ async def list_products(
     return await product_service.list_products(db, category=category, limit=limit, offset=offset)
 
 
+@router.get("/mine", response_model=list[ProductRead])
+async def list_my_products(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> Sequence[ProductRead]:
+    """Lista TODOS los productos del vendedor autenticado (incluye inactivos)."""
+    return await product_service.list_products_by_seller(db, current_user.id)
+
+
 @router.get("/{product_id}", response_model=ProductRead)
 async def get_product(
     product_id: uuid.UUID,

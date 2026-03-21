@@ -33,7 +33,7 @@ async def create_product(db: AsyncSession, seller_id: uuid.UUID, data: ProductCr
 
 async def get_product_by_id(db: AsyncSession, product_id: uuid.UUID, active_only: bool = True) -> Product:
     """Busca un producto por ID."""
-    query = select(Product).where(Product.id == product_id)
+    query = select(Product).where(Product.id == product_id, Product.is_deleted == False)  # noqa: E712
     if active_only:
         query = query.where(Product.is_active == True)  # noqa: E712
 
@@ -51,13 +51,26 @@ async def get_product_by_id(db: AsyncSession, product_id: uuid.UUID, active_only
 async def list_products(
     db: AsyncSession, category: str | None = None, limit: int = 20, offset: int = 0
 ) -> Sequence[Product]:
-    """Obtiene productos activos (is_active=True) con paginación y filtros."""
-    query = select(Product).where(Product.is_active == True)  # noqa: E712
+    """Obtiene productos activos (is_active=True) y no eliminados con paginación y filtros."""
+    query = select(Product).where(Product.is_active == True, Product.is_deleted == False)  # noqa: E712
 
     if category:
         query = query.where(Product.category == category)
 
     query = query.order_by(Product.created_at.desc()).limit(limit).offset(offset)
+    result = await db.execute(query)
+    return result.scalars().all()
+
+
+async def list_products_by_seller(
+    db: AsyncSession, seller_id: uuid.UUID
+) -> Sequence[Product]:
+    """Obtiene TODOS los productos de un vendedor (incluyendo inactivos, pero excluyendo eliminados)."""
+    query = (
+        select(Product)
+        .where(Product.seller_id == seller_id, Product.is_deleted == False)  # noqa: E712
+        .order_by(Product.created_at.desc())
+    )
     result = await db.execute(query)
     return result.scalars().all()
 
@@ -87,7 +100,7 @@ async def update_product(
 
 
 async def soft_delete_product(db: AsyncSession, product_id: uuid.UUID, seller_id: uuid.UUID) -> None:
-    """Aplica soft-delete (eliminación lógica) desactivando el producto."""
+    """Aplica soft-delete (eliminación lógica)."""
     product = await get_product_by_id(db, product_id, active_only=False)
 
     if product.seller_id != seller_id:
@@ -96,7 +109,7 @@ async def soft_delete_product(db: AsyncSession, product_id: uuid.UUID, seller_id
             detail="No tienes permiso para eliminar este producto",
         )
 
-    product.is_active = False
+    product.is_deleted = True
     await db.flush()
 
 
