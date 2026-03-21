@@ -9,10 +9,12 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 import { useAuth } from "@/hooks/useAuth";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import ProductManager from "@/components/products/ProductManager";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -69,6 +71,8 @@ export default function ProfilePage() {
   const hasPrivacyChanges =
     showEmail !== (user.show_email ?? false) ||
     showPhone !== (user.show_phone ?? false);
+
+  const isSeller = user.role === "vendedor";
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-10">
@@ -196,6 +200,24 @@ export default function ProfilePage() {
           {saving ? "Guardando…" : "Guardar privacidad"}
         </Button>
       </section>
+
+      {/* ── Mis Productos (Sprint 3 — Solo vendedores) ── */}
+      {isSeller && (
+        <section className="mt-6 rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-700">
+              Mis Productos
+            </h2>
+            <Link
+              href="/products/new"
+              className="inline-flex items-center gap-1 text-sm font-medium text-vera-600 hover:underline"
+            >
+              + Publicar nuevo
+            </Link>
+          </div>
+          <ProductManager />
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="mt-8 text-center text-xs text-gray-400">

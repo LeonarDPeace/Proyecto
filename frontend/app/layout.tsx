@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "@/styles/globals.css";
 import NetworkStatus from "@/components/NetworkStatus";
+import NavigationMenu from "@/components/layout/NavigationMenu";
 
 export const metadata: Metadata = {
   title: "VeraMarket — Marketplace Universitario",
@@ -31,8 +32,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es-CO">
-      <body className="min-h-screen bg-white antialiased">
+      <body className="min-h-screen bg-white antialiased md:pt-16 pb-20 md:pb-0">
         <NetworkStatus />
+        <NavigationMenu />
         {children}
       </body>
     </html>

@@ -4,7 +4,7 @@ interface Product {
   id: string;
   name: string;
   price: number;
-  category?: string;
+  category?: string | null;
   image_urls: string[];
   is_active: boolean;
 }

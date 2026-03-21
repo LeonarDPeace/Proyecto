@@ -1,0 +1,264 @@
+"use client";
+
+/**
+ * NavigationMenu — Menú de navegación global (Sprint 3).
+ *
+ * Renderiza una barra de navegación superior en desktop y una barra inferior
+ * (bottom-tab) en móvil, siguiendo el patrón PWA estándar.
+ *
+ * Rutas principales:
+ *   - Inicio  (/)
+ *   - Catálogo (/products)
+ *   - Mapa    (/map)
+ *   - Perfil  (/profile)  — si autenticado
+ *   - Login   (/auth)     — si no autenticado
+ */
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+
+/* ------------------------------------------------------------------ */
+/*  Iconos SVG inline (evita dependencia de librería externa)          */
+/* ------------------------------------------------------------------ */
+
+function HomeIcon({ active }: { active: boolean }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill={active ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth={active ? 0 : 1.75}
+      className="h-6 w-6"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
+      />
+    </svg>
+  );
+}
+
+function CatalogIcon({ active }: { active: boolean }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill={active ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth={active ? 0 : 1.75}
+      className="h-6 w-6"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.15c0 .414.336.75.75.75z"
+      />
+    </svg>
+  );
+}
+
+function MapIcon({ active }: { active: boolean }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill={active ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth={active ? 0 : 1.75}
+      className="h-6 w-6"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z"
+      />
+    </svg>
+  );
+}
+
+function ProfileIcon({ active }: { active: boolean }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill={active ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth={active ? 0 : 1.75}
+      className="h-6 w-6"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+      />
+    </svg>
+  );
+}
+
+function LoginIcon({ active }: { active: boolean }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill={active ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth={active ? 0 : 1.75}
+      className="h-6 w-6"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"
+      />
+    </svg>
+  );
+}
+
+function PlusIcon({ active }: { active: boolean }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill={active ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth={active ? 0 : 2}
+      className="h-6 w-6"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 4.5v15m7.5-7.5h-15"
+      />
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Tipos                                                              */
+/* ------------------------------------------------------------------ */
+
+interface NavItem {
+  label: string;
+  href: string;
+  icon: (props: { active: boolean }) => React.ReactNode;
+  /** Mostrar solo cuando hay autenticación */
+  authOnly?: boolean;
+  /** Mostrar solo cuando NO hay autenticación */
+  guestOnly?: boolean;
+  /** Mostrar solo para vendedores */
+  sellerOnly?: boolean;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Componente principal                                               */
+/* ------------------------------------------------------------------ */
+
+export default function NavigationMenu() {
+  const pathname = usePathname();
+  const { isAuthenticated, isHydrated, user } = useAuth();
+
+  const isSeller = user?.role === "vendedor";
+
+  const navItems: NavItem[] = [
+    { label: "Inicio", href: "/", icon: HomeIcon },
+    { label: "Catálogo", href: "/products", icon: CatalogIcon },
+    { label: "Publicar", href: "/products/new", icon: PlusIcon, authOnly: true, sellerOnly: true },
+    { label: "Mapa", href: "/map", icon: MapIcon },
+    { label: "Perfil", href: "/profile", icon: ProfileIcon, authOnly: true },
+    { label: "Entrar", href: "/auth", icon: LoginIcon, guestOnly: true },
+  ];
+
+  // Filtrar items según estado de autenticación
+  const visibleItems = navItems.filter((item) => {
+    if (!isHydrated) {
+      // Antes de hidratar, mostrar solo los públicos
+      return !item.authOnly && !item.guestOnly;
+    }
+    if (item.authOnly && !isAuthenticated) return false;
+    if (item.guestOnly && isAuthenticated) return false;
+    if (item.sellerOnly && !isSeller) return false;
+    return true;
+  });
+
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  };
+
+  return (
+    <>
+      {/* ── Desktop: Barra superior ────────────────────────────── */}
+      <nav
+        id="nav-desktop"
+        className="hidden md:flex fixed top-0 left-0 right-0 z-50 items-center justify-between border-b border-vera-100 bg-white/80 backdrop-blur-lg px-6 py-3 shadow-sm"
+      >
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2 group">
+          <span className="text-xl font-bold tracking-tight text-vera-700 group-hover:text-vera-500 transition-colors">
+            Vera<span className="text-vera-500 group-hover:text-vera-400">Market</span>
+          </span>
+        </Link>
+
+        {/* Links centrales */}
+        <div className="flex items-center gap-1">
+          {visibleItems.map((item) => {
+            const active = isActive(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`
+                  flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200
+                  ${
+                    active
+                      ? "bg-vera-50 text-vera-700 shadow-sm"
+                      : "text-gray-500 hover:bg-gray-50 hover:text-vera-600"
+                  }
+                `}
+              >
+                <item.icon active={active} />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Spacer derecho (podría alojar avatar/badge en el futuro) */}
+        <div className="w-24" />
+      </nav>
+
+      {/* ── Mobile: Barra inferior (bottom-tab) ────────────────── */}
+      <nav
+        id="nav-mobile"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-vera-100 bg-white/90 backdrop-blur-lg pb-[env(safe-area-inset-bottom)] shadow-[0_-2px_10px_rgba(0,0,0,0.06)]"
+      >
+        {visibleItems.map((item) => {
+          const active = isActive(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`
+                flex flex-col items-center gap-0.5 py-2 px-3 text-[11px] font-medium transition-colors duration-200
+                ${active ? "text-vera-600" : "text-gray-400 hover:text-vera-500"}
+              `}
+            >
+              <span
+                className={`
+                  flex items-center justify-center rounded-full p-1 transition-all duration-200
+                  ${active ? "bg-vera-50 scale-110" : ""}
+                `}
+              >
+                <item.icon active={active} />
+              </span>
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
+    </>
+  );
+}
