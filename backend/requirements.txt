@@ -27,6 +27,10 @@ pywebpush>=1.14
 # --- HTTP Client ---
 httpx>=0.27.0
 
+# --- Búsqueda Híbrida (Sprint 3) ---
+typesense>=0.21.0
+google-generativeai>=0.8.0
+
 # --- Monitoreo ---
 sentry-sdk[fastapi]>=1.40
 
