@@ -89,11 +89,28 @@ CREATE TABLE IF NOT EXISTS products (
     category    VARCHAR(50),
     image_urls  JSONB DEFAULT '[]'::JSONB,
     is_active   BOOLEAN DEFAULT TRUE,
+    is_deleted  BOOLEAN DEFAULT FALSE,
     created_at  TIMESTAMPTZ DEFAULT NOW(),
     updated_at  TIMESTAMPTZ DEFAULT NOW()
 );
 
 COMMENT ON COLUMN products.price IS 'Precio en COP. Debe ser mayor a 0.';
+
+-- =============================================================================
+-- Tabla: user_search_quotas (Sprint 3 — límite diario búsquedas inteligentes)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS user_search_quotas (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    search_date     DATE NOT NULL,
+    searches_used   INTEGER NOT NULL DEFAULT 0,
+    daily_limit     INTEGER NOT NULL DEFAULT 10,
+    created_at      TIMESTAMPTZ DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT uq_user_search_quota_user_day UNIQUE (user_id, search_date)
+);
+
+COMMENT ON TABLE user_search_quotas IS 'Control diario por usuario para uso de búsqueda semántica (Gemini).';
 
 -- =============================================================================
 -- Tabla: locations (PostGIS — campos alineados con ORM)
@@ -155,6 +172,9 @@ CREATE INDEX IF NOT EXISTS idx_products_seller_id
 
 CREATE INDEX IF NOT EXISTS idx_users_institutional_id
     ON users (institutional_id);
+
+CREATE INDEX IF NOT EXISTS idx_user_search_quotas_user_day
+    ON user_search_quotas (user_id, search_date);
 
 CREATE INDEX IF NOT EXISTS idx_negotiations_status
     ON negotiations (status);

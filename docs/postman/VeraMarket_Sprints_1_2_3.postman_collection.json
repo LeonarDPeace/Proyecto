@@ -595,6 +595,296 @@
           }
         }
       ]
+    },
+    {
+      "name": "5. Sprint 3 Híbrido (Búsqueda + Geo)",
+      "description": "Pruebas de cuota diaria, ubicación vendedor y búsqueda híbrida con fallback.",
+      "item": [
+        {
+          "name": "5.1 Obtener Cuota Diaria",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Cuota diaria disponible', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('daily_limit');",
+                  "    pm.expect(json).to.have.property('searches_used');",
+                  "    pm.expect(json).to.have.property('remaining');",
+                  "    pm.environment.set('quota_remaining', String(json.remaining));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/me/search-quota",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", "me", "search-quota"]
+            }
+          }
+        },
+        {
+          "name": "5.2 Configurar Ubicación Vendedor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Ubicación guardada', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('lat');",
+                  "    pm.expect(json).to.have.property('lng');",
+                  "    pm.environment.set('search_lat', String(json.lat));",
+                  "    pm.environment.set('search_lng', String(json.lng));",
+                  "    pm.environment.set('location_label', json.label || '');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lat\": {{search_lat}},\n  \"lng\": {{search_lng}},\n  \"campus\": \"UAO\",\n  \"label\": \"{{location_label}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/locations/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "locations", "me"]
+            }
+          }
+        },
+        {
+          "name": "5.3 Obtener Ubicación Vendedor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Ubicación consultada', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    if (json) {",
+                  "        pm.expect(json).to.have.property('lat');",
+                  "        pm.expect(json).to.have.property('lng');",
+                  "        pm.environment.set('search_lat', String(json.lat));",
+                  "        pm.environment.set('search_lng', String(json.lng));",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/locations/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "locations", "me"]
+            }
+          }
+        },
+        {
+          "name": "5.4 Búsqueda Semántica Autenticada",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Busqueda semántica/fallback autenticada', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('items');",
+                  "    pm.expect(json).to.have.property('meta');",
+                  "    pm.expect(json.items).to.be.an('array');",
+                  "    pm.expect(json.meta).to.have.property('search_mode');",
+                  "    if (json.meta.quota_remaining !== null) {",
+                  "        pm.environment.set('quota_remaining', String(json.meta.quota_remaining));",
+                  "    }",
+                  "    pm.environment.set('search_mode_last', String(json.meta.search_mode));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/search?q={{search_query_semantic}}&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products", "search"],
+              "query": [
+                { "key": "q", "value": "{{search_query_semantic}}" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.5 Búsqueda Full-Text Forzada",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Busqueda full-text forzada', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('meta');",
+                  "    pm.expect(json.meta).to.have.property('search_mode');",
+                  "    pm.expect(json.meta.search_mode).to.not.eql('semantic');",
+                  "    pm.environment.set('search_mode_last', String(json.meta.search_mode));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/search?q={{search_query_fulltext}}&use_semantic=false&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products", "search"],
+              "query": [
+                { "key": "q", "value": "{{search_query_fulltext}}" },
+                { "key": "use_semantic", "value": "false" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.6 Búsqueda Geo por Radio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Busqueda geoespacial por radio', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    var radius = parseFloat(pm.environment.get('search_radius') || '300');",
+                  "    pm.expect(json.items).to.be.an('array');",
+                  "    json.items.forEach(function (item) {",
+                  "        if (item.distance_meters !== null && item.distance_meters !== undefined) {",
+                  "            pm.expect(item.distance_meters).to.be.below(radius + 1);",
+                  "        }",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/search?q={{search_query_semantic}}&lat={{search_lat}}&lng={{search_lng}}&radius_meters={{search_radius}}&limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products", "search"],
+              "query": [
+                { "key": "q", "value": "{{search_query_semantic}}" },
+                { "key": "lat", "value": "{{search_lat}}" },
+                { "key": "lng", "value": "{{search_lng}}" },
+                { "key": "radius_meters", "value": "{{search_radius}}" },
+                { "key": "limit", "value": "50" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.7 Fallback sin Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Fallback para usuario no autenticado', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.meta.search_mode).to.eql('fallback_fulltext');",
+                  "    pm.expect(json.meta.reason).to.eql('unauthenticated');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/search?q={{search_query_semantic}}&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products", "search"],
+              "query": [
+                { "key": "q", "value": "{{search_query_semantic}}" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "5.8 Eliminar Ubicación Vendedor",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Ubicación eliminada o no existente', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('deleted');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/locations/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "locations", "me"]
+            }
+          }
+        }
+      ]
     }
   ]
 }

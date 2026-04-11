@@ -31,6 +31,22 @@ services:
       retries: 5
 
   # ============================================================================
+  # Typesense — Motor de búsqueda Full-Text + Facetado + GeoSearch
+  # ============================================================================
+  typesense:
+    image: typesense/typesense:27.0
+    container_name: veramarket-typesense
+    restart: unless-stopped
+    command: >
+      --data-dir /data
+      --api-key=${TYPESENSE_API_KEY:-xyz-dev-typesense-key}
+      --enable-cors
+    ports:
+      - "8108:8108"
+    volumes:
+      - typesense_data:/data
+
+  # ============================================================================
   # Backend — FastAPI
   # ============================================================================
   backend:
@@ -42,12 +58,26 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      typesense:
+        condition: service_started
     environment:
-      DATABASE_URL: "postgresql+asyncpg://veramarket:veramarket_dev@db:5432/veramarket"
-      JWT_SECRET: "dev-secret-change-in-production"
-      ALLOWED_ORIGINS: "http://localhost:3000"
-      ENVIRONMENT: "development"
-      TZ: "America/Bogota"
+      DATABASE_URL: "${DATABASE_URL:-postgresql+asyncpg://veramarket:veramarket_dev@db:5432/veramarket}"
+      JWT_SECRET: "${JWT_SECRET:-dev-secret-change-in-production}"
+      JWT_ALGORITHM: "${JWT_ALGORITHM:-HS256}"
+      JWT_EXPIRATION_MINUTES: "${JWT_EXPIRATION_MINUTES:-1440}"
+      ALLOWED_ORIGINS: "${ALLOWED_ORIGINS:-http://localhost:3000}"
+      ENVIRONMENT: "${ENVIRONMENT:-development}"
+      TZ: "${TZ:-America/Bogota}"
+      GEMINI_API_KEY: "${GEMINI_API_KEY:-}"
+      GEMINI_MODEL: "gemini-3.1-flash-lite-preview"
+      TYPESENSE_API_KEY: "${TYPESENSE_API_KEY:-xyz-dev-typesense-key}"
+      TYPESENSE_HOST: "${TYPESENSE_HOST:-typesense}"
+      TYPESENSE_PORT: "${TYPESENSE_PORT:-8108}"
+      TYPESENSE_PROTOCOL: "${TYPESENSE_PROTOCOL:-http}"
+      TYPESENSE_TIMEOUT_SECONDS: "${TYPESENSE_TIMEOUT_SECONDS:-2.0}"
+      TYPESENSE_COLLECTION_PRODUCTS: "${TYPESENSE_COLLECTION_PRODUCTS:-products}"
+      SEMANTIC_DAILY_LIMIT: "${SEMANTIC_DAILY_LIMIT:-10}"
+      BUSINESS_TIMEZONE: "${BUSINESS_TIMEZONE:-America/Bogota}"
     ports:
       - "8000:8000"
     volumes:
@@ -74,4 +104,6 @@ services:
 
 volumes:
   pgdata:
+    driver: local
+  typesense_data:
     driver: local

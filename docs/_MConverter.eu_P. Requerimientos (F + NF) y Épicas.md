@@ -12,7 +12,7 @@
 
 **Épicas (Scrum)**
 
-**Sprint 1: HU 0.1, HU 0.2, HU 0.3**
+**Sprint 0: HU 0.1, HU 0.2, HU 0.3**
 
 - **EP-00: Arquitectura Base y Flujos del Sistema**
 
@@ -56,7 +56,7 @@
 
 - Archivos .env segregados (Local, Staging, Producción) sin subir secretos al repositorio.
 
-**Sprint 2: HU 1.1, HU 1.2, HU 1.3, HU 1.4, HU 1.5, HU 2.1, HU 2.2, HU 2.3**
+**Sprint 1: HU 1.1, HU 1.2, HU 1.3, HU 1.4, HU 1.5, HU 2.1, HU 2.2, HU 2.3**
 
 - **EP-01: Autenticación Segura y Perfilamiento (Privacy-First)**
 
@@ -158,7 +158,7 @@
 
 - El Service Worker es capaz de recibir y renderizar una alerta push en el dispositivo.
 
-**Sprint 3: HU 3.1, HU 3.2, HU 3.3**
+**Sprint 2: HU 3.1, HU 3.2, HU 3.3**
 
 - **EP-03: Gestión del Catálogo P2P**
 
@@ -196,7 +196,7 @@
 
 - El producto desaparece instantáneamente del catálogo público.
 
-**Sprint 4: HU 4.1, HU 4.2, HU 4.3**
+**Sprint 3: HU 4.1, HU 4.2, HU 4.3, HU 5.1, HU 5.2, HU 5.3**
 
 - **EP-04: Búsqueda Inteligente (MVP - Motor Open Source / Fallback)**
 
@@ -232,7 +232,7 @@
 
 - Se muestran de 3 a 5 productos sugeridos basados en la misma categoría o etiquetas del producto actual.
 
-**Sprint 5: HU 5.1, HU 5.2, HU 5.3, HU 6.1, HU 6.2, HU 6.3, HU 6.4, HU 6.5**
+<!-- -->
 
 - **EP-05: Geolocalización Hiper-Local (Campus UAO)**
 
@@ -266,7 +266,10 @@
 
 - Query espacial utilizando la función ST_DWithin de PostGIS para devolver resultados por radio en metros.
 
-<!-- -->
+**  
+**
+
+**Sprint 4: HU 6.1, HU 6.2, HU 6.3, HU 6.4, HU 6.5**
 
 - **EP-06: Negociación y Cierre P2P (Frictionless)**
 
@@ -310,7 +313,7 @@
 
 - Un *trigger* o función backend inserta el valor transaccional en COP en una tabla de métricas en el momento en que el estado cambia a \"Completado\".
 
-**Sprint 6: HU 7.1, HU 7.2, HU 7.3**
+**Sprint 5: HU 7.1, HU 7.2, HU 7.3**
 
 - **EP-07: Moderación y Reputación Comunitaria**
 
