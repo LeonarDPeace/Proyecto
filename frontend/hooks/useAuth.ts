@@ -32,6 +32,57 @@ export function useAuth() {
     }
   }, [isHydrated, hydrate]);
 
+  // Validar token rehidratado para evitar estados inconsistentes en UI.
+  useEffect(() => {
+    if (!isHydrated || !token) return;
+
+    let active = true;
+
+    const validateSession = async () => {
+      try {
+        const profile = await api.get<{
+          id: string;
+          name: string;
+          email: string;
+          role: "vendedor" | "comprador";
+          is_verified: boolean;
+          institutional_id: string;
+          phone: string | null;
+          show_email: boolean;
+          show_phone: boolean;
+        }>("/users/me", token);
+
+        if (active) {
+          setUser(profile);
+        }
+      } catch {
+        if (active) {
+          logout();
+        }
+      }
+    };
+
+    validateSession();
+
+    return () => {
+      active = false;
+    };
+  }, [isHydrated, token, logout, setUser]);
+
+  // Si el backend responde 401 para una petición autenticada, sincronizar estado.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const onUnauthorized = () => {
+      logout();
+    };
+
+    window.addEventListener("veramarket:unauthorized", onUnauthorized);
+    return () => {
+      window.removeEventListener("veramarket:unauthorized", onUnauthorized);
+    };
+  }, [logout]);
+
   const isAuthenticated = !!token;
 
   /** Solicita un código OTP al correo institucional */

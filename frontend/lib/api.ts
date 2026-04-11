@@ -7,6 +7,9 @@
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
+const TOKEN_KEY = "veramarket_token";
+const USER_KEY = "veramarket_user";
+
 interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
   token?: string;
@@ -26,19 +29,35 @@ class ApiClient {
     const { body, token, headers: customHeaders, ...restOptions } = options;
 
     const headers: Record<string, string> = {
-      "Content-Type": "application/json",
       ...((customHeaders as Record<string, string>) || {}),
     };
+
+    if (body !== undefined && body !== null) {
+      headers["Content-Type"] = "application/json";
+    }
 
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      ...restOptions,
-      headers,
-      body: body ? JSON.stringify(body) : undefined,
-    });
+    let response: Response;
+    try {
+      response = await fetch(`${this.baseUrl}${endpoint}`, {
+        ...restOptions,
+        headers,
+        body: body !== undefined && body !== null ? JSON.stringify(body) : undefined,
+      });
+    } catch {
+      throw new Error(
+        `No se pudo conectar con la API (${this.baseUrl}${endpoint}). Verifica backend, URL y CORS.`
+      );
+    }
+
+    if (response.status === 401 && token && typeof window !== "undefined") {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      window.dispatchEvent(new Event("veramarket:unauthorized"));
+    }
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));

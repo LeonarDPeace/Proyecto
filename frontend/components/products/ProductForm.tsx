@@ -31,11 +31,16 @@ interface ProductFormProps {
 }
 
 const CATEGORIES = [
-  { value: "comida", label: "🍕 Comida" },
+  { value: "comida", label: "🍔 Comida/Supermercado" },
   { value: "tecnologia", label: "💻 Tecnología" },
-  { value: "ropa", label: "👕 Ropa" },
+  { value: "moda", label: "👕 Moda" },
+  { value: "hogar", label: "🛋️ Hogar" },
+  { value: "deportes", label: "⚽ Deportes" },
+  { value: "belleza", label: "💅 Belleza" },
+  { value: "academico", label: "📚 Académico" },
+  { value: "entretenimiento", label: "🎮 Entretenimiento" },
   { value: "servicios", label: "🔧 Servicios" },
-  { value: "libros", label: "📚 Libros" },
+  { value: "vehiculos", label: "🚗 Vehículos" },
   { value: "otros", label: "📦 Otros" },
 ];
 

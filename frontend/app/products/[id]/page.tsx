@@ -14,6 +14,7 @@ import Link from "next/link";
 import api from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
 import Button from "@/components/ui/Button";
+import ProductCard from "@/components/ProductCard";
 
 interface Product {
   id: string;
@@ -37,6 +38,7 @@ export default function ProductDetailPage({
   const { user, token, isHydrated } = useAuth();
 
   const [product, setProduct] = useState<Product | null>(null);
+  const [recommendations, setRecommendations] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [acting, setActing] = useState(false);
@@ -48,6 +50,17 @@ export default function ProductDetailPage({
     try {
       const data = await api.get<Product>(`/products/${params.id}`);
       setProduct(data);
+      
+      // VeraMatch: Cargar recomendaciones basadas en la categoría
+      if (data.category) {
+        try {
+          const recs = await api.get<Product[]>(`/products/?category=${data.category}&limit=5`);
+          // Filtramos el producto actual para que no se recomiende a sí mismo
+          setRecommendations(recs.filter(p => p.id !== data.id).slice(0, 3));
+        } catch (errRec) {
+          console.error("No se pudieron cargar recomendaciones", errRec);
+        }
+      }
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Producto no encontrado."
@@ -238,6 +251,25 @@ export default function ProductDetailPage({
             >
               🗑️ Eliminar
             </Button>
+          </div>
+        </section>
+      )}
+
+      {/* VeraMatch - Recomendaciones (HU 4.3) */}
+      {recommendations.length > 0 && (
+        <section className="mt-12">
+          <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            ✨ VeraMatch 
+            <span className="text-sm font-normal text-gray-500">
+              Productos similares en tu campus
+            </span>
+          </h3>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {recommendations.map((rec) => (
+              <Link key={rec.id} href={`/products/${rec.id}`}>
+                <ProductCard product={rec} />
+              </Link>
+            ))}
           </div>
         </section>
       )}

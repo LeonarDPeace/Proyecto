@@ -12,13 +12,27 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 import { useAuth } from "@/hooks/useAuth";
+import api from "@/lib/api";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import MapView from "@/components/MapView";
 import ProductManager from "@/components/products/ProductManager";
+
+interface SavedLocation {
+  id: string;
+  user_id: string;
+  campus: string;
+  label: string | null;
+  lat: number;
+  lng: number;
+}
+
+const DEFAULT_LAT = parseFloat(process.env.NEXT_PUBLIC_DEFAULT_LAT || "3.3516");
+const DEFAULT_LNG = parseFloat(process.env.NEXT_PUBLIC_DEFAULT_LNG || "-76.5320");
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, isAuthenticated, isHydrated, updatePrivacy, logout } =
+  const { user, token, isAuthenticated, isHydrated, updatePrivacy, logout } =
     useAuth();
 
   /* ── Editable privacy toggles ── */
@@ -26,6 +40,16 @@ export default function ProfilePage() {
   const [showPhone, setShowPhone] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+  /* ── Seller location setup ── */
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationSaving, setLocationSaving] = useState(false);
+  const [locationMessage, setLocationMessage] = useState<string | null>(null);
+  const [locationCampus, setLocationCampus] = useState("UAO");
+  const [locationLabel, setLocationLabel] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState<
+    { lat: number; lng: number } | null
+  >(null);
 
   // Sync state when user data loads
   useEffect(() => {
@@ -42,22 +66,15 @@ export default function ProfilePage() {
     }
   }, [isHydrated, isAuthenticated, router]);
 
-  if (!isHydrated || !user) {
-    return (
-      <main className="flex min-h-screen items-center justify-center">
-        <p className="text-gray-400">Cargando perfil…</p>
-      </main>
-    );
-  }
-
   async function handleSavePrivacy() {
     setSaving(true);
     setMessage(null);
     try {
       await updatePrivacy({ show_email: showEmail, show_phone: showPhone });
       setMessage("Configuración actualizada correctamente.");
-    } catch {
-      setMessage("Error al guardar la configuración.");
+    } catch (err) {
+      const detail = err instanceof Error ? err.message : "No se pudo actualizar privacidad.";
+      setMessage(`Error: ${detail}`);
     } finally {
       setSaving(false);
     }
@@ -69,10 +86,108 @@ export default function ProfilePage() {
   }
 
   const hasPrivacyChanges =
-    showEmail !== (user.show_email ?? false) ||
-    showPhone !== (user.show_phone ?? false);
+    showEmail !== (user?.show_email ?? false) ||
+    showPhone !== (user?.show_phone ?? false);
 
-  const isSeller = user.role === "vendedor";
+  const isSeller = user?.role === "vendedor";
+
+  useEffect(() => {
+    if (!isSeller || !token) return;
+
+    let active = true;
+
+    async function fetchLocation() {
+      setLocationLoading(true);
+      setLocationMessage(null);
+
+      try {
+        const data = await api.get<SavedLocation | null>("/locations/me", token);
+        if (!active) return;
+
+        if (data) {
+          setSelectedLocation({ lat: data.lat, lng: data.lng });
+          setLocationCampus(data.campus || "UAO");
+          setLocationLabel(data.label || "");
+        } else {
+          setSelectedLocation(null);
+          setLocationCampus("UAO");
+          setLocationLabel("");
+        }
+      } catch (err) {
+        if (active) {
+          const detail = err instanceof Error ? err.message : "No se pudo cargar ubicación.";
+          setLocationMessage(`Error: ${detail}`);
+        }
+      } finally {
+        if (active) {
+          setLocationLoading(false);
+        }
+      }
+    }
+
+    fetchLocation();
+
+    return () => {
+      active = false;
+    };
+  }, [isSeller, token]);
+
+  async function handleSaveLocation() {
+    if (!token || !selectedLocation) {
+      setLocationMessage("Selecciona un punto en el mapa antes de guardar.");
+      return;
+    }
+
+    setLocationSaving(true);
+    setLocationMessage(null);
+
+    try {
+      await api.put(
+        "/locations/me",
+        {
+          lat: selectedLocation.lat,
+          lng: selectedLocation.lng,
+          campus: locationCampus || "UAO",
+          label: locationLabel || null,
+        },
+        token
+      );
+      setLocationMessage("Ubicación guardada correctamente.");
+    } catch (err) {
+      const detail = err instanceof Error ? err.message : "No se pudo guardar ubicación.";
+      setLocationMessage(`Error: ${detail}`);
+    } finally {
+      setLocationSaving(false);
+    }
+  }
+
+  async function handleDeleteLocation() {
+    if (!token) return;
+
+    setLocationSaving(true);
+    setLocationMessage(null);
+
+    try {
+      await api.delete("/locations/me", token);
+      setSelectedLocation(null);
+      setLocationCampus("UAO");
+      setLocationLabel("");
+      setLocationMessage("Ubicación eliminada.");
+    } catch (err) {
+      const detail = err instanceof Error ? err.message : "No se pudo eliminar ubicación.";
+      setLocationMessage(`Error: ${detail}`);
+    } finally {
+      setLocationSaving(false);
+    }
+  }
+
+  if (!isHydrated || !user) {
+    return (
+      <main className="flex min-h-screen items-center justify-center">
+        <p className="text-gray-400">Cargando perfil…</p>
+      </main>
+    );
+  }
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-10">
@@ -202,6 +317,83 @@ export default function ProfilePage() {
       </section>
 
       {/* ── Mis Productos (Sprint 3 — Solo vendedores) ── */}
+      {isSeller && (
+        <section className="mt-6 rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
+          <h2 className="text-lg font-semibold text-gray-700">Ubicación en Campus</h2>
+          <p className="mt-1 text-sm text-gray-500">
+            Haz clic en el mapa para fijar tu punto de entrega. Esta ubicación se usa
+            para mostrar tus productos en el mapa de compradores.
+          </p>
+
+          {locationLoading ? (
+            <p className="mt-4 text-sm text-gray-400">Cargando ubicación...</p>
+          ) : (
+            <>
+              <div className="mt-4">
+                <MapView
+                  selectable
+                  selectedLocation={selectedLocation}
+                  onSelectLocation={(lat, lng) => setSelectedLocation({ lat, lng })}
+                  centerLat={selectedLocation?.lat ?? DEFAULT_LAT}
+                  centerLng={selectedLocation?.lng ?? DEFAULT_LNG}
+                  heightClassName="h-72"
+                />
+              </div>
+
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <Input
+                  label="Campus"
+                  value={locationCampus}
+                  onChange={(e) => setLocationCampus(e.target.value)}
+                  placeholder="UAO"
+                />
+                <Input
+                  label="Referencia"
+                  value={locationLabel}
+                  onChange={(e) => setLocationLabel(e.target.value)}
+                  placeholder="Ej: Cafetería central"
+                />
+              </div>
+
+              <p className="mt-3 text-xs text-gray-500">
+                {selectedLocation
+                  ? `Coordenadas: ${selectedLocation.lat.toFixed(5)}, ${selectedLocation.lng.toFixed(5)}`
+                  : "Selecciona un punto en el mapa para guardar tu ubicación."}
+              </p>
+
+              {locationMessage && (
+                <p
+                  className={`mt-2 text-sm ${
+                    locationMessage.startsWith("Error:") ? "text-red-600" : "text-green-600"
+                  }`}
+                >
+                  {locationMessage}
+                </p>
+              )}
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={handleSaveLocation}
+                  disabled={locationSaving || !selectedLocation}
+                >
+                  {locationSaving ? "Guardando..." : "Guardar ubicación"}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="md"
+                  onClick={handleDeleteLocation}
+                  disabled={locationSaving}
+                >
+                  Quitar ubicación
+                </Button>
+              </div>
+            </>
+          )}
+        </section>
+      )}
+
       {isSeller && (
         <section className="mt-6 rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-4">
