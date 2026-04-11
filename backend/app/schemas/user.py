@@ -5,7 +5,7 @@ HU 1.3: Los campos email/phone solo se muestran si el usuario lo permite.
 """
 
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
@@ -23,7 +23,9 @@ class UserCreate(UserBase):
     """Datos requeridos para crear un usuario (registro OTP)."""
 
     phone: str | None = Field(default=None, max_length=20)
-    accept_terms: bool = Field(..., description="Aceptación explícita de T&C (Ley 1581/2012)")
+    accept_terms: bool = Field(
+        ..., description="Aceptación explícita de T&C (Ley 1581/2012)"
+    )
 
     @field_validator("accept_terms")
     @classmethod
@@ -73,3 +75,12 @@ class UserPrivate(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class UserSearchQuotaRead(BaseModel):
+    """Estado de cuota diaria para búsquedas inteligentes."""
+
+    business_date: date
+    daily_limit: int
+    searches_used: int
+    remaining: int

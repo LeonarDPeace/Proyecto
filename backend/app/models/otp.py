@@ -25,7 +25,9 @@ class OTPCode(Base):
     )
     email: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     code: Mapped[str] = mapped_column(String(6), nullable=False)
-    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
     is_used: Mapped[bool] = mapped_column(Boolean, server_default="false")
     attempts: Mapped[int] = mapped_column(Integer, server_default="0")
 

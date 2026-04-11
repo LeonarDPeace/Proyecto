@@ -25,4 +25,6 @@ class OpenAIAdapter(IAIAdapter):
 
     async def generate_recommendation(self, user_id: str) -> list[dict]:
         """Recomendaciones personalizadas — pendiente Sprint 3."""
-        raise NotImplementedError("OpenAI generate_recommendation será implementado en Sprint 3.")
+        raise NotImplementedError(
+            "OpenAI generate_recommendation será implementado en Sprint 3."
+        )

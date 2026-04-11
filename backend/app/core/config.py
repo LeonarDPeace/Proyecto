@@ -36,6 +36,16 @@ class Settings(BaseSettings):
 
     # --- Integraciones (Sprint 3) ---
     OPENAI_API_KEY: str = ""
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-1.5-flash"
+    TYPESENSE_API_KEY: str = "xyz-dev-typesense-key"
+    TYPESENSE_HOST: str = "localhost"
+    TYPESENSE_PORT: int = 8108
+    TYPESENSE_PROTOCOL: str = "http"
+    TYPESENSE_TIMEOUT_SECONDS: float = 2.0
+    TYPESENSE_COLLECTION_PRODUCTS: str = "products"
+    SEMANTIC_DAILY_LIMIT: int = 10
+    BUSINESS_TIMEZONE: str = "America/Bogota"
     SENTRY_DSN: str = ""
 
     # --- OAuth ---

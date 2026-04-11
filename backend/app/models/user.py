@@ -24,7 +24,9 @@ class User(Base):
         default=uuid.uuid4,
         server_default="uuid_generate_v4()",
     )
-    institutional_id: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    institutional_id: Mapped[str] = mapped_column(
+        String(50), unique=True, nullable=False
+    )
     name: Mapped[str] = mapped_column(String(150), nullable=False)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     phone: Mapped[str | None] = mapped_column(String(20), nullable=True)
@@ -34,10 +36,18 @@ class User(Base):
         server_default="comprador",
     )
     vendor_status: Mapped[str] = mapped_column(
-        Enum("pending", "approved", "rejected", name="vendor_status_type", create_type=False),
+        Enum(
+            "pending",
+            "approved",
+            "rejected",
+            name="vendor_status_type",
+            create_type=False,
+        ),
         server_default="pending",
     )
-    sinapsis_code: Mapped[str | None] = mapped_column(String(50), unique=True, nullable=True)
+    sinapsis_code: Mapped[str | None] = mapped_column(
+        String(50), unique=True, nullable=True
+    )
 
     reputation: Mapped[float] = mapped_column(Numeric(3, 2), server_default="0.00")
     is_verified: Mapped[bool] = mapped_column(Boolean, server_default="false")
@@ -46,10 +56,14 @@ class User(Base):
     show_email: Mapped[bool] = mapped_column(Boolean, server_default="false")
     show_phone: Mapped[bool] = mapped_column(Boolean, server_default="false")
 
-    push_subscriptions: Mapped[list] = mapped_column(JSONB, server_default="'[]'::jsonb")
+    push_subscriptions: Mapped[list] = mapped_column(
+        JSONB, server_default="'[]'::jsonb"
+    )
 
     # Ley 1581/2012 — Consentimiento explícito de tratamiento de datos
-    accepted_terms_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    accepted_terms_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -67,6 +81,9 @@ class User(Base):
     )
     location: Mapped["Location | None"] = relationship(  # noqa: F821
         back_populates="user", uselist=False, cascade="all, delete-orphan"
+    )
+    search_quotas: Mapped[list["UserSearchQuota"]] = relationship(  # noqa: F821
+        back_populates="user", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:

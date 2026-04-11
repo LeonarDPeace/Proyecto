@@ -13,7 +13,7 @@ from app.core.config import settings
 from app.core.database import Base
 
 # Importar todos los modelos para que Alembic los detecte
-from app.models import user, product, negotiation, location, otp  # noqa: F401
+from app.models import user, product, negotiation, location, otp, user_search_quota  # noqa: F401
 
 config = context.config
 

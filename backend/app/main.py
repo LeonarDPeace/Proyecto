@@ -3,19 +3,28 @@
 PWA de comercio P2P hiper-local para campus universitarios en Cali, Colombia.
 """
 
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.routers import auth, health, products, push, users
+from app.routers import auth, health, locations, products, push, users
+from app.services import typesense_service
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(application: FastAPI):
     """Gestiona el ciclo de vida de la aplicación."""
     # Startup
+    try:
+        await typesense_service.ensure_products_collection()
+    except Exception:
+        logger.exception("No fue posible inicializar colección de Typesense en startup")
+
     yield
     # Shutdown
 
@@ -51,4 +60,5 @@ app.include_router(health.router)
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
 app.include_router(products.router, prefix="/api/v1/products", tags=["Products"])
 app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
+app.include_router(locations.router, prefix="/api/v1/locations", tags=["Locations"])
 app.include_router(push.router, prefix="/api/v1/push", tags=["Push"])

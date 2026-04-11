@@ -8,7 +8,7 @@ Verifica:
 """
 
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -17,6 +17,7 @@ from httpx import ASGITransport, AsyncClient
 from app.core.security import create_access_token
 from app.main import app
 from app.models.user import User
+from app.services.quota_service import QuotaSnapshot
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -246,3 +247,40 @@ async def test_update_privacy_without_auth():
         )
 
     assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_get_search_quota():
+    """GET /api/v1/users/me/search-quota retorna estado de cuota diaria."""
+    fake_user = _make_user()
+    snapshot = QuotaSnapshot(
+        business_date=date.today(),
+        daily_limit=10,
+        searches_used=3,
+        remaining=7,
+    )
+
+    with (
+        patch(
+            "app.services.auth_service.get_user_by_id",
+            new_callable=AsyncMock,
+            return_value=fake_user,
+        ),
+        patch(
+            "app.routers.users.get_quota_snapshot",
+            new_callable=AsyncMock,
+            return_value=snapshot,
+        ),
+    ):
+        headers = _auth_header(user_id=fake_user.id)
+        transport = ASGITransport(app=app)
+        async with AsyncClient(transport=transport, base_url="http://test") as client:
+            response = await client.get(
+                "/api/v1/users/me/search-quota", headers=headers
+            )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["daily_limit"] == 10
+    assert data["searches_used"] == 3
+    assert data["remaining"] == 7

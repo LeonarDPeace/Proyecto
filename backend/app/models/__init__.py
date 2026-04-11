@@ -8,3 +8,4 @@ from app.models.negotiation import Negotiation  # noqa: F401
 from app.models.otp import OTPCode  # noqa: F401
 from app.models.product import Product  # noqa: F401
 from app.models.user import User  # noqa: F401
+from app.models.user_search_quota import UserSearchQuota  # noqa: F401

@@ -65,8 +65,16 @@ async def test_vendor_request_valid_code():
     fake_user = _make_user()
 
     with (
-        patch("app.services.auth_service.get_user_by_id", new_callable=AsyncMock, return_value=fake_user),
-        patch("app.routers.auth.request_vendor_role", new_callable=AsyncMock, return_value=("approved", "vendedor")),
+        patch(
+            "app.services.auth_service.get_user_by_id",
+            new_callable=AsyncMock,
+            return_value=fake_user,
+        ),
+        patch(
+            "app.routers.auth.request_vendor_role",
+            new_callable=AsyncMock,
+            return_value=("approved", "vendedor"),
+        ),
     ):
         headers = _auth_header(user_id=fake_user.id)
         transport = ASGITransport(app=app)
@@ -91,11 +99,21 @@ async def test_vendor_request_invalid_code():
 
     # Simulamos el HTTPException que arroja request_vendor_role
     def rise_exc(*args, **kwargs):
-        raise HTTPException(status_code=400, detail="Código Sinapsis inválido o inactivo.")
+        raise HTTPException(
+            status_code=400, detail="Código Sinapsis inválido o inactivo."
+        )
 
     with (
-        patch("app.services.auth_service.get_user_by_id", new_callable=AsyncMock, return_value=fake_user),
-        patch("app.routers.auth.request_vendor_role", new_callable=AsyncMock, side_effect=rise_exc),
+        patch(
+            "app.services.auth_service.get_user_by_id",
+            new_callable=AsyncMock,
+            return_value=fake_user,
+        ),
+        patch(
+            "app.routers.auth.request_vendor_role",
+            new_callable=AsyncMock,
+            side_effect=rise_exc,
+        ),
     ):
         headers = _auth_header(user_id=fake_user.id)
         transport = ASGITransport(app=app)
@@ -116,11 +134,21 @@ async def test_vendor_request_already_vendor():
     fake_user = _make_user(role="vendedor", vendor_status="approved")
 
     def rise_exc(*args, **kwargs):
-        raise HTTPException(status_code=400, detail="El usuario ya tiene el rol de vendedor aprobado.")
+        raise HTTPException(
+            status_code=400, detail="El usuario ya tiene el rol de vendedor aprobado."
+        )
 
     with (
-        patch("app.services.auth_service.get_user_by_id", new_callable=AsyncMock, return_value=fake_user),
-        patch("app.routers.auth.request_vendor_role", new_callable=AsyncMock, side_effect=rise_exc),
+        patch(
+            "app.services.auth_service.get_user_by_id",
+            new_callable=AsyncMock,
+            return_value=fake_user,
+        ),
+        patch(
+            "app.routers.auth.request_vendor_role",
+            new_callable=AsyncMock,
+            side_effect=rise_exc,
+        ),
     ):
         headers = _auth_header(user_id=fake_user.id)
         transport = ASGITransport(app=app)
@@ -132,4 +160,6 @@ async def test_vendor_request_already_vendor():
             )
 
     assert response.status_code == 400
-    assert response.json()["detail"] == "El usuario ya tiene el rol de vendedor aprobado."
+    assert (
+        response.json()["detail"] == "El usuario ya tiene el rol de vendedor aprobado."
+    )

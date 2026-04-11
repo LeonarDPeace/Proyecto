@@ -33,7 +33,9 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
         Token JWT codificado.
     """
     to_encode = data.copy()
-    expire = datetime.now(UTC) + (expires_delta or timedelta(minutes=settings.JWT_EXPIRATION_MINUTES))
+    expire = datetime.now(UTC) + (
+        expires_delta or timedelta(minutes=settings.JWT_EXPIRATION_MINUTES)
+    )
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
 
@@ -45,7 +47,9 @@ def decode_access_token(token: str) -> dict | None:
         Payload decodificado o None si el token es inválido/expirado.
     """
     try:
-        return jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
+        return jwt.decode(
+            token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM]
+        )
     except JWTError:
         return None
 
@@ -110,3 +114,29 @@ async def get_current_user(
         )
 
     return user
+
+
+async def get_current_user_optional(
+    credentials: HTTPAuthorizationCredentials | None = Depends(security_scheme),
+    db: AsyncSession = Depends(get_db),
+):
+    """Obtiene usuario si el token es válido; retorna None en caso contrario."""
+    if credentials is None:
+        return None
+
+    payload = decode_access_token(credentials.credentials)
+    if payload is None:
+        return None
+
+    user_id_str: str | None = payload.get("sub")
+    if user_id_str is None:
+        return None
+
+    try:
+        user_id = uuid.UUID(user_id_str)
+    except ValueError:
+        return None
+
+    from app.services.auth_service import get_user_by_id
+
+    return await get_user_by_id(db, user_id)

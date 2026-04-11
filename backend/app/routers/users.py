@@ -6,16 +6,20 @@ Respeta la separación público/privado (Ley 1581/2012).
 """
 
 import uuid
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.user import User
 from app.schemas.auth import PrivacySettings, PrivacySettingsRead
-from app.schemas.user import UserPrivate, UserPublic
+from app.schemas.user import UserPrivate, UserPublic, UserSearchQuotaRead
 from app.services.auth_service import get_user_by_id, update_user_profile
+from app.services.quota_service import get_quota_snapshot
 
 router = APIRouter()
 
@@ -109,4 +113,33 @@ async def update_privacy_settings(
     return PrivacySettingsRead(
         show_email=user.show_email,
         show_phone=user.show_phone,
+    )
+
+
+@router.get(
+    "/me/search-quota",
+    response_model=UserSearchQuotaRead,
+    summary="Obtener cuota diaria de búsqueda inteligente",
+)
+async def get_search_quota(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Retorna consumo y saldo diario de búsquedas semánticas."""
+    try:
+        snapshot = await get_quota_snapshot(db, current_user.id)
+    except Exception:
+        business_date = datetime.now(ZoneInfo(settings.BUSINESS_TIMEZONE)).date()
+        return UserSearchQuotaRead(
+            business_date=business_date,
+            daily_limit=settings.SEMANTIC_DAILY_LIMIT,
+            searches_used=0,
+            remaining=settings.SEMANTIC_DAILY_LIMIT,
+        )
+
+    return UserSearchQuotaRead(
+        business_date=snapshot.business_date,
+        daily_limit=snapshot.daily_limit,
+        searches_used=snapshot.searches_used,
+        remaining=snapshot.remaining,
     )

@@ -9,14 +9,16 @@ import uuid
 from collections.abc import Sequence
 
 from fastapi import HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.product import Product
 from app.schemas.product import ProductCreate, ProductUpdate
 
 
-async def create_product(db: AsyncSession, seller_id: uuid.UUID, data: ProductCreate) -> Product:
+async def create_product(
+    db: AsyncSession, seller_id: uuid.UUID, data: ProductCreate
+) -> Product:
     """Crea un nuevo producto en BD (solo rol Vendedor)."""
     product = Product(
         seller_id=seller_id,
@@ -31,7 +33,9 @@ async def create_product(db: AsyncSession, seller_id: uuid.UUID, data: ProductCr
     return product
 
 
-async def get_product_by_id(db: AsyncSession, product_id: uuid.UUID, active_only: bool = True) -> Product:
+async def get_product_by_id(
+    db: AsyncSession, product_id: uuid.UUID, active_only: bool = True
+) -> Product:
     """Busca un producto por ID."""
     query = select(Product).where(Product.id == product_id, Product.is_deleted == False)  # noqa: E712
     if active_only:
@@ -52,7 +56,9 @@ async def list_products(
     db: AsyncSession, category: str | None = None, limit: int = 20, offset: int = 0
 ) -> Sequence[Product]:
     """Obtiene productos activos (is_active=True) y no eliminados con paginación y filtros."""
-    query = select(Product).where(Product.is_active == True, Product.is_deleted == False)  # noqa: E712
+    query = select(Product).where(
+        Product.is_active == True, Product.is_deleted == False
+    )  # noqa: E712
 
     if category:
         query = query.where(Product.category == category)
@@ -99,7 +105,9 @@ async def update_product(
     return product
 
 
-async def soft_delete_product(db: AsyncSession, product_id: uuid.UUID, seller_id: uuid.UUID) -> None:
+async def soft_delete_product(
+    db: AsyncSession, product_id: uuid.UUID, seller_id: uuid.UUID
+) -> None:
     """Aplica soft-delete (eliminación lógica)."""
     product = await get_product_by_id(db, product_id, active_only=False)
 
@@ -113,7 +121,9 @@ async def soft_delete_product(db: AsyncSession, product_id: uuid.UUID, seller_id
     await db.flush()
 
 
-async def toggle_product_status(db: AsyncSession, product_id: uuid.UUID, seller_id: uuid.UUID) -> Product:
+async def toggle_product_status(
+    db: AsyncSession, product_id: uuid.UUID, seller_id: uuid.UUID
+) -> Product:
     """Alterna el estado is_active (Disponible/Agotado o Pausado)."""
     product = await get_product_by_id(db, product_id, active_only=False)
 
@@ -126,3 +136,34 @@ async def toggle_product_status(db: AsyncSession, product_id: uuid.UUID, seller_
     product.is_active = not product.is_active
     await db.flush()
     return product
+
+
+async def search_products_text(
+    db: AsyncSession,
+    query_text: str,
+    *,
+    category: str | None = None,
+    limit: int = 20,
+) -> Sequence[Product]:
+    """Fallback textual en PostgreSQL cuando no se puede usar Typesense."""
+    query = select(Product).where(
+        Product.is_active == True, Product.is_deleted == False
+    )  # noqa: E712
+
+    if category:
+        query = query.where(Product.category == category)
+
+    cleaned_query = query_text.strip()
+    if cleaned_query and cleaned_query != "*":
+        pattern = f"%{cleaned_query}%"
+        query = query.where(
+            or_(
+                Product.name.ilike(pattern),
+                Product.description.ilike(pattern),
+                Product.category.ilike(pattern),
+            )
+        )
+
+    query = query.order_by(Product.created_at.desc()).limit(limit)
+    result = await db.execute(query)
+    return result.scalars().all()

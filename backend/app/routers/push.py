@@ -25,7 +25,9 @@ async def subscribe_push(
     db: AsyncSession = Depends(get_db),
 ):
     """Registra o actualiza la suscripción del usuario a las notificaciones Push."""
-    subs = list(current_user.push_subscriptions) if current_user.push_subscriptions else []
+    subs = (
+        list(current_user.push_subscriptions) if current_user.push_subscriptions else []
+    )
 
     # Evitar duplicados revisando si el endpoint ya existe.
     exists = any(s.get("endpoint") == subscription.endpoint for s in subs)

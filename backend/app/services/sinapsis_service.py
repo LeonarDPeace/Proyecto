@@ -44,7 +44,9 @@ def load_sinapsis_whitelist(csv_path: str | Path | None = None) -> set[str]:
     return valid_codes
 
 
-async def request_vendor_role(db: AsyncSession, user: User, sinapsis_code: str) -> tuple[str, str]:
+async def request_vendor_role(
+    db: AsyncSession, user: User, sinapsis_code: str
+) -> tuple[str, str]:
     """Valida el código Sinapsis del usuario y cambia su rol a vendedor si es válido.
 
     Args:

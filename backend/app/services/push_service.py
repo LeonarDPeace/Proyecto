@@ -10,7 +10,9 @@ from pywebpush import WebPushException, webpush
 # Keys for VAPID configuration
 # Se deben configurar en .env: VAPID_PRIVATE_KEY, VAPID_SUBSCRIBER_EMAIL
 VAPID_PRIVATE_KEY = os.getenv("VAPID_PRIVATE_KEY", "generate_a_new_vapid_key")
-VAPID_SUBSCRIBER_EMAIL = os.getenv("VAPID_SUBSCRIBER_EMAIL", "mailto:test@veramarket.com")
+VAPID_SUBSCRIBER_EMAIL = os.getenv(
+    "VAPID_SUBSCRIBER_EMAIL", "mailto:test@veramarket.com"
+)
 
 
 def send_push_notification(subscription_info: dict, payload_data: str):
