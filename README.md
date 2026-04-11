@@ -39,6 +39,8 @@
 | **Mapa**      | Leaflet.js + OpenStreetMap                       |
 | **PWA**       | @ducanh2912/next-pwa                             |
 | **Backend**   | FastAPI (Python 3.11+), Pydantic v2              |
+| **Búsqueda**  | Typesense 27 (Full-Text + Facets + GeoSearch)    |
+| **NLU**       | Gemini 1.5 Flash (JSON estructurado)             |
 | **ORM**       | SQLAlchemy 2.0 (async) + Alembic                 |
 | **Base de datos** | PostgreSQL 15 + PostGIS                      |
 | **Auth**      | JWT (python-jose) + bcrypt                       |
@@ -184,6 +186,10 @@ Variables críticas:
 | `JWT_SECRET`      | Clave secreta para tokens JWT            |
 | `ALLOWED_ORIGINS` | Orígenes CORS permitidos                 |
 | `NEXT_PUBLIC_API_URL` | URL de la API para el frontend       |
+| `GEMINI_API_KEY`  | API key para interpretación NLU           |
+| `TYPESENSE_API_KEY` | API key del motor de búsqueda Typesense |
+| `TYPESENSE_HOST`  | Host de Typesense (docker: `typesense`)   |
+| `TYPESENSE_PORT`  | Puerto de Typesense (por defecto `8108`)  |
 
 ---
 
@@ -248,8 +254,8 @@ El pipeline de GitHub Actions (`.github/workflows/ci-cd.yml`) ejecuta:
 | 0      | Setup monorepo, modelos, esqueletos, CI/CD           | ✅ Finalizado |
 | 1      | Auth (OTP, Sinapsis), CRUD productos, perfil usuario | ✅ Finalizado |
 | 2      | Core PWA, notificaciones push, UX Offline loaders    | ✅ Finalizado |
-| 3      | Mapa interactivo (Leaflet/PostGIS), negociación      | 🔲        |
-| 4      | IA — búsqueda semántica + recomendaciones (Adapter)  | 🔲        |
+| 3      | Catálogo inteligente híbrido + mapa interactivo       | 🟡 En curso |
+| 4      | Recomendaciones IA (VeraMatch) + mejoras de ranking   | 🔲        |
 | 5      | QA, tests E2E, deploy producción, reputación         | 🔲        |
 
 ---
