@@ -1,14 +1,24 @@
 # ==============================================================================
-# VeraMarket — CI/CD Pipeline
-# GitHub Actions: lint + test + deploy
+# VeraMarket — CI/CD Pipeline (Sprint 4 — DevOps)
+# GitHub Actions: lint + test (cobertura ≥ 70%) + build + deploy
+#
+# Triggers:
+#   push feature/*      → CI (test unitario backend)
+#   PR → develop | main → CI completo (backend tests + frontend lint/build)
+#   push main           → CI completo + CD (despliegue producción)
 # ==============================================================================
 name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, master, develop]
+    branches:
+      - main
+      - develop
+      - 'feature/*'
   pull_request:
-    branches: [main, master, develop]
+    branches:
+      - main
+      - develop
 
 env:
   PYTHON_VERSION: "3.11"
@@ -16,10 +26,11 @@ env:
 
 jobs:
   # ============================================================================
-  # Backend — Lint + Test
+  # Backend — Lint + Test + Coverage (≥ 70%)
+  # Triggers: SIEMPRE (push a feature/*, PR, push a main/develop)
   # ============================================================================
-  backend-lint-test:
-    name: "Backend: Lint & Test"
+  backend-ci:
+    name: "Backend: Lint, Test & Coverage"
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -48,6 +59,7 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
+          cache-dependency-path: backend/requirements.txt
 
       - name: Install dependencies
         run: |
@@ -57,19 +69,40 @@ jobs:
       - name: Lint with Ruff
         run: ruff check app/ --config ruff.toml
 
-      - name: Run tests
+      - name: Run tests with coverage (min 70%)
         env:
           DATABASE_URL: "postgresql+asyncpg://veramarket:testpassword@localhost:5432/veramarket_test"
           JWT_SECRET: "test-secret-key-not-for-production"
           ENVIRONMENT: "test"
-        run: pytest -v --tb=short
+          TYPESENSE_HOST: "localhost"
+          TYPESENSE_API_KEY: "test-key"
+        run: |
+          pytest \
+            --cov=app/services \
+            --cov=app/routers \
+            --cov-report=term-missing \
+            --cov-report=xml:coverage.xml \
+            --cov-fail-under=70 \
+            -v --tb=short
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage.xml
 
   # ============================================================================
   # Frontend — Lint + Build
+  # Triggers: PR → develop|main, push → main|develop (NO en feature/*)
   # ============================================================================
-  frontend-lint-build:
+  frontend-ci:
     name: "Frontend: Lint & Build"
     runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'pull_request' ||
+      github.ref == 'refs/heads/main' ||
+      github.ref == 'refs/heads/develop'
     defaults:
       run:
         working-directory: frontend
@@ -82,13 +115,16 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
-          cache-dependency-path: frontend/package.json
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Lint
         run: npm run lint
+
+      - name: Run tests
+        run: npm test
 
       - name: Build
         env:
@@ -96,11 +132,54 @@ jobs:
         run: npm run build
 
   # ============================================================================
-  # Deploy Staging (develop → Render preview + Vercel preview)
+  # CD — Deploy Backend (Render) + Frontend (Vercel)
+  # Trigger: push → main (solo si CI pasa)
+  # ============================================================================
+  deploy-production:
+    name: "CD: Deploy Production"
+    needs: [backend-ci, frontend-ci]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ------ Backend → Render ------
+      - name: Deploy Backend to Render
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_PRODUCTION }}
+        run: |
+          if [ -n "$RENDER_DEPLOY_HOOK" ]; then
+            echo "🚀 Triggering Render deploy..."
+            curl -s -o /dev/null -w "%{http_code}" -X POST "$RENDER_DEPLOY_HOOK"
+          else
+            echo "⚠️  RENDER_DEPLOY_HOOK_PRODUCTION secret not configured — skipping."
+          fi
+
+      # ------ Frontend → Vercel ------
+      - name: Deploy Frontend to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          if [ -n "$VERCEL_TOKEN" ]; then
+            echo "🚀 Triggering Vercel production deploy..."
+            npm i -g vercel
+            cd frontend && vercel --prod --token "$VERCEL_TOKEN" --yes
+          else
+            echo "⚠️  VERCEL_TOKEN secret not configured — skipping."
+            echo "ℹ️  Vercel auto-deploys from main branch if connected via dashboard."
+          fi
+
+  # ============================================================================
+  # CD — Deploy Staging (develop)
+  # Trigger: push → develop (solo si CI pasa)
   # ============================================================================
   deploy-staging:
-    name: "Deploy: Staging"
-    needs: [backend-lint-test, frontend-lint-build]
+    name: "CD: Deploy Staging"
+    needs: [backend-ci, frontend-ci]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     environment: staging
@@ -108,36 +187,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy Backend to Render (Preview)
+      - name: Deploy Backend to Render (Staging)
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_STAGING }}
         run: |
-          echo "🚀 Deploy backend to Render staging..."
-          # TODO: Configurar Render Deploy Hook
-          # curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_STAGING }}"
+          if [ -n "$RENDER_DEPLOY_HOOK" ]; then
+            echo "🚀 Triggering Render staging deploy..."
+            curl -s -o /dev/null -w "%{http_code}" -X POST "$RENDER_DEPLOY_HOOK"
+          else
+            echo "⚠️  RENDER_DEPLOY_HOOK_STAGING secret not configured — skipping."
+          fi
 
       - name: Deploy Frontend to Vercel (Preview)
         run: |
-          echo "🚀 Deploy frontend to Vercel preview..."
-          # Vercel auto-deploys from develop branch
-
-  # ============================================================================
-  # Deploy Production (main → Render + Vercel)
-  # ============================================================================
-  deploy-production:
-    name: "Deploy: Production"
-    needs: [backend-lint-test, frontend-lint-build]
-    runs-on: ubuntu-latest
-    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && github.event_name == 'push'
-    environment: production
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy Backend to Render (Production)
-        run: |
-          echo "🚀 Deploy backend to Render production..."
-          # curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_PRODUCTION }}"
-
-      - name: Deploy Frontend to Vercel (Production)
-        run: |
-          echo "🚀 Deploy frontend to Vercel production..."
-          # Vercel auto-deploys from main branch
+          echo "ℹ️  Vercel auto-deploys preview from develop branch."
