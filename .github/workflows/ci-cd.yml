@@ -6,20 +6,18 @@
 #   push feature/*      → CI (test unitario backend)
 #   PR → develop | main → CI completo (backend tests + frontend lint/build)
 #   push main           → CI completo + CD (despliegue producción)
-#   PR → develop | master → CI completo (backend tests + frontend lint/build)
-#   push master           → CI completo + CD (despliegue producción)
 # ==============================================================================
 name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - master
+      - main
       - develop
       - 'feature/*'
   pull_request:
     branches:
-      - master
+      - main
       - develop
 
 env:
@@ -29,7 +27,7 @@ env:
 jobs:
   # ============================================================================
   # Backend — Lint + Test + Coverage (≥ 70%)
-  # Triggers: SIEMPRE (push a feature/*, PR, push a master/develop)
+  # Triggers: SIEMPRE (push a feature/*, PR, push a main/develop)
   # ============================================================================
   backend-ci:
     name: "Backend: Lint, Test & Coverage"
@@ -84,7 +82,7 @@ jobs:
             --cov=app/routers \
             --cov-report=term-missing \
             --cov-report=xml:coverage.xml \
-            --cov-fail-under=45 \
+            --cov-fail-under=70 \
             -v --tb=short
 
       - name: Upload coverage report
@@ -96,11 +94,15 @@ jobs:
 
   # ============================================================================
   # Frontend — Lint + Build
-  # Triggers: SIEMPRE
+  # Triggers: PR → develop|main, push → main|develop (NO en feature/*)
   # ============================================================================
   frontend-ci:
     name: "Frontend: Lint & Build"
     runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'pull_request' ||
+      github.ref == 'refs/heads/main' ||
+      github.ref == 'refs/heads/develop'
     defaults:
       run:
         working-directory: frontend
@@ -137,7 +139,7 @@ jobs:
     name: "CD: Deploy Production"
     needs: [backend-ci, frontend-ci]
     runs-on: ubuntu-latest
-    if: github.ref_name == 'master' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment: production
 
     steps:
@@ -179,7 +181,7 @@ jobs:
     name: "CD: Deploy Staging"
     needs: [backend-ci, frontend-ci]
     runs-on: ubuntu-latest
-    if: github.ref_name == 'develop' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     environment: staging
 
     steps:
