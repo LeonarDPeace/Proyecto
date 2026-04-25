@@ -40,10 +40,14 @@ class MockNegotiation:
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
-        if "id" in self.__dict__: self.id = uuid.UUID(str(self.id))
-        if "buyer_id" in self.__dict__: self.buyer_id = uuid.UUID(str(self.buyer_id))
-        if "seller_id" in self.__dict__: self.seller_id = uuid.UUID(str(self.seller_id))
-        if "product_id" in self.__dict__: self.product_id = uuid.UUID(str(self.product_id))
+        if "id" in self.__dict__:
+            self.id = uuid.UUID(str(self.id))
+        if "buyer_id" in self.__dict__:
+            self.buyer_id = uuid.UUID(str(self.buyer_id))
+        if "seller_id" in self.__dict__:
+            self.seller_id = uuid.UUID(str(self.seller_id))
+        if "product_id" in self.__dict__:
+            self.product_id = uuid.UUID(str(self.product_id))
 
 
 class MockChatMessage:
@@ -51,9 +55,12 @@ class MockChatMessage:
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
-        if "id" in self.__dict__: self.id = uuid.UUID(str(self.id))
-        if "negotiation_id" in self.__dict__: self.negotiation_id = uuid.UUID(str(self.negotiation_id))
-        if "sender_id" in self.__dict__: self.sender_id = uuid.UUID(str(self.sender_id))
+        if "id" in self.__dict__:
+            self.id = uuid.UUID(str(self.id))
+        if "negotiation_id" in self.__dict__:
+            self.negotiation_id = uuid.UUID(str(self.negotiation_id))
+        if "sender_id" in self.__dict__:
+            self.sender_id = uuid.UUID(str(self.sender_id))
 
 
 def _make_negotiation_dict(
