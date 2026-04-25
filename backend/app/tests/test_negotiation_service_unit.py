@@ -4,7 +4,7 @@ Asegura cobertura > 90% en app/services/negotiation_service.py.
 """
 
 import uuid
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi import HTTPException
@@ -32,7 +32,7 @@ async def test_create_negotiation_logic_success():
     # Mock DB results
     mock_result_product = MagicMock()
     mock_result_product.scalar_one_or_none.return_value = fake_product
-    
+
     mock_result_existing = MagicMock()
     mock_result_existing.scalar_one_or_none.return_value = None
 
@@ -65,10 +65,10 @@ async def test_create_negotiation_self_purchase():
     """Lanza 400 si el comprador es el mismo vendedor."""
     db = AsyncMock()
     buyer_id = uuid.uuid4()
-    
+
     fake_product = MagicMock(spec=Product)
     fake_product.seller_id = buyer_id
-    
+
     mock_result = MagicMock()
     mock_result.scalar_one_or_none.return_value = fake_product
     db.execute.return_value = mock_result
@@ -118,7 +118,7 @@ async def test_confirm_delivery_invalid_status():
     db = AsyncMock()
     fake_neg = MagicMock(spec=Negotiation)
     fake_neg.status = "pending"
-    
+
     mock_result = MagicMock()
     mock_result.scalar_one_or_none.return_value = fake_neg
     db.execute.return_value = mock_result
@@ -167,10 +167,10 @@ async def test_create_negotiation_duplicate():
     db = AsyncMock()
     mock_result_product = MagicMock()
     mock_result_product.scalar_one_or_none.return_value = MagicMock(spec=Product, seller_id=uuid.uuid4())
-    
+
     mock_result_existing = MagicMock()
     mock_result_existing.scalar_one_or_none.return_value = MagicMock(spec=Negotiation)
-    
+
     db.execute.side_effect = [mock_result_product, mock_result_existing]
 
     with pytest.raises(HTTPException) as exc:
@@ -185,7 +185,7 @@ async def test_update_negotiation_status_logic():
     seller_id = uuid.uuid4()
     neg_id = uuid.uuid4()
     fake_neg = MagicMock(spec=Negotiation, seller_id=seller_id, status="pending")
-    
+
     mock_result = MagicMock()
     mock_result.scalar_one_or_none.return_value = fake_neg
     db.execute.return_value = mock_result
@@ -212,7 +212,7 @@ async def test_confirm_delivery_already_confirmed():
     db = AsyncMock()
     user_id = uuid.uuid4()
     fake_neg = MagicMock(spec=Negotiation, buyer_id=user_id, status="accepted", buyer_confirmed=True)
-    
+
     mock_result = MagicMock()
     mock_result.scalar_one_or_none.return_value = fake_neg
     db.execute.return_value = mock_result
@@ -229,7 +229,7 @@ async def test_gmv_summary_logic():
     mock_row = MagicMock()
     mock_row.total_transactions = 10
     mock_row.total_gmv_cop = 50000.0
-    
+
     mock_result = MagicMock()
     mock_result.one.return_value = mock_row
     db.execute.return_value = mock_result

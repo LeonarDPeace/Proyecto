@@ -20,9 +20,9 @@ async def test_create_product_logic():
     db = AsyncMock()
     seller_id = uuid.uuid4()
     data = ProductCreate(
-        name="Test", 
-        description="Desc", 
-        price=100.0, 
+        name="Test",
+        description="Desc",
+        price=100.0,
         category="Ropa"
     )
 
@@ -50,10 +50,10 @@ async def test_update_product_forbidden():
     db = AsyncMock()
     seller_id = uuid.uuid4()
     other_id = uuid.uuid4()
-    
+
     fake_product = MagicMock(spec=Product)
     fake_product.seller_id = other_id
-    
+
     mock_result = MagicMock()
     mock_result.scalar_one_or_none.return_value = fake_product
     db.execute.return_value = mock_result
@@ -69,11 +69,11 @@ async def test_toggle_product_status_logic():
     """Cambia el estado del producto."""
     db = AsyncMock()
     seller_id = uuid.uuid4()
-    
+
     fake_product = MagicMock(spec=Product)
     fake_product.seller_id = seller_id
     fake_product.is_active = True
-    
+
     mock_result = MagicMock()
     mock_result.scalar_one_or_none.return_value = fake_product
     db.execute.return_value = mock_result
@@ -87,11 +87,11 @@ async def test_soft_delete_logic():
     """Marca como eliminado."""
     db = AsyncMock()
     seller_id = uuid.uuid4()
-    
+
     fake_product = MagicMock(spec=Product)
     fake_product.seller_id = seller_id
     fake_product.is_deleted = False
-    
+
     mock_result = MagicMock()
     mock_result.scalar_one_or_none.return_value = fake_product
     db.execute.return_value = mock_result

@@ -4,9 +4,10 @@ Asegura que los módulos de servicios y managers alcancen el 70% de cobertura.
 """
 
 import uuid
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import HTTPException
 
 from app.routers.websockets import ConnectionManager
 from app.services import map_service, push_service
@@ -55,7 +56,7 @@ async def test_push_service_coverage():
     """Cubre el esqueleto del push_service."""
     from app.models.user import User
     user = MagicMock(spec=User)
-    
+
     # Probamos las funciones aunque sean stubs
     await push_service.send_push_notification(user, "Title", "Body")
     await push_service.subscribe_user(user, {})
@@ -67,15 +68,14 @@ async def test_push_service_coverage():
 async def test_quota_service_logic():
     """Valida el consumo de cuota en quota_service."""
     from app.services import quota_service
-    from app.models.user_search_quota import UserSearchQuota
     db = AsyncMock()
     user_id = uuid.uuid4()
-    
+
     # Mock result (no quota found)
     mock_result = MagicMock()
     mock_result.scalar_one_or_none.return_value = None
     db.execute.return_value = mock_result
-    
+
     # Test consumption
     consumed, snapshot = await quota_service.try_consume_semantic_search(db, user_id)
     assert consumed is True
@@ -86,9 +86,9 @@ async def test_quota_service_logic():
 @pytest.mark.asyncio
 async def test_sinapsis_service_logic():
     """Valida la lógica de validación de códigos Sinapsis."""
-    from app.services import sinapsis_service
     from app.models.user import User
-    
+    from app.services import sinapsis_service
+
     db = AsyncMock()
     user = MagicMock(spec=User)
     user.role = "comprador"
@@ -97,12 +97,12 @@ async def test_sinapsis_service_logic():
     # Mock whitelist loading
     with patch("app.services.sinapsis_service.load_sinapsis_whitelist") as mock_load:
         mock_load.return_value = {"VAL-123"}
-        
+
         # Valid code
         status, role = await sinapsis_service.request_vendor_role(db, user, "VAL-123")
         assert status == "approved"
         assert role == "vendedor"
-        
+
         # Already vendor
         user.role = "vendedor"
         with pytest.raises(HTTPException) as exc:
@@ -113,13 +113,14 @@ async def test_sinapsis_service_logic():
 @pytest.mark.asyncio
 async def test_typesense_service_logic():
     """Valida utilitarios de typesense_service."""
-    from app.services import typesense_service
+    from datetime import UTC, datetime
+
     from app.models.product import Product
-    from datetime import datetime, UTC
-    
+    from app.services import typesense_service
+
     # Sanitize
     assert typesense_service._sanitize_term("Hola Mundo!!!") == "hola mundo"
-    
+
     # Infer tags
     prod = MagicMock(spec=Product)
     prod.name = "Camiseta Roja"
@@ -128,11 +129,11 @@ async def test_typesense_service_logic():
     tags = typesense_service._infer_tags(prod)
     assert "camiseta" in tags
     assert "algodón" in tags
-    
+
     # Epoch
     dt = datetime(2025, 1, 1, tzinfo=UTC)
     assert typesense_service._to_epoch(dt) == 1735689600
-    
+
     # Build document
     db = AsyncMock()
     mock_row = MagicMock()
@@ -142,7 +143,7 @@ async def test_typesense_service_logic():
     mock_result = MagicMock()
     mock_result.first.return_value = mock_row
     db.execute.return_value = mock_result
-    
+
     doc = await typesense_service.build_product_document(db, prod)
     assert doc["name"] == "Camiseta Roja"
     assert doc["location"] == [3.35, -76.53]
