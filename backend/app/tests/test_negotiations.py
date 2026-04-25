@@ -20,7 +20,6 @@ from app.main import app
 from app.models.user import User
 from app.services.negotiation_service import generate_payment_deep_link
 
-
 # --- Helpers ---
 
 

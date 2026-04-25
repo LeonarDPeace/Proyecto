@@ -61,7 +61,7 @@ def _document_to_search_item(document: dict) -> ProductSearchItem:
     image_urls = [value for value in (image_urls_raw or []) if isinstance(value, str)]
 
     distance_raw = document.get("distance_meters")
-    distance = float(distance_raw) if isinstance(distance_raw, (int, float)) else None
+    distance = float(distance_raw) if isinstance(distance_raw, int | float) else None
 
     return ProductSearchItem(
         id=uuid.UUID(str(document["id"])),

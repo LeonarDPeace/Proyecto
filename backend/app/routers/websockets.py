@@ -9,10 +9,8 @@ import logging
 import uuid
 from collections import defaultdict
 
-from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-from app.core.database import get_db
 from app.core.security import decode_access_token
 from app.services import negotiation_service
 from app.services.auth_service import get_user_by_id

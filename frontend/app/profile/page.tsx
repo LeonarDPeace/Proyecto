@@ -101,7 +101,7 @@ export default function ProfilePage() {
       setLocationMessage(null);
 
       try {
-        const data = await api.get<SavedLocation | null>("/locations/me", token);
+        const data = await api.get<SavedLocation | null>("/locations/me", token || undefined);
         if (!active) return;
 
         if (data) {

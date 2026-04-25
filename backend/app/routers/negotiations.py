@@ -26,7 +26,6 @@ from app.schemas.negotiation import (
     NegotiationStatusUpdate,
     PaymentDeepLink,
 )
-from app.schemas.response import MessageResponse
 from app.services import negotiation_service
 
 logger = logging.getLogger(__name__)

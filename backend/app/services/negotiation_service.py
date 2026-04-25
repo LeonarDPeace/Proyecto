@@ -8,7 +8,6 @@ HU 6.5: Registro automático del valor (GMV).
 import logging
 import uuid
 from collections.abc import Sequence
-from datetime import UTC, datetime
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
