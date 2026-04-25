@@ -229,22 +229,17 @@ async def test_auth_service_get_user_by_id():
 
 
 @pytest.mark.asyncio
-async def test_auth_service_create_or_update_user():
-    """Cubre la rama de usuario existente en create_or_update_user."""
-    from app.models.user import User
+async def test_auth_service_create_user():
+    """Cubre create_user."""
     from app.services import auth_service
 
     db = AsyncMock()
-    fake_user = MagicMock(spec=User)
-    fake_user.email = "test@uao.edu.co"
 
-    mock_result = MagicMock()
-    mock_result.scalar_one_or_none.return_value = fake_user
-    db.execute.return_value = mock_result
-
-    user, is_new = await auth_service.create_or_update_user(db, "test@uao.edu.co")
-    assert is_new is False
-    assert user == fake_user
+    user = await auth_service.create_user(
+        db, email="test@uao.edu.co", name="Test", institutional_id="123"
+    )
+    assert user.email == "test@uao.edu.co"
+    assert db.add.called
 
 
 # ---------------------------------------------------------------------------
@@ -254,59 +249,58 @@ async def test_auth_service_create_or_update_user():
 
 @pytest.mark.asyncio
 async def test_location_service_upsert():
-    """Cubre upsert_location con usuario sin ubicación previa."""
-    from app.models.user import User
+    """Cubre upsert_user_location."""
     from app.services import location_service
 
     db = AsyncMock()
-    user = MagicMock(spec=User)
-    user.id = uuid.uuid4()
-    user.role = "vendedor"
-
     mock_result = MagicMock()
     mock_result.scalar_one_or_none.return_value = None
-    db.execute.return_value = mock_result
 
-    result = await location_service.upsert_location(
-        db,
-        user=user,
-        lat=3.35,
-        lng=-76.53,
-        label="UAO Campus",
-    )
-    assert db.add.called
-    assert result.lat == 3.35
+    with patch("app.services.location_service.get_user_location_view", new_callable=AsyncMock) as mock_view:
+        mock_view.return_value = {"lat": 3.35, "lng": -76.53}
+        db.execute.return_value = mock_result
+
+        result = await location_service.upsert_user_location(
+            db,
+            user_id=uuid.uuid4(),
+            lat=3.35,
+            lng=-76.53,
+            label="UAO Campus",
+        )
+        assert db.add.called
+        assert result["lat"] == 3.35
 
 
 @pytest.mark.asyncio
 async def test_location_service_get_location():
-    """Cubre get_location_by_user."""
-    from app.models.location import Location
+    """Cubre get_user_location_view."""
     from app.services import location_service
 
     db = AsyncMock()
-    fake_loc = MagicMock(spec=Location)
+    mock_row = MagicMock()
+    mock_row.lat = 3.35
+    mock_row.lng = -76.53
+    mock_row.Location = MagicMock()
+    
     mock_result = MagicMock()
-    mock_result.scalar_one_or_none.return_value = fake_loc
+    mock_result.first.return_value = mock_row
     db.execute.return_value = mock_result
 
-    result = await location_service.get_location_by_user(db, uuid.uuid4())
-    assert result == fake_loc
+    result = await location_service.get_user_location_view(db, uuid.uuid4())
+    assert result["lat"] == 3.35
 
 
 @pytest.mark.asyncio
 async def test_location_service_delete():
-    """Cubre delete_location."""
-    from app.models.location import Location
+    """Cubre delete_user_location."""
     from app.services import location_service
 
     db = AsyncMock()
-    fake_loc = MagicMock(spec=Location)
     mock_result = MagicMock()
-    mock_result.scalar_one_or_none.return_value = fake_loc
+    mock_result.scalar_one_or_none.return_value = MagicMock()
     db.execute.return_value = mock_result
 
-    await location_service.delete_location(db, uuid.uuid4())
+    await location_service.delete_user_location(db, uuid.uuid4())
     assert db.delete.called
 
 
@@ -325,8 +319,40 @@ async def test_product_service_list():
     mock_result.scalars.return_value.all.return_value = []
     db.execute.return_value = mock_result
 
-    results = await product_service.list_products(db, skip=0, limit=10)
+    results = await product_service.list_products(db, offset=0, limit=10)
     assert results == []
+
+
+# ---------------------------------------------------------------------------
+# Email Service — cobertura extra
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_email_service_logic():
+    """Cubre la lógica de generación y verificación de OTP."""
+    from app.services import email_service
+
+    db = AsyncMock()
+
+    # create_otp
+    otp = await email_service.create_otp(db, email="test@uao.edu.co")
+    assert len(otp.code) == 6
+    assert db.add.called
+
+    from datetime import UTC, datetime, timedelta
+
+    # verify_otp (success)
+    mock_result = MagicMock()
+    mock_otp = MagicMock()
+    mock_otp.code = "123456"
+    mock_otp.attempts = 0
+    mock_otp.expires_at = datetime.now(UTC) + timedelta(minutes=10)
+    mock_result.scalar_one_or_none.return_value = mock_otp
+    db.execute.return_value = mock_result
+
+    valid = await email_service.verify_otp(db, email="test@uao.edu.co", code="123456")
+    assert valid is True
 
 
 @pytest.mark.asyncio

@@ -52,7 +52,7 @@ class MockChatMessage:
 def _make_negotiation_dict(
     id=None, buyer_id=None, seller_id=None, product_id=None, **overrides
 ) -> dict:
-    """Retorna un dict serializable de NegotiationRead."""
+    """Retorna un dict con los datos de Negotiation."""
     neg = {
         "id": id or uuid.uuid4(),
         "buyer_id": buyer_id or uuid.uuid4(),
@@ -62,8 +62,8 @@ def _make_negotiation_dict(
         "buyer_confirmed": False,
         "seller_confirmed": False,
         "agreed_price_cop": 15000.0,
-        "created_at": datetime.now(UTC).isoformat(),
-        "updated_at": datetime.now(UTC).isoformat(),
+        "created_at": datetime.now(UTC),
+        "updated_at": datetime.now(UTC),
     }
     neg.update(overrides)
     return neg
@@ -72,13 +72,13 @@ def _make_negotiation_dict(
 def _make_message_dict(
     id=None, negotiation_id=None, sender_id=None, **overrides
 ) -> dict:
-    """Retorna un dict serializable de ChatMessageRead."""
+    """Retorna un dict con los datos de ChatMessage."""
     msg = {
         "id": id or uuid.uuid4(),
         "negotiation_id": negotiation_id or uuid.uuid4(),
         "sender_id": sender_id or uuid.uuid4(),
         "content": "Hola, me interesa tu producto",
-        "created_at": datetime.now(UTC).isoformat(),
+        "created_at": datetime.now(UTC),
     }
     msg.update(overrides)
     return msg
