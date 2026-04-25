@@ -7,7 +7,7 @@ Fix: test_confirm_delivery_logic_flow — el mock del producto en _record_gmv
 """
 
 import uuid
-from unittest.mock import AsyncMock, MagicMock, call
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from fastapi import HTTPException
@@ -15,7 +15,6 @@ from fastapi import HTTPException
 from app.models.negotiation import Negotiation
 from app.models.product import Product
 from app.services import negotiation_service
-
 
 # ---------------------------------------------------------------------------
 # Create Negotiation

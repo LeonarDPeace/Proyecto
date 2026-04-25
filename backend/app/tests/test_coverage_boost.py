@@ -14,8 +14,7 @@ import pytest
 from fastapi import HTTPException
 
 from app.routers.websockets import ConnectionManager
-from app.services import map_service
-
+from app.services import map_service  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # WebSocket — ConnectionManager (HU 6.1)
