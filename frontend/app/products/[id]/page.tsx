@@ -62,7 +62,7 @@ export default function ProductDetailPage({
           // Filtramos el producto actual para que no se recomiende a sí mismo
           setRecommendations(recs.filter(p => p.id !== data.id).slice(0, 3));
         } catch (errRec) {
-          console.error("No se pudieron cargar recomendaciones", errRec);
+          // Silently fail recommendations
         }
       }
     } catch (err) {
@@ -88,8 +88,8 @@ export default function ProductDetailPage({
         token
       );
       setProduct(updated);
-    } catch (err) {
-      alert(err instanceof Error ? err.message : "Error al cambiar estado.");
+    } catch {
+      // Silently fail status update
     } finally {
       setActing(false);
     }

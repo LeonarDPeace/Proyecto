@@ -101,7 +101,7 @@ export default function ProfilePage() {
       setLocationMessage(null);
 
       try {
-        const data = await api.get<SavedLocation | null>("/locations/me", token);
+        const data = await api.get<SavedLocation | null>("/locations/me", token || undefined);
         if (!active) return;
 
         if (data) {
@@ -150,7 +150,7 @@ export default function ProfilePage() {
           campus: locationCampus || "UAO",
           label: locationLabel || null,
         },
-        token
+        token || undefined
       );
       setLocationMessage("Ubicación guardada correctamente.");
     } catch (err) {
@@ -168,7 +168,7 @@ export default function ProfilePage() {
     setLocationMessage(null);
 
     try {
-      await api.delete("/locations/me", token);
+      await api.delete("/locations/me", token || undefined);
       setSelectedLocation(null);
       setLocationCampus("UAO");
       setLocationLabel("");

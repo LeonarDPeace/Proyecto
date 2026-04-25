@@ -46,7 +46,7 @@ export default function ChatBox({ negotiationId }: ChatBoxProps) {
         }));
         setMessages(formatted);
       } catch {
-        console.error("Error loading chat history");
+        // Silently fail history load
       } finally {
         setLoadingHistory(false);
       }
@@ -73,8 +73,7 @@ export default function ChatBox({ negotiationId }: ChatBoxProps) {
       await sendViaRest(negotiationId, content);
       // El mensaje aparecerá en la pantalla vía WebSocket (el servidor lo retransmitirá)
     } catch (err: any) {
-      console.error("Error al enviar mensaje:", err);
-      // Opcional: restaurar el input si falló
+      // Restore input on failure
       setInputValue(content);
     }
   };

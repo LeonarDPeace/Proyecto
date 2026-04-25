@@ -21,7 +21,7 @@ EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
 DO $$ BEGIN
-    CREATE TYPE negotiation_status AS ENUM ('pending', 'accepted', 'rejected', 'completed');
+    CREATE TYPE negotiation_status_enum AS ENUM ('pending', 'accepted', 'rejected', 'completed');
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
@@ -130,17 +130,49 @@ COMMENT ON TABLE locations IS 'Ubicación de vendedores con coordenadas PostGIS 
 -- Tabla: negotiations
 -- =============================================================================
 CREATE TABLE IF NOT EXISTS negotiations (
-    id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    buyer_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    seller_id   UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    product_id  UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-    status      negotiation_status DEFAULT 'pending',
-    created_at  TIMESTAMPTZ DEFAULT NOW(),
-    updated_at  TIMESTAMPTZ DEFAULT NOW(),
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    buyer_id        UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    seller_id       UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    product_id      UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    status          negotiation_status_enum DEFAULT 'pending',
+    buyer_confirmed BOOLEAN DEFAULT FALSE,
+    seller_confirmed BOOLEAN DEFAULT FALSE,
+    agreed_price_cop NUMERIC(12, 2),
+    created_at      TIMESTAMPTZ DEFAULT NOW(),
+    updated_at      TIMESTAMPTZ DEFAULT NOW(),
     CONSTRAINT chk_buyer_seller CHECK (buyer_id <> seller_id)
 );
 
 COMMENT ON TABLE negotiations IS 'Registro de negociaciones entre compradores y vendedores.';
+
+-- =============================================================================
+-- Tabla: chat_messages (HU 6.1 — Chat P2P)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    negotiation_id  UUID NOT NULL REFERENCES negotiations(id) ON DELETE CASCADE,
+    sender_id       UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    content         TEXT NOT NULL,
+    created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE chat_messages IS 'Mensajes de chat para las negociaciones P2P (HU 6.1).';
+
+-- =============================================================================
+-- Tabla: gmv_metrics (HU 6.5 — Registro de volumen transaccional)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS gmv_metrics (
+    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    negotiation_id  UUID NOT NULL UNIQUE REFERENCES negotiations(id) ON DELETE CASCADE,
+    product_id      UUID REFERENCES products(id) ON DELETE SET NULL,
+    buyer_id        UUID REFERENCES users(id) ON DELETE SET NULL,
+    seller_id       UUID REFERENCES users(id) ON DELETE SET NULL,
+    amount_cop      NUMERIC(12, 2) NOT NULL,
+    product_name    VARCHAR(200),
+    completed_at    TIMESTAMPTZ DEFAULT NOW()
+);
+
+COMMENT ON TABLE gmv_metrics IS 'Métricas de volumen bruto de mercancía (GMV) (HU 6.5).';
 
 -- =============================================================================
 -- Row Level Security (RLS) — Ley 1581/2012
@@ -184,6 +216,9 @@ CREATE INDEX IF NOT EXISTS idx_negotiations_buyer_id
 
 CREATE INDEX IF NOT EXISTS idx_negotiations_seller_id
     ON negotiations (seller_id);
+
+CREATE INDEX IF NOT EXISTS idx_chat_messages_negotiation
+    ON chat_messages (negotiation_id);
 
 -- =============================================================================
 -- Datos semilla para desarrollo

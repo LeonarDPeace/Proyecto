@@ -19,7 +19,6 @@ function urlB64ToUint8Array(base64String: string) {
 
 export async function subscribeToPushNotifications(token: string) {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    console.warn("Push no está soportado por este navegador.");
     return false;
   }
 
@@ -28,7 +27,6 @@ export async function subscribeToPushNotifications(token: string) {
     const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
     
     if (!vapidPublicKey) {
-      console.warn("Falta NEXT_PUBLIC_VAPID_PUBLIC_KEY en .env");
       return false;
     }
 
@@ -48,7 +46,7 @@ export async function subscribeToPushNotifications(token: string) {
 
     return response.ok;
   } catch (error) {
-    console.error("Error suscribiendo a push notifications:", error);
+    // Silent fail push subscription
     return false;
   }
 }

@@ -220,22 +220,12 @@ docs: update README with setup instructions
 
 ## CI/CD
 
-El pipeline de GitHub Actions [`.github/workflows/ci-cd.yml`](.github/workflows/ci-cd.yml) implementa una estrategia de integración y despliegue continuo robusta:
+El pipeline de GitHub Actions (`.github/workflows/ci-cd.yml`) ejecuta:
 
-1.  **Triggers Inteligentes**:
-    -   `push feature/*`: Ejecuta solo tests unitarios y linting del backend (feedback rápido).
-    -   `pull_request` (hacia `develop` o `main`): Ejecuta el CI completo (Backend + Frontend Build/Lint).
-    -   `push main`: Dispara el flujo completo de CI y el despliegue automático (CD) a producción.
-2.  **Calidad del Backend**:
-    -   **Linting**: Uso de `Ruff` para garantizar estándares de código Python.
-    -   **Testing**: Ejecución de `pytest` con servicios de PostgreSQL y PostGIS.
-    -   **Quality Gate**: Cobertura mínima obligatoria del **70%** (configurada vía `pytest-cov`).
-3.  **Calidad del Frontend**:
-    -   **Linting**: ESLint para mantener la consistencia en Next.js.
-    -   **Validation**: Verificación de tipos y build de producción exitoso.
-4.  **Despliegue Continuo (CD)**:
-    -   **Backend**: Despliegue automático a **Render.com** mediante webhooks.
-    -   **Frontend**: Despliegue a **Vercel** mediante CLI/Webhook.
+1. **Backend**: Lint (Ruff) + Tests (pytest) con PostgreSQL/PostGIS de servicio
+2. **Frontend**: Lint (ESLint) + Build (Next.js)
+3. **Deploy Staging**: push a `develop` → Render preview + Vercel preview
+4. **Deploy Production**: push a `main` → Render + Vercel producción
 
 ---
 
