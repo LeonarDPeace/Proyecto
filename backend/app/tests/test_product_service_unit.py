@@ -40,14 +40,14 @@ async def test_update_product_forbidden():
     db = AsyncMock()
     seller_id = uuid.uuid4()
     other_id = uuid.uuid4()
-    
+
     fake_product = MagicMock(spec=Product)
     fake_product.seller_id = seller_id
-    
+
     mock_result = MagicMock()
     mock_result.scalar_one_or_none.return_value = fake_product
     db.execute.return_value = mock_result
-    
+
     with pytest.raises(HTTPException) as exc:
         await product_service.update_product(
             db, uuid.uuid4(), other_id, ProductUpdate(name="New Name")
@@ -59,15 +59,15 @@ async def test_update_product_forbidden():
 async def test_toggle_product_status_logic():
     db = AsyncMock()
     seller_id = uuid.uuid4()
-    
+
     fake_product = MagicMock(spec=Product)
     fake_product.seller_id = seller_id
     fake_product.is_active = True
-    
+
     mock_result = MagicMock()
     mock_result.scalar_one_or_none.return_value = fake_product
     db.execute.return_value = mock_result
-    
+
     product = await product_service.toggle_product_status(db, uuid.uuid4(), seller_id)
     assert product.is_active is False
     assert db.flush.called
@@ -77,15 +77,15 @@ async def test_toggle_product_status_logic():
 async def test_soft_delete_logic():
     db = AsyncMock()
     seller_id = uuid.uuid4()
-    
+
     fake_product = MagicMock(spec=Product)
     fake_product.seller_id = seller_id
     fake_product.is_deleted = False
-    
+
     mock_result = MagicMock()
     mock_result.scalar_one_or_none.return_value = fake_product
     db.execute.return_value = mock_result
-    
+
     await product_service.soft_delete_product(db, uuid.uuid4(), seller_id)
     assert fake_product.is_deleted is True
     assert db.flush.called

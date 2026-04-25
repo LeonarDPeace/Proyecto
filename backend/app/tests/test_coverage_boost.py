@@ -281,7 +281,7 @@ async def test_location_service_get_location():
     mock_row.lat = 3.35
     mock_row.lng = -76.53
     mock_row.Location = MagicMock()
-    
+
     mock_result = MagicMock()
     mock_result.first.return_value = mock_row
     db.execute.return_value = mock_result
