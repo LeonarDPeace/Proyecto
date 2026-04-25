@@ -163,6 +163,25 @@ async def send_message(
     )
     await db.commit()
     await db.refresh(message)
+
+    # --- Notificar vía WebSocket (Modo Híbrido) ---
+    try:
+        from app.routers.websockets import manager
+        await manager.broadcast_to_room(
+            str(negotiation_id),
+            {
+                "type": "message",
+                "id": str(message.id),
+                "negotiation_id": str(negotiation_id),
+                "sender_id": str(current_user.id),
+                "sender_name": current_user.name,
+                "content": message.content,
+                "created_at": message.created_at.isoformat(),
+            }
+        )
+    except Exception:
+        logger.warning("No se pudo notificar mensaje vía WS (fallback a REST exitoso)")
+
     return message
 
 

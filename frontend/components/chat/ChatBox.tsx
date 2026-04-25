@@ -59,11 +59,24 @@ export default function ChatBox({ negotiationId }: ChatBoxProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [wsMessages]);
 
-  const handleSend = () => {
+  const { sendMessage: sendViaRest } = useNegotiations();
+
+  const handleSend = async () => {
     const content = inputValue.trim();
-    if (!content || !connected) return;
-    sendMessage(content);
+    if (!content) return;
+    
+    // Guardamos el input para limpiar después
     setInputValue("");
+    
+    try {
+      // Usamos REST para máxima fiabilidad en el envío
+      await sendViaRest(negotiationId, content);
+      // El mensaje aparecerá en la pantalla vía WebSocket (el servidor lo retransmitirá)
+    } catch (err: any) {
+      console.error("Error al enviar mensaje:", err);
+      // Opcional: restaurar el input si falló
+      setInputValue(content);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -143,17 +156,16 @@ export default function ChatBox({ negotiationId }: ChatBoxProps) {
         <input
           type="text"
           className="chat-input"
-          placeholder={connected ? "Escribe un mensaje…" : "Reconectando…"}
+          placeholder="Escribe un mensaje…"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          disabled={!connected}
           maxLength={2000}
         />
         <button
           className="chat-send-btn"
           onClick={handleSend}
-          disabled={!connected || !inputValue.trim()}
+          disabled={!inputValue.trim()}
           aria-label="Enviar mensaje"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

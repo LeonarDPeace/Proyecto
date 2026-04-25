@@ -104,18 +104,35 @@ export function useChat({ negotiationId, enabled = true }: UseChatOptions) {
 
   const sendMessage = useCallback(
     (content: string) => {
+      console.log("Intentando enviar mensaje WS:", content);
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(JSON.stringify({ content }));
+        console.log("Mensaje enviado exitosamente al WS");
+      } else {
+        console.warn("No se pudo enviar: WS no está abierto. Estado:", wsRef.current?.readyState);
       }
     },
     []
   );
 
-  // Conectar al montar, desconectar al desmontar
+  // Conectar solo cuando el token y la ID estén listos y no haya una conexión activa
   useEffect(() => {
-    connect();
+    let active = true;
+
+    if (token && negotiationId && enabled && !connected && !connecting) {
+      connect();
+    }
+
+    return () => {
+      active = false;
+      // No desconectar agresivamente si el componente solo se re-renderiza
+    };
+  }, [token, negotiationId, enabled, connected, connecting, connect]);
+
+  // Cleanup final al desmontar de verdad
+  useEffect(() => {
     return () => disconnect();
-  }, [connect, disconnect]);
+  }, [disconnect]);
 
   return {
     messages,

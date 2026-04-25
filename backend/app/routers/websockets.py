@@ -35,6 +35,7 @@ class ConnectionManager:
         """Acepta y registra una conexión WebSocket en una sala."""
         await websocket.accept()
         self.active_connections[negotiation_id].append((user_id, websocket))
+        print(f"DEBUG_WS: Conectado user={user_id} a negotiation={negotiation_id}")
         logger.info(
             "WS conectado: user=%s, negotiation=%s",
             user_id,
@@ -67,10 +68,12 @@ class ConnectionManager:
                 continue
             try:
                 await websocket.send_json(message)
-            except Exception:
+            except Exception as e:
+                print(f"DEBUG_WS_ERROR: Fallo al enviar a {user_id}: {str(e)}")
                 logger.warning(
-                    "Error enviando mensaje WS a user=%s",
+                    "Error enviando mensaje WS a user=%s: %s",
                     user_id,
+                    str(e)
                 )
 
     async def send_personal(self, websocket: WebSocket, message: dict) -> None:
@@ -138,7 +141,8 @@ async def websocket_chat(
                     code=4003, reason="No eres parte de esta negociación"
                 )
                 return
-        except Exception:
+        except Exception as e:
+            logger.error("Error en validación de WebSocket: %s", str(e), exc_info=True)
             await websocket.close(code=4000, reason="Error de validación")
             return
 
@@ -152,14 +156,14 @@ async def websocket_chat(
             "type": "system",
             "content": f"Usuario {user.name} se unió al chat",
             "sender_id": user_id_str,
-        },
-        exclude_user=user_id_str,
+        }
     )
 
     try:
         while True:
             # Recibir mensaje del cliente
             raw_data = await websocket.receive_text()
+            print(f"DEBUG_WS: Mensaje recibido de {user_id_str}: {raw_data}")
 
             try:
                 data = json.loads(raw_data)
