@@ -1,10 +1,11 @@
 "use client";
 
 /**
- * Página — Detalle de Producto (Sprint 3).
+ * Página — Detalle de Producto (Sprint 3 y 4).
  *
  * Muestra información completa del producto.
- * Si el usuario autenticado es el dueño, muestra acciones de edición/eliminación/toggle.
+ * Si el usuario autenticado es el dueño, muestra acciones de edición.
+ * Si es otro usuario, muestra botón para Iniciar Negociación.
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -13,6 +14,7 @@ import Link from "next/link";
 
 import api from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
+import { useNegotiations } from "@/hooks/useNegotiations";
 import Button from "@/components/ui/Button";
 import ProductCard from "@/components/ProductCard";
 
@@ -36,12 +38,14 @@ export default function ProductDetailPage({
 }) {
   const router = useRouter();
   const { user, token, isHydrated } = useAuth();
+  const { createNegotiation } = useNegotiations();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [recommendations, setRecommendations] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [acting, setActing] = useState(false);
+  const [negotiating, setNegotiating] = useState(false);
 
   const isOwner = isHydrated && user && product && user.id === product.seller_id;
 
@@ -102,6 +106,18 @@ export default function ProductDetailPage({
     } catch (err) {
       alert(err instanceof Error ? err.message : "Error al eliminar.");
       setActing(false);
+    }
+  }
+
+  async function handleStartNegotiation() {
+    if (!product || !token) return;
+    setNegotiating(true);
+    try {
+      const neg = await createNegotiation(product.id, "¡Hola! Me interesa este producto.");
+      router.push(`/negotiations/${neg.id}`);
+    } catch (err: any) {
+      alert(err.message || "Error al iniciar negociación. Es posible que ya tengas una en curso.");
+      setNegotiating(false);
     }
   }
 
@@ -208,8 +224,67 @@ export default function ProductDetailPage({
         </div>
       )}
 
+      {/* Acciones principales (Dueño vs Comprador) */}
+      <div className="mt-8">
+        {isOwner ? (
+          <section className="rounded-xl border border-vera-200 bg-vera-50/50 p-5">
+            <h3 className="text-sm font-semibold text-vera-700 mb-4">
+              Gestión del producto
+            </h3>
+            <div className="flex flex-wrap gap-3">
+              <Link href={`/products/${product.id}/edit`}>
+                <Button variant="primary" size="md">
+                  ✏️ Editar
+                </Button>
+              </Link>
+              <Button
+                variant="outline"
+                size="md"
+                onClick={handleToggleStatus}
+                disabled={acting}
+              >
+                {acting
+                  ? "Cambiando…"
+                  : product.is_active
+                  ? "⏸️ Pausar"
+                  : "▶️ Activar"}
+              </Button>
+              <Button
+                variant="secondary"
+                size="md"
+                onClick={handleDelete}
+                disabled={acting}
+                className="!text-red-600 !bg-red-50 hover:!bg-red-100"
+              >
+                🗑️ Eliminar
+              </Button>
+            </div>
+          </section>
+        ) : product.is_active ? (
+          <div className="flex flex-col gap-4 sm:flex-row">
+            {isHydrated && user ? (
+              <Button 
+                variant="primary" 
+                size="lg" 
+                onClick={handleStartNegotiation}
+                disabled={negotiating}
+                className="w-full sm:w-auto text-lg px-8 py-3 shadow-md"
+              >
+                {negotiating ? "Iniciando..." : "💬 Contactar al vendedor / Comprar"}
+              </Button>
+            ) : isHydrated && !user ? (
+              <Link href="/auth" className="w-full sm:w-auto">
+                <Button variant="primary" size="lg" className="w-full">
+                  Inicia sesión para comprar
+                </Button>
+              </Link>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+
       {/* Metadata */}
-      <div className="mt-4 flex gap-4 text-xs text-gray-400">
+      <div className="mt-6 border-t border-gray-100 pt-4 flex gap-4 text-xs text-gray-400">
         <span>
           Publicado: {new Date(product.created_at).toLocaleDateString("es-CO")}
         </span>
@@ -217,43 +292,6 @@ export default function ProductDetailPage({
           Actualizado: {new Date(product.updated_at).toLocaleDateString("es-CO")}
         </span>
       </div>
-
-      {/* Acciones del dueño */}
-      {isOwner && (
-        <section className="mt-8 rounded-xl border border-vera-200 bg-vera-50/50 p-5">
-          <h3 className="text-sm font-semibold text-vera-700 mb-4">
-            Gestión del producto
-          </h3>
-          <div className="flex flex-wrap gap-3">
-            <Link href={`/products/${product.id}/edit`}>
-              <Button variant="primary" size="md">
-                ✏️ Editar
-              </Button>
-            </Link>
-            <Button
-              variant="outline"
-              size="md"
-              onClick={handleToggleStatus}
-              disabled={acting}
-            >
-              {acting
-                ? "Cambiando…"
-                : product.is_active
-                ? "⏸️ Pausar"
-                : "▶️ Activar"}
-            </Button>
-            <Button
-              variant="secondary"
-              size="md"
-              onClick={handleDelete}
-              disabled={acting}
-              className="!text-red-600 !bg-red-50 hover:!bg-red-100"
-            >
-              🗑️ Eliminar
-            </Button>
-          </div>
-        </section>
-      )}
 
       {/* VeraMatch - Recomendaciones (HU 4.3) */}
       {recommendations.length > 0 && (
