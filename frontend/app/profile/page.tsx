@@ -101,7 +101,7 @@ export default function ProfilePage() {
       setLocationMessage(null);
 
       try {
-        const data = await api.get<SavedLocation | null>("/locations/me", token || undefined);
+        const data = await api.get<SavedLocation | null>("/locations/me", token);
         if (!active) return;
 
         if (data) {
@@ -194,9 +194,16 @@ export default function ProfilePage() {
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-800">Mi Perfil</h1>
-        <Button variant="outline" size="sm" onClick={handleLogout}>
-          Cerrar sesión
-        </Button>
+        <div className="flex gap-2">
+          <Link href="/negotiations">
+            <Button variant="secondary" size="sm">
+              💬 Mis Negociaciones
+            </Button>
+          </Link>
+          <Button variant="outline" size="sm" onClick={handleLogout}>
+            Cerrar sesión
+          </Button>
+        </div>
       </div>
 
       {/* ── Información personal ── */}

@@ -185,7 +185,7 @@ export default function NavigationMenu() {
     { label: "Inicio", href: "/", icon: HomeIcon },
     { label: "Catálogo", href: "/products", icon: CatalogIcon },
     { label: "Publicar", href: "/products/new", icon: PlusIcon, authOnly: true, sellerOnly: true },
-    { label: "Chats", href: "/negotiations", icon: ChatIcon, authOnly: true },
+    { label: "Negociaciones", href: "/negotiations", icon: ChatIcon, authOnly: true },
     { label: "Mapa", href: "/map", icon: MapIcon },
     { label: "Perfil", href: "/profile", icon: ProfileIcon, authOnly: true },
     { label: "Entrar", href: "/auth", icon: LoginIcon, guestOnly: true },
