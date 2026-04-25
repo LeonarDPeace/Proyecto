@@ -137,7 +137,7 @@ jobs:
     name: "CD: Deploy Production"
     needs: [backend-ci, frontend-ci]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    if: github.ref_name == 'master' && github.event_name == 'push'
     environment: production
 
     steps:
@@ -179,7 +179,7 @@ jobs:
     name: "CD: Deploy Staging"
     needs: [backend-ci, frontend-ci]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    if: github.ref_name == 'develop' && github.event_name == 'push'
     environment: staging
 
     steps:
