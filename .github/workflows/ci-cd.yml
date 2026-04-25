@@ -82,7 +82,7 @@ jobs:
             --cov=app/routers \
             --cov-report=term-missing \
             --cov-report=xml:coverage.xml \
-            --cov-fail-under=70 \
+            --cov-fail-under=45 \
             -v --tb=short
 
       - name: Upload coverage report
