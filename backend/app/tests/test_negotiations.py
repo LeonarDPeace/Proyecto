@@ -54,10 +54,10 @@ def _make_negotiation_dict(
 ) -> dict:
     """Retorna un dict serializable de NegotiationRead."""
     neg = {
-        "id": str(id or uuid.uuid4()),
-        "buyer_id": str(buyer_id or uuid.uuid4()),
-        "seller_id": str(seller_id or uuid.uuid4()),
-        "product_id": str(product_id or uuid.uuid4()),
+        "id": id or uuid.uuid4(),
+        "buyer_id": buyer_id or uuid.uuid4(),
+        "seller_id": seller_id or uuid.uuid4(),
+        "product_id": product_id or uuid.uuid4(),
         "status": "pending",
         "buyer_confirmed": False,
         "seller_confirmed": False,
@@ -74,9 +74,9 @@ def _make_message_dict(
 ) -> dict:
     """Retorna un dict serializable de ChatMessageRead."""
     msg = {
-        "id": str(id or uuid.uuid4()),
-        "negotiation_id": str(negotiation_id or uuid.uuid4()),
-        "sender_id": str(sender_id or uuid.uuid4()),
+        "id": id or uuid.uuid4(),
+        "negotiation_id": negotiation_id or uuid.uuid4(),
+        "sender_id": sender_id or uuid.uuid4(),
         "content": "Hola, me interesa tu producto",
         "created_at": datetime.now(UTC).isoformat(),
     }
