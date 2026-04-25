@@ -175,7 +175,7 @@ async def send_message(
 async def get_payment_deep_link(
     negotiation_id: uuid.UUID,
     platform: str = Query(
-        ..., regex="^(nequi|daviplata)$", description="nequi o daviplata"
+        ..., pattern="^(nequi|daviplata)$", description="nequi o daviplata"
     ),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),

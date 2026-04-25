@@ -1,10 +1,13 @@
 """Tests — Negotiation Service logic (HU 6.1-6.5).
 
 Asegura cobertura > 90% en app/services/negotiation_service.py.
+
+Fix: test_confirm_delivery_logic_flow — el mock del producto en _record_gmv
+     debe tener .name y .price correctamente configurados.
 """
 
 import uuid
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, call
 
 import pytest
 from fastapi import HTTPException
@@ -12,6 +15,11 @@ from fastapi import HTTPException
 from app.models.negotiation import Negotiation
 from app.models.product import Product
 from app.services import negotiation_service
+
+
+# ---------------------------------------------------------------------------
+# Create Negotiation
+# ---------------------------------------------------------------------------
 
 
 @pytest.mark.asyncio
@@ -29,7 +37,6 @@ async def test_create_negotiation_logic_success():
     fake_product.is_active = True
     fake_product.is_deleted = False
 
-    # Mock DB results
     mock_result_product = MagicMock()
     mock_result_product.scalar_one_or_none.return_value = fake_product
 
@@ -78,14 +85,21 @@ async def test_create_negotiation_self_purchase():
     assert exc.value.status_code == 400
 
 
+# ---------------------------------------------------------------------------
+# Confirm Delivery — FIXED: mock producto con .name y .price para _record_gmv
+# ---------------------------------------------------------------------------
+
+
 @pytest.mark.asyncio
 async def test_confirm_delivery_logic_flow():
-    """Valida flujo de confirmación dual y cierre."""
+    """Valida flujo de confirmación dual y cierre con registro GMV."""
     db = AsyncMock()
     buyer_id = uuid.uuid4()
     seller_id = uuid.uuid4()
     neg_id = uuid.uuid4()
+    product_id = uuid.uuid4()
 
+    # --- Negotiation mock ---
     fake_neg = MagicMock(spec=Negotiation)
     fake_neg.id = neg_id
     fake_neg.buyer_id = buyer_id
@@ -93,20 +107,31 @@ async def test_confirm_delivery_logic_flow():
     fake_neg.status = "accepted"
     fake_neg.buyer_confirmed = False
     fake_neg.seller_confirmed = False
-    fake_neg.product_id = uuid.uuid4()
+    fake_neg.product_id = product_id
     fake_neg.agreed_price_cop = 5000.0
 
-    mock_result = MagicMock()
-    mock_result.scalar_one_or_none.return_value = fake_neg
-    db.execute.return_value = mock_result
+    # --- Product mock (para _record_gmv) ---
+    fake_product = MagicMock(spec=Product)
+    fake_product.name = "Camiseta de Prueba"
+    fake_product.price = 5000.0
 
-    # Confirmación Comprador
+    # DB devuelve la negociación en todas las consultas de negociación,
+    # y el producto cuando _record_gmv lo consulta.
+    mock_result_neg = MagicMock()
+    mock_result_neg.scalar_one_or_none.return_value = fake_neg
+
+    mock_result_product = MagicMock()
+    mock_result_product.scalar_one_or_none.return_value = fake_product
+
+    # Primera llamada → negociación (buyer confirm)
+    db.execute.side_effect = [mock_result_neg]
     await negotiation_service.confirm_delivery(db, neg_id, buyer_id)
     assert fake_neg.buyer_confirmed is True
-    assert fake_neg.status == "accepted" # Aún no completa
+    assert fake_neg.status == "accepted"  # Aún no completa
 
-    # Confirmación Vendedor
-    fake_neg.buyer_confirmed = True # Simular estado previo
+    # Segunda llamada → negociación + producto (seller confirm → trigger _record_gmv)
+    fake_neg.buyer_confirmed = True  # simular estado previo guardado
+    db.execute.side_effect = [mock_result_neg, mock_result_product]
     await negotiation_service.confirm_delivery(db, neg_id, seller_id)
     assert fake_neg.seller_confirmed is True
     assert fake_neg.status == "completed"
@@ -114,7 +139,7 @@ async def test_confirm_delivery_logic_flow():
 
 @pytest.mark.asyncio
 async def test_confirm_delivery_invalid_status():
-    """Lanza 400 si la negociación no está aceptada."""
+    """Lanza 400 si la negociación no está en estado 'accepted'."""
     db = AsyncMock()
     fake_neg = MagicMock(spec=Negotiation)
     fake_neg.status = "pending"
@@ -126,6 +151,11 @@ async def test_confirm_delivery_invalid_status():
     with pytest.raises(HTTPException) as exc:
         await negotiation_service.confirm_delivery(db, uuid.uuid4(), uuid.uuid4())
     assert exc.value.status_code == 400
+
+
+# ---------------------------------------------------------------------------
+# Chat Messages
+# ---------------------------------------------------------------------------
 
 
 @pytest.mark.asyncio
@@ -149,16 +179,21 @@ async def test_create_chat_message_logic():
     assert msg.content == "Test"
     assert db.add.called
 
-    # Caso: No es parte de la negociación
+    # No es parte de la negociación
     with pytest.raises(HTTPException) as exc:
         await negotiation_service.create_chat_message(db, neg_id, uuid.uuid4(), "Test")
     assert exc.value.status_code == 403
 
-    # Caso: Negociación cerrada
+    # Negociación cerrada
     fake_neg.status = "completed"
     with pytest.raises(HTTPException) as exc:
         await negotiation_service.create_chat_message(db, neg_id, user_id, "Test")
     assert exc.value.status_code == 400
+
+
+# ---------------------------------------------------------------------------
+# Duplicate Negotiation
+# ---------------------------------------------------------------------------
 
 
 @pytest.mark.asyncio
@@ -166,8 +201,9 @@ async def test_create_negotiation_duplicate():
     """Lanza 409 si ya hay una negociación activa."""
     db = AsyncMock()
     mock_result_product = MagicMock()
-    mock_result_product.scalar_one_or_none.return_value = MagicMock(spec=Product, seller_id=uuid.uuid4())
-
+    mock_result_product.scalar_one_or_none.return_value = MagicMock(
+        spec=Product, seller_id=uuid.uuid4()
+    )
     mock_result_existing = MagicMock()
     mock_result_existing.scalar_one_or_none.return_value = MagicMock(spec=Negotiation)
 
@@ -176,6 +212,11 @@ async def test_create_negotiation_duplicate():
     with pytest.raises(HTTPException) as exc:
         await negotiation_service.create_negotiation(db, uuid.uuid4(), uuid.uuid4())
     assert exc.value.status_code == 409
+
+
+# ---------------------------------------------------------------------------
+# Update Status
+# ---------------------------------------------------------------------------
 
 
 @pytest.mark.asyncio
@@ -190,28 +231,42 @@ async def test_update_negotiation_status_logic():
     mock_result.scalar_one_or_none.return_value = fake_neg
     db.execute.return_value = mock_result
 
-    # Success
+    # Éxito
     await negotiation_service.update_negotiation_status(db, neg_id, seller_id, "accepted")
     assert fake_neg.status == "accepted"
 
-    # Forbidden (not seller)
+    # Prohibido (no es el vendedor)
     with pytest.raises(HTTPException) as exc:
-        await negotiation_service.update_negotiation_status(db, neg_id, uuid.uuid4(), "accepted")
+        await negotiation_service.update_negotiation_status(
+            db, neg_id, uuid.uuid4(), "accepted"
+        )
     assert exc.value.status_code == 403
 
-    # Invalid transition (already accepted)
+    # Transición inválida (ya aceptada)
     fake_neg.status = "accepted"
     with pytest.raises(HTTPException) as exc:
-        await negotiation_service.update_negotiation_status(db, neg_id, seller_id, "rejected")
+        await negotiation_service.update_negotiation_status(
+            db, neg_id, seller_id, "rejected"
+        )
     assert exc.value.status_code == 400
+
+
+# ---------------------------------------------------------------------------
+# Already Confirmed
+# ---------------------------------------------------------------------------
 
 
 @pytest.mark.asyncio
 async def test_confirm_delivery_already_confirmed():
-    """Lanza 400 si ya se confirmó."""
+    """Lanza 400 si el usuario ya confirmó anteriormente."""
     db = AsyncMock()
     user_id = uuid.uuid4()
-    fake_neg = MagicMock(spec=Negotiation, buyer_id=user_id, status="accepted", buyer_confirmed=True)
+    fake_neg = MagicMock(
+        spec=Negotiation,
+        buyer_id=user_id,
+        status="accepted",
+        buyer_confirmed=True,
+    )
 
     mock_result = MagicMock()
     mock_result.scalar_one_or_none.return_value = fake_neg
@@ -220,6 +275,11 @@ async def test_confirm_delivery_already_confirmed():
     with pytest.raises(HTTPException) as exc:
         await negotiation_service.confirm_delivery(db, uuid.uuid4(), user_id)
     assert exc.value.status_code == 400
+
+
+# ---------------------------------------------------------------------------
+# GMV Summary
+# ---------------------------------------------------------------------------
 
 
 @pytest.mark.asyncio
@@ -237,3 +297,29 @@ async def test_gmv_summary_logic():
     summary = await negotiation_service.get_gmv_summary(db)
     assert summary["total_transactions"] == 10
     assert summary["total_gmv_cop"] == 50000.0
+
+
+# ---------------------------------------------------------------------------
+# Deep Link generation
+# ---------------------------------------------------------------------------
+
+
+def test_generate_payment_deep_link_nequi():
+    """Valida generación de deep link Nequi."""
+    result = negotiation_service.generate_payment_deep_link("nequi", "+573001234567", 15000)
+    assert "nequi://" in result["deep_link_url"]
+    assert "15000" in result["deep_link_url"]
+
+
+def test_generate_payment_deep_link_daviplata():
+    """Valida generación de deep link DaviPlata."""
+    result = negotiation_service.generate_payment_deep_link("daviplata", "3009999999")
+    assert "daviplata://" in result["deep_link_url"]
+    assert result["amount_cop"] is None
+
+
+def test_generate_payment_deep_link_invalid():
+    """Lanza 400 para plataforma no soportada."""
+    with pytest.raises(HTTPException) as exc:
+        negotiation_service.generate_payment_deep_link("bancolombia", "3001234567")
+    assert exc.value.status_code == 400
