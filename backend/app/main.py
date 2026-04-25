@@ -10,7 +10,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.routers import auth, health, locations, products, push, users
+from app.routers import auth, health, locations, negotiations, products, push, users
+from app.routers import websockets as ws_router
 from app.services import typesense_service
 
 logger = logging.getLogger(__name__)
@@ -62,3 +63,9 @@ app.include_router(products.router, prefix="/api/v1/products", tags=["Products"]
 app.include_router(users.router, prefix="/api/v1/users", tags=["Users"])
 app.include_router(locations.router, prefix="/api/v1/locations", tags=["Locations"])
 app.include_router(push.router, prefix="/api/v1/push", tags=["Push"])
+app.include_router(
+    negotiations.router,
+    prefix="/api/v1/negotiations",
+    tags=["Negotiations"],
+)
+app.include_router(ws_router.router, tags=["WebSocket"])
