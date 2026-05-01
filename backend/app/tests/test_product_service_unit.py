@@ -19,7 +19,9 @@ async def test_create_product_logic():
         category="Moda",
         image_urls=["http://example.com/image.jpg"],
     )
-    product = await product_service.create_product(db, seller_id=uuid.uuid4(), data=data)
+    product = await product_service.create_product(
+        db, seller_id=uuid.uuid4(), data=data
+    )
     assert product.name == "Test Product"
     assert db.add.called
 

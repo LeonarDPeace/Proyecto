@@ -62,6 +62,11 @@ def _make_negotiation_dict(
         "buyer_confirmed": False,
         "seller_confirmed": False,
         "agreed_price_cop": 15000.0,
+        "quantity": 1,
+        "buyer_note": None,
+        "payment_method": None,
+        "coupon_code": None,
+        "transaction_locked": False,
         "created_at": datetime.now(UTC),
         "updated_at": datetime.now(UTC),
     }
@@ -156,9 +161,7 @@ async def test_get_negotiation_success():
     """GET /api/v1/negotiations/{id} retorna detalle de negociación."""
     user_id = uuid.uuid4()
     neg_id = uuid.uuid4()
-    fake_neg = MockNegotiation(
-        **_make_negotiation_dict(id=neg_id, buyer_id=user_id)
-    )
+    fake_neg = MockNegotiation(**_make_negotiation_dict(id=neg_id, buyer_id=user_id))
 
     app.dependency_overrides[get_current_user] = lambda: _mock_user(user_id)
     app.dependency_overrides[get_db] = override_get_db
@@ -276,9 +279,10 @@ async def test_confirm_delivery_both_completes():
         **_make_negotiation_dict(
             id=neg_id,
             buyer_id=buyer_id,
-            status="completed",
+            status="delivered",
             buyer_confirmed=True,
             seller_confirmed=True,
+            transaction_locked=True,
         )
     )
 
@@ -296,7 +300,7 @@ async def test_confirm_delivery_both_completes():
 
     app.dependency_overrides.clear()
     assert response.status_code == 200
-    assert response.json()["status"] == "completed"
+    assert response.json()["status"] == "delivered"
     assert response.json()["buyer_confirmed"] is True
     assert response.json()["seller_confirmed"] is True
 
@@ -339,9 +343,7 @@ async def test_list_messages():
     user_id = uuid.uuid4()
     neg_id = uuid.uuid4()
     fake_msgs = [
-        MockChatMessage(
-            **_make_message_dict(negotiation_id=neg_id, sender_id=user_id)
-        ),
+        MockChatMessage(**_make_message_dict(negotiation_id=neg_id, sender_id=user_id)),
         MockChatMessage(
             **_make_message_dict(negotiation_id=neg_id, sender_id=uuid.uuid4())
         ),

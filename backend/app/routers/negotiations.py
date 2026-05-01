@@ -25,6 +25,7 @@ from app.schemas.negotiation import (
     NegotiationRead,
     NegotiationStatusUpdate,
     PaymentDeepLink,
+    SetPaymentMethod,
 )
 from app.services import negotiation_service
 
@@ -54,6 +55,8 @@ async def create_negotiation(
         buyer_id=current_user.id,
         product_id=data.product_id,
         initial_message=data.initial_message,
+        quantity=data.quantity,
+        buyer_note=data.buyer_note,
     )
     await db.commit()
     await db.refresh(negotiation)
@@ -128,6 +131,35 @@ async def confirm_delivery(
 
 
 # ---------------------------------------------------------------------------
+# HU 8.5: Establecer método de pago
+# ---------------------------------------------------------------------------
+
+
+@router.patch("/{negotiation_id}/payment", response_model=NegotiationRead)
+async def set_payment_method(
+    negotiation_id: uuid.UUID,
+    data: SetPaymentMethod,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> NegotiationRead:
+    """Establece el método de pago y bloquea la transacción (HU 8.5).
+
+    Solo el comprador puede establecer el método de pago.
+    Debe hacerse antes de confirmar la entrega.
+    """
+    negotiation = await negotiation_service.set_payment_method(
+        db,
+        negotiation_id,
+        current_user.id,
+        data.payment_method,
+        coupon_code=data.coupon_code,
+    )
+    await db.commit()
+    await db.refresh(negotiation)
+    return negotiation
+
+
+# ---------------------------------------------------------------------------
 # HU 6.1: Chat Messages
 # ---------------------------------------------------------------------------
 
@@ -167,6 +199,7 @@ async def send_message(
     # --- Notificar vía WebSocket (Modo Híbrido) ---
     try:
         from app.routers.websockets import manager
+
         await manager.broadcast_to_room(
             str(negotiation_id),
             {
@@ -177,7 +210,7 @@ async def send_message(
                 "sender_name": current_user.name,
                 "content": message.content,
                 "created_at": message.created_at.isoformat(),
-            }
+            },
         )
     except Exception:
         logger.warning("No se pudo notificar mensaje vía WS (fallback a REST exitoso)")

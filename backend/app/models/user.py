@@ -7,7 +7,7 @@ Sprint 1: Autenticación OTP (sin contraseña). Privacy-first (HU 1.3).
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import Boolean, DateTime, Enum, Numeric, String
+from sqlalchemy import Boolean, DateTime, Enum, Integer, Numeric, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -50,6 +50,16 @@ class User(Base):
     )
 
     reputation: Mapped[float] = mapped_column(Numeric(3, 2), server_default="0.00")
+    average_rating: Mapped[float] = mapped_column(
+        Numeric(3, 2),
+        server_default="0.00",
+        comment="Promedio de calificaciones recibidas (1-5)",
+    )
+    total_reviews: Mapped[int] = mapped_column(
+        Integer,
+        server_default="0",
+        comment="Número total de calificaciones recibidas",
+    )
     is_verified: Mapped[bool] = mapped_column(Boolean, server_default="false")
 
     # --- Privacy settings (HU 1.3) ---

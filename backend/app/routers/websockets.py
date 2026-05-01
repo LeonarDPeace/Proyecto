@@ -71,9 +71,7 @@ class ConnectionManager:
             except Exception as e:
                 print(f"DEBUG_WS_ERROR: Fallo al enviar a {user_id}: {str(e)}")
                 logger.warning(
-                    "Error enviando mensaje WS a user=%s: %s",
-                    user_id,
-                    str(e)
+                    "Error enviando mensaje WS a user=%s: %s", user_id, str(e)
                 )
 
     async def send_personal(self, websocket: WebSocket, message: dict) -> None:
@@ -132,9 +130,7 @@ async def websocket_chat(
                 return
 
             neg_uuid = uuid.UUID(negotiation_id)
-            negotiation = await negotiation_service.get_negotiation_by_id(
-                db, neg_uuid
-            )
+            negotiation = await negotiation_service.get_negotiation_by_id(db, neg_uuid)
 
             if user_id not in (negotiation.buyer_id, negotiation.seller_id):
                 await websocket.close(
@@ -156,7 +152,7 @@ async def websocket_chat(
             "type": "system",
             "content": f"Usuario {user.name} se unió al chat",
             "sender_id": user_id_str,
-        }
+        },
     )
 
     try:

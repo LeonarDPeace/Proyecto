@@ -163,3 +163,51 @@ async def send_otp_email(email: str, code: str) -> None:
         password=settings.SMTP_PASSWORD,
         start_tls=True,
     )
+
+
+async def send_transactional_email(email: str, subject: str, body: str) -> None:
+    """Envía un correo transaccional (HU 8.2 — notificaciones de estado de pedido).
+
+    En desarrollo, imprime en consola. En producción, envía vía SMTP.
+    """
+    if settings.ENVIRONMENT == "development" or not settings.SMTP_USER:
+        print(f"\n{'=' * 50}")
+        print(f"📧 [{subject}] → {email}")
+        print(f"   {body}")
+        print(f"{'=' * 50}\n")
+        return
+
+    msg = EmailMessage()
+    msg["Subject"] = subject
+    msg["From"] = settings.SMTP_FROM
+    msg["To"] = email
+    msg.set_content(body)
+    msg.add_alternative(
+        f"""
+        <html>
+        <body style="font-family: 'Inter', Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 20px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h1 style="color: #2563eb; margin: 0;">Vera<span style="color: #3b82f6;">Market</span></h1>
+            </div>
+            <div style="background: #f8fafc; border-radius: 12px; padding: 30px; text-align: center;">
+                <h2 style="color: #1e293b; margin-top: 0;">{subject}</h2>
+                <p style="color: #475569;">{body}</p>
+            </div>
+            <p style="color: #94a3b8; font-size: 12px; text-align: center; margin-top: 20px;">
+                — Equipo VeraMarket 🛒
+            </p>
+        </body>
+        </html>
+        """,
+        subtype="html",
+    )
+
+    await aiosmtplib.send(
+        msg,
+        hostname=settings.SMTP_HOST,
+        port=settings.SMTP_PORT,
+        username=settings.SMTP_USER,
+        password=settings.SMTP_PASSWORD,
+        start_tls=True,
+    )
+

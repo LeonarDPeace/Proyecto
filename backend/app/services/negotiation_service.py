@@ -3,6 +3,10 @@
 HU 6.1: Chat interno en tiempo real.
 HU 6.4: Marcado manual de "Transacción Completada" (ambas partes confirman).
 HU 6.5: Registro automático del valor (GMV).
+HU 8.1: Máquina de estados de pedido.
+HU 8.3: Parámetros extra (cantidad, nota).
+HU 8.5: Bloqueo transaccional.
+HU 8.2: Notificaciones transaccionales por correo.
 """
 
 import logging
@@ -18,8 +22,19 @@ from app.models.chat_message import ChatMessage
 from app.models.gmv_metric import GmvMetric
 from app.models.negotiation import Negotiation
 from app.models.product import Product
+from app.models.transaction import Transaction
 
 logger = logging.getLogger(__name__)
+
+# --- HU 8.1: Máquina de estados válida ---
+VALID_TRANSITIONS: dict[str, set[str]] = {
+    "pending": {"accepted", "rejected", "cancelled"},
+    "accepted": {"paused", "rejected", "cancelled", "delivered"},
+    "paused": {"accepted", "cancelled"},
+    "rejected": set(),
+    "cancelled": set(),
+    "delivered": set(),
+}
 
 
 # ---------------------------------------------------------------------------
@@ -32,6 +47,8 @@ async def create_negotiation(
     buyer_id: uuid.UUID,
     product_id: uuid.UUID,
     initial_message: str | None = None,
+    quantity: int = 1,
+    buyer_note: str | None = None,
 ) -> Negotiation:
     """Crea una nueva negociación (comprador inicia contacto con vendedor).
 
@@ -80,6 +97,8 @@ async def create_negotiation(
         seller_id=product.seller_id,
         product_id=product_id,
         agreed_price_cop=float(product.price),
+        quantity=quantity,
+        buyer_note=buyer_note,
     )
     db.add(negotiation)
     await db.flush()
@@ -121,9 +140,7 @@ async def list_negotiations_by_user(
     """Lista todas las negociaciones de un usuario (como comprador o vendedor)."""
     result = await db.execute(
         select(Negotiation)
-        .where(
-            (Negotiation.buyer_id == user_id) | (Negotiation.seller_id == user_id)
-        )
+        .where((Negotiation.buyer_id == user_id) | (Negotiation.seller_id == user_id))
         .order_by(Negotiation.updated_at.desc())
     )
     return result.scalars().all()
@@ -135,22 +152,139 @@ async def update_negotiation_status(
     user_id: uuid.UUID,
     new_status: str,
 ) -> Negotiation:
-    """Actualiza el estado de una negociación (solo el vendedor puede aceptar/rechazar)."""
+    """Actualiza el estado de una negociación según la máquina de estados (HU 8.1).
+
+    Transiciones válidas:
+    - pending  → accepted, rejected, cancelled
+    - accepted → paused, rejected, cancelled, delivered
+    - paused   → accepted, cancelled
+    - rejected / cancelled / delivered → (terminal, sin transiciones)
+    """
     negotiation = await get_negotiation_by_id(db, negotiation_id)
 
-    if negotiation.seller_id != user_id:
+    # Validar que el usuario es parte de la negociación
+    is_seller = negotiation.seller_id == user_id
+    is_buyer = negotiation.buyer_id == user_id
+    if not is_seller and not is_buyer:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Solo el vendedor puede aceptar o rechazar la negociación",
+            detail="No eres parte de esta negociación",
         )
 
-    if negotiation.status not in ("pending",):
+    # Solo vendedor puede aceptar/rechazar/pausar; comprador puede cancelar
+    seller_actions = {"accepted", "rejected", "paused"}
+    if new_status in seller_actions and not is_seller:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Solo el vendedor puede aceptar, rechazar o pausar",
+        )
+
+    # Validar transición válida
+    allowed = VALID_TRANSITIONS.get(negotiation.status, set())
+    if new_status not in allowed:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"No se puede cambiar de '{negotiation.status}' a '{new_status}'",
+            detail=f"Transición inválida: '{negotiation.status}' → '{new_status}'",
         )
 
     negotiation.status = new_status
+    await db.flush()
+
+    # HU 8.2: Notificación por email al cambiar estado
+    await _notify_status_change(db, negotiation, new_status)
+
+    return negotiation
+
+
+async def _notify_status_change(
+    db: AsyncSession, negotiation: Negotiation, new_status: str
+) -> None:
+    """Envía notificación por email ante cambios de estado (HU 8.2)."""
+    try:
+        from app.services.auth_service import get_user_by_id
+
+        buyer = await get_user_by_id(db, negotiation.buyer_id)
+        seller = await get_user_by_id(db, negotiation.seller_id)
+        if not buyer or not seller:
+            return
+
+        status_labels = {
+            "accepted": "Pedido Aceptado ✅",
+            "paused": "Pedido Pausado ⏸️",
+            "rejected": "Pedido Rechazado ❌",
+            "cancelled": "Pedido Cancelado 🚫",
+            "delivered": "Pedido Entregado 📦",
+        }
+        label = status_labels.get(new_status, new_status)
+
+        from app.services.email_service import send_transactional_email
+
+        # Notificar al comprador
+        await send_transactional_email(
+            email=buyer.email,
+            subject=f"VeraMarket — {label}",
+            body=f"Tu pedido ha cambiado a estado: {label}.",
+        )
+        # Notificar al vendedor (si la acción fue del comprador)
+        await send_transactional_email(
+            email=seller.email,
+            subject=f"VeraMarket — {label}",
+            body=f"Un pedido ha cambiado a estado: {label}.",
+        )
+    except Exception:
+        logger.warning("No se pudo enviar notificación de estado")
+
+
+# ---------------------------------------------------------------------------
+# HU 8.5: Establecer método de pago (bloqueo transaccional)
+# ---------------------------------------------------------------------------
+
+
+async def set_payment_method(
+    db: AsyncSession,
+    negotiation_id: uuid.UUID,
+    user_id: uuid.UUID,
+    payment_method: str,
+    coupon_code: str | None = None,
+) -> Negotiation:
+    """Registra el método de pago y bloquea la transacción.
+
+    Solo el comprador puede establecer el método de pago.
+    La transacción queda bloqueada (transaction_locked=True) para
+    impedir el cierre sin método de pago (HU 8.5).
+    """
+    negotiation = await get_negotiation_by_id(db, negotiation_id)
+
+    if negotiation.buyer_id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Solo el comprador puede establecer el método de pago",
+        )
+
+    if negotiation.status != "accepted":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El método de pago solo se puede establecer en negociaciones aceptadas",
+        )
+
+    negotiation.payment_method = payment_method
+    negotiation.coupon_code = coupon_code
+    negotiation.transaction_locked = True
+
+    # Validar cupón si existe
+    if coupon_code:
+        from app.services.coupon_service import validate_coupon
+
+        validation = await validate_coupon(
+            db, coupon_code, negotiation.seller_id,
+            float(negotiation.agreed_price_cop or 0) * negotiation.quantity,
+        )
+        if not validation["valid"]:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=validation["message"],
+            )
+
     await db.flush()
     return negotiation
 
@@ -167,8 +301,11 @@ async def confirm_delivery(
 ) -> Negotiation:
     """Marca la confirmación de entrega de una de las partes.
 
-    Cuando ambas partes confirman, el estado cambia a 'completed'
-    y se registra automáticamente la métrica GMV (HU 6.5).
+    Cuando ambas partes confirman, el estado cambia a 'delivered'
+    y se registra automáticamente la métrica GMV (HU 6.5)
+    y la transacción detallada (HU 8.7).
+
+    HU 8.5: Requiere que transaction_locked=True (método de pago registrado).
     """
     negotiation = await get_negotiation_by_id(db, negotiation_id)
 
@@ -176,6 +313,13 @@ async def confirm_delivery(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Solo se puede confirmar entrega en negociaciones aceptadas",
+        )
+
+    # HU 8.5: Bloqueo transaccional
+    if not negotiation.transaction_locked:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Debes seleccionar un método de pago antes de confirmar la entrega",
         )
 
     is_buyer = negotiation.buyer_id == user_id
@@ -203,10 +347,12 @@ async def confirm_delivery(
             )
         negotiation.seller_confirmed = True
 
-    # Si ambas partes confirmaron → completar transacción + registrar GMV
+    # Si ambas partes confirmaron → completar transacción + registrar GMV + Transaction
     if negotiation.buyer_confirmed and negotiation.seller_confirmed:
-        negotiation.status = "completed"
+        negotiation.status = "delivered"
         await _record_gmv(db, negotiation)
+        await _record_transaction(db, negotiation)
+        await _notify_status_change(db, negotiation, "delivered")
 
     await db.flush()
     return negotiation
@@ -246,6 +392,52 @@ async def _record_gmv(db: AsyncSession, negotiation: Negotiation) -> None:
         negotiation.id,
         amount,
     )
+
+
+async def _record_transaction(db: AsyncSession, negotiation: Negotiation) -> None:
+    """Registra el detalle de la transacción para analítica (HU 8.7)."""
+    result = await db.execute(
+        select(Product).where(Product.id == negotiation.product_id)
+    )
+    product = result.scalar_one_or_none()
+    product_name = product.name if product else None
+
+    unit_price = float(negotiation.agreed_price_cop or (product.price if product else 0))
+    quantity = negotiation.quantity or 1
+    subtotal = round(unit_price * quantity, 2)
+
+    # Calcular descuento si hay cupón
+    discount = 0.0
+    if negotiation.coupon_code:
+        from app.services.coupon_service import redeem_coupon, validate_coupon
+
+        validation = await validate_coupon(
+            db, negotiation.coupon_code, negotiation.seller_id, subtotal
+        )
+        if validation["valid"]:
+            discount = validation["discount_amount"]
+            await redeem_coupon(db, negotiation.coupon_code)
+
+    total = round(subtotal - discount, 2)
+
+    tx = Transaction(
+        negotiation_id=negotiation.id,
+        product_id=negotiation.product_id,
+        buyer_id=negotiation.buyer_id,
+        seller_id=negotiation.seller_id,
+        product_name=product_name,
+        quantity=quantity,
+        unit_price_cop=unit_price,
+        subtotal_cop=subtotal,
+        discount_cop=discount,
+        total_cop=total,
+        payment_method=negotiation.payment_method,
+        coupon_code=negotiation.coupon_code,
+        buyer_note=negotiation.buyer_note,
+    )
+    db.add(tx)
+    await db.flush()
+    logger.info("Transacción registrada: %s, total=%s COP", tx.id, total)
 
 
 async def get_gmv_summary(db: AsyncSession) -> dict:
@@ -290,7 +482,7 @@ async def create_chat_message(
             detail="No eres parte de esta negociación",
         )
 
-    if negotiation.status in ("completed", "rejected"):
+    if negotiation.status in ("delivered", "rejected", "cancelled"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="No se pueden enviar mensajes en negociaciones cerradas",

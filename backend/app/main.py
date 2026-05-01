@@ -10,7 +10,18 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.routers import auth, health, locations, negotiations, products, push, users
+from app.routers import (
+    analytics,
+    auth,
+    coupons,
+    health,
+    locations,
+    negotiations,
+    products,
+    push,
+    ratings,
+    users,
+)
 from app.routers import websockets as ws_router
 from app.services import typesense_service
 
@@ -67,5 +78,20 @@ app.include_router(
     negotiations.router,
     prefix="/api/v1/negotiations",
     tags=["Negotiations"],
+)
+app.include_router(
+    ratings.router,
+    prefix="/api/v1/ratings",
+    tags=["Ratings"],
+)
+app.include_router(
+    coupons.router,
+    prefix="/api/v1/coupons",
+    tags=["Coupons"],
+)
+app.include_router(
+    analytics.router,
+    prefix="/api/v1/analytics",
+    tags=["Analytics"],
 )
 app.include_router(ws_router.router, tags=["WebSocket"])

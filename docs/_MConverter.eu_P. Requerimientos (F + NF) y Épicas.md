@@ -345,8 +345,105 @@
 
 - Botón \"Reportar\" con lista desplegable de razones (Spam, Ofensivo, Fraude).
 
-- Si un producto recibe X número de reportes (ej. 3), el sistema lo oculta automáticamente (cambia is_active=false) hasta que un administrador lo revise.[  
-  ]{.mark}
+- Si un producto recibe X número de reportes (ej. 3), el sistema lo oculta automáticamente (cambia is_active=false) hasta que un administrador lo revise.
+
+- **EP-08: Gestión Avanzada de Pedidos, Analítica y Refactorización UX**
+
+  - **HU 8.1 (Refactorización EP-06): Flujo de Estados, Seguimiento y Cancelación de Pedidos.**
+
+**Descripción:** Como Usuario, quiero ver el historial de mi pedido y tener opciones para que sea aceptado, pausado, rechazado, cancelado o marcado como recibido, para tener control total de la logística.
+
+**Criterios de Aceptación:**
+
+- Implementación de máquina de estados en la tabla de transacciones (Pendiente, Aceptado, Pausado, Rechazado, Cancelado, Entregado).
+- El frontend renderiza la línea de tiempo del pedido en el historial del usuario.
+
+<!-- -->
+
+  - **HU 8.2 (Refactorización EP-02/06): Notificaciones Transaccionales por Correo.**
+
+**Descripción:** Como Usuario, quiero recibir una notificación por correo electrónico cada vez que el estado de mi pedido cambie (ej. "Pedido Aceptado" o "Pedido Cancelado"), para estar enterado sin tener la app abierta.
+
+**Criterios de Aceptación:**
+
+- Integración de un servicio de envíos transaccionales (ej. Resend o SendGrid).
+- Disparadores automáticos (Triggers) en el backend ante la mutación de estado de un pedido.
+
+<!-- -->
+
+  - **HU 8.3 (Mejora EP-03): Parámetros Extra de Compra (Cantidad y Notas).**
+
+**Descripción:** Como Comprador, quiero poder seleccionar la cantidad exacta del producto y añadir una nota personalizada en mi pedido antes de iniciar la negociación.
+
+**Criterios de Aceptación:**
+
+- Interfaz del producto incluye selector numérico de cantidad y campo de texto opcional.
+- Los datos viajan en el payload inicial y se incrustan en el encabezado del chat.
+
+<!-- -->
+
+  - **HU 8.4 (Refactorización EP-06): Recibo Detallado y Opción de Pago en Efectivo.**
+
+**Descripción:** Como Comprador, quiero ver una factura/recibo detallado con el subtotal y tener la opción explícita de "Pago en Efectivo", para formalizar transacciones físicas.
+
+**Criterios de Aceptación:**
+
+- La UI del chat renderiza una tarjeta de "Factura" (Cantidad x Precio Unitario = Total).
+- Se añade el botón de Efectivo junto a los Deep Links de billeteras digitales.
+
+<!-- -->
+
+  - **HU 8.5 (Mejora EP-06): Bloqueo de Cierre de Negociación (Integridad Transaccional).**
+
+**Descripción:** Como Sistema, quiero restringir la terminación de un chat o pedido sin que se haya registrado explícitamente el estado monetario, para garantizar la integridad de las métricas.
+
+**Criterios de Aceptación:**
+
+- El botón de "Completar Transacción" se mantiene deshabilitado hasta que se confirme un medio de pago o se clasifique como "Cancelado/Rechazado".
+
+<!-- -->
+
+  - **HU 8.6 (Mejora EP-01): Vistas Híbridas y Divididas (Cambio de Rol Rápido).**
+
+**Descripción:** Como Emprendedor avalado por Sinapsis, quiero poder alternar ágilmente mi interfaz entre el modo "Mi Tienda (Vendedor)" y el modo "Catálogo (Comprador)" sin tener que cerrar sesión.
+
+**Criterios de Aceptación:**
+
+- Botón de "Switch Role" en el navbar/perfil.
+- El cambio reconfigura inmediatamente el menú de navegación y las vistas de administración disponibles.
+
+<!-- -->
+
+  - **HU 8.7: Dashboard Financiero con Rangos Temporales variables.**
+
+**Descripción:** Como Vendedor, quiero acceder a información financiera sobre mis ventas con filtros de tiempo ajustables, para analizar el rendimiento de mi emprendimiento.
+
+**Criterios de Aceptación:**
+
+- Visualización de métricas de ingresos y pedidos completados.
+- Selectores de tiempo (Día, Semana, Mes, Semestre) ejecutando consultas agregadas en PostgreSQL.
+
+<!-- -->
+
+  - **HU 8.8 (Refactorización EP-03): Modos de Visualización del Catálogo y Reactividad.**
+
+**Descripción:** Como Usuario, quiero un botón para cambiar el catálogo entre modo "Cuadrícula" y "Lista", y que la interfaz recargue los estados automáticamente al pulsar un botón sin refrescar la página.
+
+**Criterios de Aceptación:**
+
+- Toggle de Layout con persistencia en el dispositivo del usuario.
+- Implementación de caché reactiva y mutaciones optimistas (ej. SWR / React Query) en botones de acción para actualizar el DOM instantáneamente.
+
+<!-- -->
+
+  - **HU 8.9: Sistema de Cupones de Descuento.**
+
+**Descripción:** Como Vendedor, quiero poder generar códigos de descuento para compartirlos, e integrarlos en el flujo de cobro del pedido para atraer más estudiantes.
+
+**Criterios de Aceptación:**
+
+- CRUD administrativo de cupones (% o valor fijo).
+- Campo en la factura del pedido (HU 8.4) para validar y recalcular el Total a pagar.
 
 **Requerimientos Funcionales (F)**
 
@@ -366,8 +463,13 @@
 
 - [**RF-08 (Calificación):** El sistema debe permitir a las partes evaluarse mutuamente (1 a 5 estrellas) una vez concluida una transacción.]{.mark}
 
-- [**RF-09 (Tracking de Transacciones y GMV):** El sistema debe registrar cada cambio de estado a \"Transacción Completada\" y almacenar en una tabla de analíticas el precio listado del producto en ese momento, permitiendo calcular el volumen total transaccionado (GMV) diario y mensual.]{.mark}**  
-  **
+- [**RF-09 (Tracking de Transacciones y GMV):** El sistema debe registrar cada cambio de estado a "Transacción Completada" y almacenar en una tabla de analíticas el precio listado del producto en ese momento, permitiendo calcular el volumen total transaccionado (GMV) diario y mensual.]{.mark}
+
+- **RF-10 (Gestión de Pedidos Avanzada):** El sistema debe manejar una máquina de estados estricta para los pedidos (Pendiente, Aceptado, Pausado, Rechazado, Cancelado, Entregado) e integrar un bloqueo transaccional si no se ha definido el método de pago.
+
+- **RF-11 (Dashboard Financiero):** El sistema debe proveer un dashboard analítico para el vendedor, mostrando resúmenes financieros (ingresos, descuentos, transacciones) y gráficas temporales.
+
+- **RF-12 (Gestión de Cupones):** El sistema debe permitir la creación, validación y redención de cupones de descuento (porcentuales o fijos en COP) en el flujo de pedidos.
 
 **Requerimientos No Funcionales (RNF)**
 

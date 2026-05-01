@@ -256,7 +256,9 @@ async def test_location_service_upsert():
     mock_result = MagicMock()
     mock_result.scalar_one_or_none.return_value = None
 
-    with patch("app.services.location_service.get_user_location_view", new_callable=AsyncMock) as mock_view:
+    with patch(
+        "app.services.location_service.get_user_location_view", new_callable=AsyncMock
+    ) as mock_view:
         mock_view.return_value = {"lat": 3.35, "lng": -76.53}
         db.execute.return_value = mock_result
 

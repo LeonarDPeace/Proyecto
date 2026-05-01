@@ -1,9 +1,12 @@
-"""Esquemas Pydantic — Negotiation & Chat (Sprint 4).
+"""Esquemas Pydantic — Negotiation & Chat (Sprint 4/5).
 
 HU 6.1: Chat en tiempo real.
 HU 6.2/6.3: Deep Links Nequi/DaviPlata.
 HU 6.4: Marcado manual de transacción completada.
 HU 6.5: Registro GMV.
+HU 8.1: Máquina de estados de pedido.
+HU 8.3: Parámetros extra (cantidad, nota).
+HU 8.5: Bloqueo transaccional.
 """
 
 import uuid
@@ -26,6 +29,16 @@ class NegotiationCreate(BaseModel):
         max_length=1000,
         description="Mensaje opcional al iniciar la negociación",
     )
+    quantity: int = Field(
+        default=1,
+        ge=1,
+        description="Cantidad del producto solicitada",
+    )
+    buyer_note: str | None = Field(
+        default=None,
+        max_length=500,
+        description="Nota personalizada del comprador",
+    )
 
 
 class NegotiationRead(BaseModel):
@@ -39,6 +52,11 @@ class NegotiationRead(BaseModel):
     buyer_confirmed: bool
     seller_confirmed: bool
     agreed_price_cop: float | None
+    quantity: int
+    buyer_note: str | None
+    payment_method: str | None
+    coupon_code: str | None
+    transaction_locked: bool
     created_at: datetime
     updated_at: datetime
 
@@ -48,7 +66,18 @@ class NegotiationRead(BaseModel):
 class NegotiationStatusUpdate(BaseModel):
     """Actualización del estado de una negociación."""
 
-    status: Literal["accepted", "rejected"]
+    status: Literal["accepted", "paused", "rejected", "cancelled"]
+
+
+class SetPaymentMethod(BaseModel):
+    """Establecer método de pago (HU 8.5) — bloquea la transacción."""
+
+    payment_method: Literal["efectivo", "nequi", "daviplata"]
+    coupon_code: str | None = Field(
+        default=None,
+        max_length=30,
+        description="Código de cupón opcional",
+    )
 
 
 class NegotiationConfirmDelivery(BaseModel):
