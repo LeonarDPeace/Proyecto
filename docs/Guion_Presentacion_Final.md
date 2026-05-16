@@ -52,8 +52,8 @@
     *   *Visual:* Gráficos técnicos (Uptime, Latencia, Testing).
     *   *Métricas:* 
         *   **Latencia (Lograda):** Búsquedas resueltas en < 100ms (gracias a Typesense).
-        *   **Cobertura de Pruebas (Deuda Técnica):** < 5% de Test Coverage.
-    *   *Discurso:* "Técnicamente, el sistema es extremadamente veloz y resiliente bajo estrés. Logramos los tiempos de carga requeridos. Sin embargo, midiendo nuestra calidad interna, nuestra cobertura de pruebas automatizadas es inferior al 5%. Priorizamos la entrega de valor funcional (UI/UX) frente a la madurez de testing. Esta es nuestra mayor deuda técnica y el primer paso arquitectónico para la siguiente fase."
+        *   **Cobertura de Pruebas:** > 75% de Test Coverage en servicios core.
+    *   *Discurso:* "Técnicamente, el sistema es extremadamente veloz y resiliente bajo estrés. Durante el último ciclo de desarrollo priorizamos mitigar la deuda técnica, alcanzando más de un 75% de cobertura de pruebas automatizadas en los servicios core (FastAPI), garantizando que las reglas de negocio, negociación y roles funcionen correctamente antes de salir a producción."
 
 ---
 

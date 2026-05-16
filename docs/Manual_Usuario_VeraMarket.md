@@ -9,6 +9,8 @@ Bienvenido a **VeraMarket**, la red de confianza para comprar y vender dentro de
 2.  Recibirás un **código OTP** de 6 dígitos en tu bandeja de entrada.
 3.  Ingresa el código en la plataforma para acceder. *No necesitas contraseñas largas ni complicadas.*
 
+![Interfaz de Inicio de Sesión Passwordless](images/veramarket_login_1778831439772.png)
+
 > [!TIP]
 > Si no encuentras el correo con el código OTP, revisa tu carpeta de Spam o Correo no deseado.
 
@@ -25,14 +27,14 @@ Puedes buscar productos de tres formas:
 *   **Filtros Avanzados:** Filtra por categoría, rango de precio, estado del producto (Nuevo/Usado) y promociones activas.
 *   **Mapa Interactivo:** Encuentra vendedores que estén cerca de tu ubicación actual en el campus visualizando los pines en el mapa.
 
-![Interfaz de Búsqueda Inteligente y Catálogo](C:\Users\eduar\.gemini\antigravity\brain\22953bcb-b08b-4895-a14d-e81cce9ab657\veramarket_search_home_1778831745386.png)
+![Interfaz de Búsqueda Inteligente y Catálogo](images/veramarket_search_home_1778831745386.png)
 
 ### Proceso de Compra (El "Happy Path")
 1.  **Iniciar Negociación:** Haz clic en "Negociar" en cualquier producto. Podrás definir la cantidad que deseas y añadir notas adicionales antes de abrir el chat directo.
 2.  **Hacer Ofertas:** Puedes proponer un precio diferente o hacer preguntas sobre el producto a través del chat en tiempo real.
 3.  **Confirmar Pago:** Una vez acordado el precio, selecciona tu método de pago (Efectivo o Transferencia usando los botones directos de Nequi/DaviPlata).
 
-![Interfaz de Chat de Negociación y Factura Directa](C:\Users\eduar\.gemini\antigravity\brain\22953bcb-b08b-4895-a14d-e81cce9ab657\veramarket_negotiation_chat_1778831819589.png)
+![Interfaz de Chat de Negociación y Factura Directa](images/veramarket_negotiation_chat_1778831819589.png)
 
 4.  **Completar Transacción:** Cuando recibas el producto, asegúrate de marcar la transacción como "Entregada" en la aplicación.
 
@@ -56,6 +58,8 @@ Monitorea tu éxito y el crecimiento de tu emprendimiento en la pestaña de **Da
 *   Tus ingresos totales (Volumen de Mercancía Bruta - GMV).
 *   Gráficos dinámicos de ventas filtrables por día, semana o mes.
 *   Listado detallado de tus transacciones completadas y canceladas.
+
+![Dashboard Financiero y Métricas del Vendedor](images/veramarket_dashboard_1778831531363.png)
 
 ---
 
