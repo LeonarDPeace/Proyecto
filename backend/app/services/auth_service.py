@@ -111,3 +111,18 @@ async def update_user_profile(
     user.updated_at = datetime.now(UTC)
     await db.flush()
     return user
+
+
+async def switch_user_role(db: AsyncSession, user: User) -> User:
+    """Alterna el rol del usuario entre 'comprador' y 'vendedor'.
+    Solo permitido si vendor_status == 'approved'.
+    """
+    if user.vendor_status != "approved":
+        # Esta validación se refuerza en el router para dar el error HTTP correcto.
+        return user
+
+    user.role = "vendedor" if user.role == "comprador" else "comprador"
+    user.updated_at = datetime.now(UTC)
+    await db.flush()
+    return user
+

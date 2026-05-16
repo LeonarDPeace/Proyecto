@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.user import User
-from app.schemas.analytics import AnalyticsDataPoint, AnalyticsSummary
+from app.schemas.analytics import AnalyticsDataPoint, AnalyticsSummary, TransactionRead
 from app.services import analytics_service
 
 router = APIRouter()
@@ -40,7 +40,20 @@ async def get_seller_timeline(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> list[AnalyticsDataPoint]:
-    """Puntos de datos diarios para gráficos del dashboard."""
     return await analytics_service.get_seller_timeline(
+        db, current_user.id, period=period
+    )
+
+
+@router.get("/transactions", response_model=list[TransactionRead])
+async def get_seller_transactions(
+    period: Literal["day", "week", "month", "semester", "all_time"] = Query(
+        "month", description="Período de consulta"
+    ),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> list[TransactionRead]:
+    """Listado detallado de transacciones individuales para el dashboard."""
+    return await analytics_service.get_seller_transactions(
         db, current_user.id, period=period
     )

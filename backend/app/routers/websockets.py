@@ -35,7 +35,7 @@ class ConnectionManager:
         """Acepta y registra una conexión WebSocket en una sala."""
         await websocket.accept()
         self.active_connections[negotiation_id].append((user_id, websocket))
-        print(f"DEBUG_WS: Conectado user={user_id} a negotiation={negotiation_id}")
+        logger.debug("WS conectado: user=%s, negotiation=%s", user_id, negotiation_id)
         logger.info(
             "WS conectado: user=%s, negotiation=%s",
             user_id,
@@ -69,7 +69,7 @@ class ConnectionManager:
             try:
                 await websocket.send_json(message)
             except Exception as e:
-                print(f"DEBUG_WS_ERROR: Fallo al enviar a {user_id}: {str(e)}")
+                logger.debug("WS broadcast fallo para user=%s: %s", user_id, str(e))
                 logger.warning(
                     "Error enviando mensaje WS a user=%s: %s", user_id, str(e)
                 )
@@ -159,7 +159,7 @@ async def websocket_chat(
         while True:
             # Recibir mensaje del cliente
             raw_data = await websocket.receive_text()
-            print(f"DEBUG_WS: Mensaje recibido de {user_id_str}: {raw_data}")
+            logger.debug("WS mensaje recibido de %s", user_id_str)
 
             try:
                 data = json.loads(raw_data)

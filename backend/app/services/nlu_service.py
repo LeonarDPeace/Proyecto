@@ -16,20 +16,38 @@ class NLUQueryResult(BaseModel):
     query_clean: str = Field(min_length=1)
     tags: list[str] = Field(default_factory=list)
     category: str | None = None
+    subcategory: str | None = None
+    condition: str | None = None
+    brand: str | None = None
+    has_free_shipping: bool | None = None
+    min_price: float | None = None
+    max_price: float | None = None
+    availability: str | None = None
+    seller_rating_min: float | None = None
+    seller_rating_max: float | None = None
+    discount_only: bool | None = None
+    warranty: str | None = None
+    payment_methods: list[str] | None = None
 
 
 def _extract_json_block(raw_text: str) -> dict[str, Any]:
     """Extrae JSON de la respuesta, incluso si hay texto adicional."""
     raw_text = raw_text.strip()
 
+    def _safe_load(value: str) -> dict[str, Any]:
+        try:
+            return json.loads(value)
+        except json.JSONDecodeError as exc:
+            raise ValueError("La respuesta NLU no contiene JSON valido") from exc
+
     if raw_text.startswith("{") and raw_text.endswith("}"):
-        return json.loads(raw_text)
+        return _safe_load(raw_text)
 
     match = re.search(r"\{.*\}", raw_text, re.DOTALL)
     if not match:
         raise ValueError("La respuesta NLU no contiene un objeto JSON válido")
 
-    return json.loads(match.group(0))
+    return _safe_load(match.group(0))
 
 
 def _normalize_tags(raw_tags: list[Any] | None) -> list[str]:
@@ -49,8 +67,98 @@ def _normalize_tags(raw_tags: list[Any] | None) -> list[str]:
     return tags
 
 
-async def parse_semantic_query(user_query: str) -> NLUQueryResult:
-    """Interpreta una consulta libre y devuelve JSON controlado para filtrado/search."""
+def _normalize_optional_str(value: Any) -> str | None:
+    if not isinstance(value, str):
+        return None
+    cleaned = value.strip().lower()
+    return cleaned or None
+
+
+def _coerce_bool(value: Any) -> bool | None:
+    return value if isinstance(value, bool) else None
+
+
+def _coerce_float(value: Any) -> float | None:
+    if value is None:
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _build_prompt(user_query: str, ui_filters: dict[str, Any] | None) -> str:
+    prompt = (
+        "Eres un analizador semantico para un marketplace universitario estilo Amazon/MercadoLibre. "
+        "Responde SOLO con JSON valido y sin texto adicional. "
+        "Tu objetivo es extraer filtros especificos de la consulta del usuario. "
+        "Devuelve exactamente este esquema JSON:\n"
+        '{"query_clean": "str (consulta principal sin los filtros explicitos)", '
+        '"category": "str | null (ej. tecnologia, moda, libros, etc)", '
+        '"subcategory": "str | null", '
+        '"condition": "str | null (nuevo, usado, reacondicionado)", '
+        '"brand": "str | null", '
+        '"has_free_shipping": "bool | null (true si pide envio gratis)", '
+        '"min_price": "number | null", '
+        '"max_price": "number | null", '
+        '"availability": "str | null (in_stock)", '
+        '"seller_rating_min": "number | null", '
+        '"seller_rating_max": "number | null", '
+        '"discount_only": "bool | null (true si pide con descuento)", '
+        '"warranty": "str | null (has_warranty si pide con garantia)", '
+        '"payment_methods": ["str"] | null, '
+        '"tags": ["str", "str"]}\n'
+        "Reglas:\n"
+        "- Extrae la marca (brand) si se menciona explicitamente (ej. apple, nike, samsung).\n"
+        "- Extrae condition si dicen 'usado', 'nuevo', 'segunda mano'.\n"
+        "- Extrae min_price/max_price si dicen 'menos de X', 'entre X y Y'.\n"
+        "- Extrae discount_only si mencionan 'descuento', 'oferta', 'rebaja'.\n"
+        "- Extrae seller_rating_min si mencionan 'mejores vendedores', "
+        "'confiables' (ej. 4.0).\n"
+        "- query_clean debe ser el nombre base del producto a buscar, sin los filtros. "
+        "Ej. 'busco un iphone usado barato' -> "
+        "query_clean='iphone', condition='usado'.\n"
+    )
+
+    if ui_filters:
+        filters_json = json.dumps(ui_filters, ensure_ascii=True)
+        prompt += (
+            "Filtros UI confirmados (no los contradigas, "
+            "solo complementa si falta algo):\n"
+            f"{filters_json}\n"
+        )
+
+    prompt += f"Consulta del usuario: {user_query}"
+    return prompt
+
+
+def _parse_nlu_payload(parsed: dict[str, Any], fallback_query: str) -> NLUQueryResult:
+    query_clean = str(parsed.get("query_clean", "")).strip() or fallback_query.strip()
+
+    payload = {
+        "query_clean": query_clean,
+        "tags": _normalize_tags(parsed.get("tags")),
+        "category": _normalize_optional_str(parsed.get("category")),
+        "subcategory": _normalize_optional_str(parsed.get("subcategory")),
+        "condition": _normalize_optional_str(parsed.get("condition")),
+        "brand": _normalize_optional_str(parsed.get("brand")),
+        "has_free_shipping": _coerce_bool(parsed.get("has_free_shipping")),
+        "min_price": _coerce_float(parsed.get("min_price")),
+        "max_price": _coerce_float(parsed.get("max_price")),
+        "availability": _normalize_optional_str(parsed.get("availability")),
+        "seller_rating_min": _coerce_float(parsed.get("seller_rating_min")),
+        "seller_rating_max": _coerce_float(parsed.get("seller_rating_max")),
+        "discount_only": _coerce_bool(parsed.get("discount_only")),
+        "warranty": _normalize_optional_str(parsed.get("warranty")),
+        "payment_methods": _normalize_tags(parsed.get("payment_methods")),
+    }
+
+    return NLUQueryResult.model_validate(payload)
+
+
+async def _execute_nlu(
+    user_query: str, ui_filters: dict[str, Any] | None
+) -> NLUQueryResult:
     if not settings.GEMINI_API_KEY:
         raise RuntimeError("GEMINI_API_KEY no configurada")
 
@@ -59,26 +167,14 @@ async def parse_semantic_query(user_query: str) -> NLUQueryResult:
         f"?key={settings.GEMINI_API_KEY}"
     )
 
-    prompt = (
-        "Eres un normalizador de consultas para un gran marketplace. "
-        "Responde SOLO con JSON válido y sin texto adicional. "
-        "No inventes categorías fuera de: "
-        "comida, tecnologia, moda, hogar, deportes, belleza, academico, entretenimiento, servicios, vehiculos, otros. "
-        "Devuelve exactamente este esquema: "
-        '{"query_clean":"...","tags":["..."],'
-        '"category":"comida|tecnologia|moda|hogar|deportes|belleza|academico|entretenimiento|servicios|vehiculos|otros|null"}. '
-        "Si no identificas la categoría principal, usa null. "
-        "IMPORTANTE: Las subcategorías finas (ej. 'audífonos', 'snacks', 'pantalones') debes inyectarlas en el arreglo de 'tags'. "
-        "Mantén query_clean corto y útil para búsqueda. "
-        f"Consulta del usuario: {user_query}"
-    )
+    prompt = _build_prompt(user_query, ui_filters)
 
     payload = {
         "contents": [{"role": "user", "parts": [{"text": prompt}]}],
         "generationConfig": {
             "temperature": 0,
             "topP": 0.1,
-            "maxOutputTokens": 200,
+            "maxOutputTokens": 300,
             "response_mime_type": "application/json",
         },
     }
@@ -95,33 +191,26 @@ async def parse_semantic_query(user_query: str) -> NLUQueryResult:
         raise ValueError("Respuesta inesperada de Gemini") from exc
 
     parsed = _extract_json_block(raw_text)
-    query_clean = str(parsed.get("query_clean", "")).strip() or user_query.strip()
+    return _parse_nlu_payload(parsed, user_query)
 
-    category_raw = parsed.get("category")
-    category = (
-        category_raw.strip().lower()
-        if isinstance(category_raw, str) and category_raw.strip()
-        else None
-    )
 
-    allowed_categories = {
-        "comida",
-        "tecnologia",
-        "moda",
-        "hogar",
-        "deportes",
-        "belleza",
-        "academico",
-        "entretenimiento",
-        "servicios",
-        "vehiculos",
-        "otros",
+async def parse_semantic_query(user_query: str) -> NLUQueryResult:
+    """Interpreta una consulta libre y devuelve JSON controlado para filtrado/search."""
+    return await _execute_nlu(user_query, None)
+
+
+async def parse_semantic_query_with_filters(
+    user_query: str, ui_filters: BaseModel | dict[str, Any]
+) -> NLUQueryResult:
+    """Interpreta consulta libre con filtros UI confirmados."""
+    if isinstance(ui_filters, BaseModel):
+        raw_filters = ui_filters.model_dump()
+    else:
+        raw_filters = dict(ui_filters)
+
+    filters_payload = {
+        key: value
+        for key, value in raw_filters.items()
+        if value not in (None, [], {}, "")
     }
-    if category not in allowed_categories:
-        category = None
-
-    return NLUQueryResult(
-        query_clean=query_clean,
-        tags=_normalize_tags(parsed.get("tags")),
-        category=category,
-    )
+    return await _execute_nlu(user_query, filters_payload)

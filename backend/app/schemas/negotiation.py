@@ -56,7 +56,9 @@ class NegotiationRead(BaseModel):
     buyer_note: str | None
     payment_method: str | None
     coupon_code: str | None
+    discount_amount: float
     transaction_locked: bool
+
     created_at: datetime
     updated_at: datetime
 

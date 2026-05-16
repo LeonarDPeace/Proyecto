@@ -1,6 +1,6 @@
-codigo,estado
-SINAPSIS-2026-X1Y2,activo
-SINAPSIS-2026-A3B4,activo
-SINAPSIS-2026-Z9Y8,inactivo
-SINAPSIS-TEST-001,activo
-SINAPSIS-TEST-002,activo
+codigo,email,estado
+SINAPSIS-2026-X1Y2,emprendedor1@uao.edu.co,activo
+SINAPSIS-2026-A3B4,emprendedor2@uao.edu.co,activo
+SINAPSIS-2026-Z9Y8,desactivado@uao.edu.co,inactivo
+SINAPSIS-TEST-001,test@example.com,activo
+SINAPSIS-TEST-002,eduardo@example.com,activo

@@ -56,7 +56,9 @@ async def create_rating(
 
     # Determinar a quién se califica
     reviewed_id = (
-        negotiation.seller_id if reviewer_id == negotiation.buyer_id else negotiation.buyer_id
+        negotiation.seller_id
+        if reviewer_id == negotiation.buyer_id
+        else negotiation.buyer_id
     )
 
     # Verificar duplicado
@@ -88,9 +90,7 @@ async def create_rating(
     return rating
 
 
-async def _update_user_reputation(
-    db: AsyncSession, user_id: uuid.UUID
-) -> None:
+async def _update_user_reputation(db: AsyncSession, user_id: uuid.UUID) -> None:
     """Recalcula average_rating y total_reviews de un usuario."""
     result = await db.execute(
         select(
@@ -108,12 +108,15 @@ async def _update_user_reputation(
         )
     )
     await db.flush()
-    logger.info("Reputación actualizada para user=%s: avg=%.2f, total=%d", user_id, row.avg, row.total)
+    logger.info(
+        "Reputación actualizada para user=%s: avg=%.2f, total=%d",
+        user_id,
+        row.avg,
+        row.total,
+    )
 
 
-async def get_user_reputation(
-    db: AsyncSession, user_id: uuid.UUID
-) -> dict:
+async def get_user_reputation(db: AsyncSession, user_id: uuid.UUID) -> dict:
     """Obtiene la reputación consolidada de un usuario."""
     result = await db.execute(
         select(User.average_rating, User.total_reviews).where(User.id == user_id)
@@ -131,9 +134,7 @@ async def get_user_reputation(
     }
 
 
-async def list_ratings_for_user(
-    db: AsyncSession, user_id: uuid.UUID
-) -> list[Rating]:
+async def list_ratings_for_user(db: AsyncSession, user_id: uuid.UUID) -> list[Rating]:
     """Lista las calificaciones recibidas por un usuario."""
     result = await db.execute(
         select(Rating)

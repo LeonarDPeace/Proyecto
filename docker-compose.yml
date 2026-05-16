@@ -20,7 +20,7 @@ services:
       POSTGRES_PASSWORD: veramarket_dev
       POSTGRES_DB: veramarket
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
@@ -61,7 +61,7 @@ services:
       typesense:
         condition: service_started
     environment:
-      DATABASE_URL: "${DATABASE_URL:-postgresql+asyncpg://veramarket:veramarket_dev@db:5432/veramarket}"
+      DATABASE_URL: "postgresql+asyncpg://veramarket:veramarket_dev@db:5432/veramarket"
       JWT_SECRET: "${JWT_SECRET:-dev-secret-change-in-production}"
       JWT_ALGORITHM: "${JWT_ALGORITHM:-HS256}"
       JWT_EXPIRATION_MINUTES: "${JWT_EXPIRATION_MINUTES:-1440}"
@@ -69,9 +69,9 @@ services:
       ENVIRONMENT: "${ENVIRONMENT:-development}"
       TZ: "${TZ:-America/Bogota}"
       GEMINI_API_KEY: "${GEMINI_API_KEY:-}"
-      GEMINI_MODEL: "gemini-3.1-flash-lite-preview"
+      GEMINI_MODEL: "${GEMINI_MODEL:-gemini-2-flash}"
       TYPESENSE_API_KEY: "${TYPESENSE_API_KEY:-xyz-dev-typesense-key}"
-      TYPESENSE_HOST: "${TYPESENSE_HOST:-typesense}"
+      TYPESENSE_HOST: "typesense"
       TYPESENSE_PORT: "${TYPESENSE_PORT:-8108}"
       TYPESENSE_PROTOCOL: "${TYPESENSE_PROTOCOL:-http}"
       TYPESENSE_TIMEOUT_SECONDS: "${TYPESENSE_TIMEOUT_SECONDS:-2.0}"
@@ -101,6 +101,9 @@ services:
       NEXT_PUBLIC_DEFAULT_LNG: "-76.5320"
     ports:
       - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
 
 volumes:
   pgdata:

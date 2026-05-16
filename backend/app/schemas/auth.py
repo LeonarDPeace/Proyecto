@@ -111,6 +111,7 @@ class OTPSentResponse(BaseModel):
     message: str = "Código OTP enviado al correo"
     email: str
     expires_in_minutes: int
+    is_registered: bool = False
 
 
 class VendorRoleRequest(BaseModel):

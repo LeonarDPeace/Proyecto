@@ -26,6 +26,11 @@ async def create_product(
         description=data.description,
         price=data.price,
         category=data.category,
+        subcategory=data.subcategory,
+        condition=data.condition,
+        brand=data.brand,
+        has_free_shipping=data.has_free_shipping,
+        attributes=data.attributes,
         image_urls=data.image_urls,
     )
     db.add(product)

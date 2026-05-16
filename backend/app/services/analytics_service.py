@@ -33,7 +33,8 @@ async def get_seller_summary(
     """Calcula el resumen financiero de un vendedor para un período."""
     query = select(
         func.count(Transaction.id).label("total_transactions"),
-        func.coalesce(func.sum(Transaction.total_cop), 0).label("total_revenue"),
+        func.coalesce(func.sum(Transaction.subtotal_cop), 0).label("gross_revenue"),
+        func.coalesce(func.sum(Transaction.total_cop), 0).label("net_revenue"),
         func.coalesce(func.sum(Transaction.discount_cop), 0).label("total_discount"),
         func.coalesce(func.avg(Transaction.total_cop), 0).label("avg_order"),
     ).where(Transaction.seller_id == seller_id)
@@ -46,18 +47,16 @@ async def get_seller_summary(
     result = await db.execute(query)
     row = result.one()
 
-    total_rev = float(row.total_revenue)
-    total_disc = float(row.total_discount)
-
     return {
         "seller_id": seller_id,
         "period": period,
         "total_transactions": row.total_transactions,
-        "total_revenue_cop": total_rev,
-        "total_discount_cop": total_disc,
-        "net_revenue_cop": round(total_rev - total_disc, 2),
+        "total_revenue_cop": float(row.gross_revenue),
+        "total_discount_cop": float(row.total_discount),
+        "net_revenue_cop": round(float(row.net_revenue), 2),
         "average_order_cop": round(float(row.avg_order), 2),
     }
+
 
 
 async def get_seller_timeline(
@@ -94,3 +93,23 @@ async def get_seller_timeline(
         }
         for row in result.all()
     ]
+
+
+async def get_seller_transactions(
+    db: AsyncSession,
+    seller_id: uuid.UUID,
+    period: str = "month",
+) -> list[Transaction]:
+    """Obtiene el listado detallado de transacciones individuales para el periodo."""
+    query = select(Transaction).where(Transaction.seller_id == seller_id)
+
+    delta = _PERIOD_DELTAS.get(period)
+    if delta is not None:
+        since = datetime.now(UTC) - delta
+        query = query.where(Transaction.completed_at >= since)
+
+    # Ordenar por fecha descendente por defecto (más recientes primero)
+    query = query.order_by(Transaction.completed_at.desc())
+
+    result = await db.execute(query)
+    return list(result.scalars().all())

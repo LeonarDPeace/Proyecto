@@ -12,6 +12,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.coupon import Coupon
+from app.models.product import Product
+from sqlalchemy.orm import selectinload
 
 logger = logging.getLogger(__name__)
 
@@ -24,12 +26,11 @@ async def create_coupon(
     discount_fixed_cop: float | None = None,
     max_uses: int = 1,
     expires_at=None,
+    applicable_product_ids: list[uuid.UUID] | None = None,
 ) -> Coupon:
     """Crea un nuevo cupón de descuento."""
     # Verificar código único
-    existing = await db.execute(
-        select(Coupon).where(Coupon.code == code.upper())
-    )
+    existing = await db.execute(select(Coupon).where(Coupon.code == code.upper()))
     if existing.scalar_one_or_none():
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -44,9 +45,23 @@ async def create_coupon(
         max_uses=max_uses,
         expires_at=expires_at,
     )
+    
+    if applicable_product_ids:
+        # Solo asociar productos que pertenecen al vendedor
+        result = await db.execute(
+            select(Product).where(
+                Product.id.in_(applicable_product_ids),
+                Product.seller_id == seller_id
+            )
+        )
+        products = result.scalars().all()
+        coupon.applicable_products = list(products)
+
     db.add(coupon)
     await db.flush()
-    logger.info("Cupón creado: %s por seller=%s", code, seller_id)
+    num_products = len(applicable_product_ids) if applicable_product_ids else 0
+    logger.info("Cupón creado: %s por seller=%s con %d productos asociados", 
+                code, seller_id, num_products)
     return coupon
 
 
@@ -56,6 +71,7 @@ async def list_coupons_by_seller(
     """Lista los cupones de un vendedor."""
     result = await db.execute(
         select(Coupon)
+        .options(selectinload(Coupon.applicable_products))
         .where(Coupon.seller_id == seller_id)
         .order_by(Coupon.created_at.desc())
     )
@@ -67,13 +83,16 @@ async def validate_coupon(
     code: str,
     seller_id: uuid.UUID,
     subtotal: float,
+    product_id: uuid.UUID | None = None,
 ) -> dict:
     """Valida un cupón y calcula el descuento.
 
     El cupón debe pertenecer al vendedor del producto y estar activo.
     """
     result = await db.execute(
-        select(Coupon).where(
+        select(Coupon)
+        .options(selectinload(Coupon.applicable_products))
+        .where(
             Coupon.code == code.upper(),
             Coupon.seller_id == seller_id,
         )
@@ -96,6 +115,16 @@ async def validate_coupon(
             "message": "Cupón expirado, agotado o inactivo",
         }
 
+    # Validar restricción de producto
+    if coupon.applicable_products:
+        if not product_id or product_id not in [p.id for p in coupon.applicable_products]:
+            return {
+                "valid": False,
+                "code": code,
+                "discount_amount": 0.0,
+                "message": "Este cupón no es válido para este producto",
+            }
+
     discount = coupon.calculate_discount(subtotal)
     return {
         "valid": True,
@@ -107,9 +136,7 @@ async def validate_coupon(
 
 async def redeem_coupon(db: AsyncSession, code: str) -> None:
     """Incrementa el contador de uso del cupón."""
-    result = await db.execute(
-        select(Coupon).where(Coupon.code == code.upper())
-    )
+    result = await db.execute(select(Coupon).where(Coupon.code == code.upper()))
     coupon = result.scalar_one_or_none()
     if coupon:
         coupon.current_uses += 1

@@ -37,6 +37,12 @@ class UserCreate(UserBase):
         return v
 
 
+class UserUpdate(BaseModel):
+    """Datos para actualizar el perfil del usuario."""
+    name: str | None = Field(default=None, min_length=2, max_length=150)
+    phone: str | None = Field(default=None, max_length=20)
+
+
 class UserPublic(BaseModel):
     """Datos públicos de un usuario (sin info sensible por defecto).
 
@@ -49,6 +55,26 @@ class UserPublic(BaseModel):
     reputation: float
     is_verified: bool
     # Campos opcionales — solo presentes si la privacidad lo permite
+    email: EmailStr | None = None
+    phone: str | None = None
+
+    model_config = {"from_attributes": True}
+
+
+class SellerPublicInfo(BaseModel):
+    """Datos públicos del vendedor para mostrar en detalle de producto."""
+
+    id: uuid.UUID
+    name: str
+    role: str
+    reputation: float
+    average_rating: float
+    total_reviews: int
+    is_verified: bool
+    member_since: datetime | None = None
+    last_active_at: datetime | None = None
+    location_label: str | None = None
+    location_campus: str | None = None
     email: EmailStr | None = None
     phone: str | None = None
 
@@ -71,7 +97,9 @@ class UserPrivate(BaseModel):
     is_verified: bool
     show_email: bool
     show_phone: bool
+    vendor_status: str
     accepted_terms_at: datetime | None
+
     created_at: datetime
 
     model_config = {"from_attributes": True}

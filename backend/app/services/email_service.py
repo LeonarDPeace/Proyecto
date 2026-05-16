@@ -210,4 +210,3 @@ async def send_transactional_email(email: str, subject: str, body: str) -> None:
         password=settings.SMTP_PASSWORD,
         start_tls=True,
     )
-

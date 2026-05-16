@@ -13,15 +13,26 @@ from datetime import UTC, datetime
 from sqlalchemy import (
     Boolean,
     CheckConstraint,
+    Column,
     DateTime,
     ForeignKey,
     Integer,
     Numeric,
     String,
+    Table,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
+
+
+# Tabla de asociación para cupones aplicables solo a ciertos productos (M2M)
+coupon_products = Table(
+    "coupon_products",
+    Base.metadata,
+    Column("coupon_id", ForeignKey("coupons.id", ondelete="CASCADE"), primary_key=True),
+    Column("product_id", ForeignKey("products.id", ondelete="CASCADE"), primary_key=True),
+)
 
 
 class Coupon(Base):
@@ -91,6 +102,13 @@ class Coupon(Base):
     # --- Relationships ---
     seller: Mapped["User"] = relationship()  # noqa: F821
 
+    # Si está vacío, el cupón es global para el vendedor.
+    # Si tiene productos, solo aplica a esos productos.
+    applicable_products: Mapped[list["Product"]] = relationship(
+        secondary=coupon_products,
+        back_populates="applicable_coupons"
+    )
+
     def is_valid(self) -> bool:
         """Verifica si el cupón es válido para uso."""
         if not self.is_active:
@@ -110,5 +128,9 @@ class Coupon(Base):
         return 0.0
 
     def __repr__(self) -> str:
-        dtype = f"{self.discount_percent}%" if self.discount_percent else f"${self.discount_fixed_cop} COP"
+        dtype = (
+            f"{self.discount_percent}%"
+            if self.discount_percent
+            else f"${self.discount_fixed_cop} COP"
+        )
         return f"<Coupon {self.code} — {dtype}>"

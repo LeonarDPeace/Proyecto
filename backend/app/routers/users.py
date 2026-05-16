@@ -17,7 +17,7 @@ from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.user import User
 from app.schemas.auth import PrivacySettings, PrivacySettingsRead
-from app.schemas.user import UserPrivate, UserPublic, UserSearchQuotaRead
+from app.schemas.user import UserPrivate, UserPublic, UserSearchQuotaRead, UserUpdate
 from app.services.auth_service import get_user_by_id, update_user_profile
 from app.services.quota_service import get_quota_snapshot
 
@@ -35,6 +35,27 @@ async def get_me(current_user: User = Depends(get_current_user)):
     Incluye email, phone, y datos sensibles (solo visible al propio usuario).
     """
     return current_user
+
+
+@router.patch(
+    "/me",
+    response_model=UserPrivate,
+    summary="Actualizar mi perfil",
+)
+async def update_me(
+    payload: UserUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Actualiza los datos del perfil (nombre, teléfono)."""
+    updated_user = await update_user_profile(
+        db,
+        current_user,
+        name=payload.name,
+        phone=payload.phone,
+    )
+    await db.commit()
+    return updated_user
 
 
 @router.get(
@@ -110,6 +131,7 @@ async def update_privacy_settings(
         show_email=payload.show_email,
         show_phone=payload.show_phone,
     )
+    await db.commit()
     return PrivacySettingsRead(
         show_email=user.show_email,
         show_phone=user.show_phone,

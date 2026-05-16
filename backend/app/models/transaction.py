@@ -43,6 +43,7 @@ class Transaction(Base):
     seller_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True,
+        index=True,
     )
     product_name: Mapped[str | None] = mapped_column(
         String(200),
@@ -91,6 +92,7 @@ class Transaction(Base):
     completed_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(UTC),
+        index=True,
     )
 
     # --- Relationships ---

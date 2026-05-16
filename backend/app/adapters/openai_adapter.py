@@ -1,30 +1,34 @@
-"""Adapter — OpenAI (stub para Sprint 3).
+"""Adapter — OpenAI (stub, deprecated in favor of Gemini).
 
-Implementará búsqueda semántica con GPT-4o-mini y embeddings.
-Actualmente lanza NotImplementedError para todas las operaciones.
+This adapter was the original Sprint 3 plan for semantic search using
+GPT-4o-mini. The actual implementation uses Google Gemini 2 Flash via
+`nlu_service.py`. This stub is preserved to satisfy the Adapter Pattern
+interface but is NOT used in production.
+
+See: `app/services/nlu_service.py` for the active NLU implementation.
 """
 
 from app.adapters.base import IAIAdapter
 
 
 class OpenAIAdapter(IAIAdapter):
-    """Adaptador para la API de OpenAI.
+    """Adaptador stub para la API de OpenAI (no utilizado).
 
-    Sprint 3: Conectará con GPT-4o-mini para búsqueda semántica
-    y recomendaciones personalizadas.
+    La implementación activa usa Google Gemini 2 Flash.
+    Este stub se conserva para compatibilidad con el Adapter Pattern.
     """
 
     def __init__(self, api_key: str = ""):
         self.api_key = api_key
 
     async def semantic_search(self, query: str, context: dict) -> list[dict]:
-        """Búsqueda semántica — pendiente Sprint 3."""
+        """Búsqueda semántica — no implementado (usar Gemini via nlu_service)."""
         raise NotImplementedError(
-            "OpenAI semantic_search será implementado en Sprint 3. Usa filtros tradicionales por ahora."
+            "OpenAI adapter deprecated. Use nlu_service.py (Gemini 2 Flash) instead."
         )
 
     async def generate_recommendation(self, user_id: str) -> list[dict]:
-        """Recomendaciones personalizadas — pendiente Sprint 3."""
+        """Recomendaciones personalizadas — no implementado."""
         raise NotImplementedError(
-            "OpenAI generate_recommendation será implementado en Sprint 3."
+            "OpenAI adapter deprecated. Use nlu_service.py (Gemini 2 Flash) instead."
         )

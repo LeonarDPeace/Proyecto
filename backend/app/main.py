@@ -20,6 +20,7 @@ from app.routers import (
     products,
     push,
     ratings,
+    reports,
     users,
 )
 from app.routers import websockets as ws_router
@@ -93,5 +94,10 @@ app.include_router(
     analytics.router,
     prefix="/api/v1/analytics",
     tags=["Analytics"],
+)
+app.include_router(
+    reports.router,
+    prefix="/api/v1/reports",
+    tags=["Reports"],
 )
 app.include_router(ws_router.router, tags=["WebSocket"])

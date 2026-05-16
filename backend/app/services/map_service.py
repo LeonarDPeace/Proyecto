@@ -27,6 +27,5 @@ async def get_nearby_sellers(
     Returns:
         Lista de vendedores dentro del radio.
 
-    TODO (Sprint 1): Implementar con SQLAlchemy + GeoAlchemy2.
     """
     return []

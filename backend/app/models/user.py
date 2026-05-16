@@ -32,7 +32,7 @@ class User(Base):
     phone: Mapped[str | None] = mapped_column(String(20), nullable=True)
 
     role: Mapped[str] = mapped_column(
-        Enum("vendedor", "comprador", name="user_role", create_type=False),
+        Enum("vendedor", "comprador", "admin", name="user_role", create_type=False),
         server_default="comprador",
     )
     vendor_status: Mapped[str] = mapped_column(
@@ -72,6 +72,9 @@ class User(Base):
 
     # Ley 1581/2012 — Consentimiento explícito de tratamiento de datos
     accepted_terms_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    last_active_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
 

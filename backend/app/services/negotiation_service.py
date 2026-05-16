@@ -92,6 +92,13 @@ async def create_negotiation(
             detail="Ya tienes una negociación activa para este producto",
         )
 
+    # Verificar stock disponible (HU 8.x)
+    if product.stock < quantity:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Stock insuficiente. Solo quedan {product.stock} unidades disponibles.",
+        )
+
     negotiation = Negotiation(
         buyer_id=buyer_id,
         seller_id=product.seller_id,
@@ -112,6 +119,9 @@ async def create_negotiation(
         )
         db.add(message)
         await db.flush()
+
+    # HU 8.2: Notificar al vendedor sobre el nuevo interés
+    await _notify_new_negotiation(db, negotiation)
 
     return negotiation
 
@@ -205,6 +215,12 @@ async def _notify_status_change(
 
         buyer = await get_user_by_id(db, negotiation.buyer_id)
         seller = await get_user_by_id(db, negotiation.seller_id)
+        
+        # Cargar producto para contexto
+        result = await db.execute(select(Product).where(Product.id == negotiation.product_id))
+        product = result.scalar_one_or_none()
+        product_name = product.name if product else "un producto"
+
         if not buyer or not seller:
             return
 
@@ -222,17 +238,41 @@ async def _notify_status_change(
         # Notificar al comprador
         await send_transactional_email(
             email=buyer.email,
-            subject=f"VeraMarket — {label}",
-            body=f"Tu pedido ha cambiado a estado: {label}.",
+            subject=f"VeraMarket — {label}: {product_name}",
+            body=f"Hola {buyer.name},\n\nTu pedido por '{product_name}' ha cambiado a estado: {label}.",
         )
-        # Notificar al vendedor (si la acción fue del comprador)
-        await send_transactional_email(
-            email=seller.email,
-            subject=f"VeraMarket — {label}",
-            body=f"Un pedido ha cambiado a estado: {label}.",
-        )
-    except Exception:
-        logger.warning("No se pudo enviar notificación de estado")
+        # Notificar al vendedor (si la acción fue del comprador, ej: cancelado)
+        if new_status == "cancelled":
+            await send_transactional_email(
+                email=seller.email,
+                subject=f"VeraMarket — Pedido Cancelado 🚫: {product_name}",
+                body=f"Hola {seller.name},\n\nEl comprador ha cancelado el pedido por '{product_name}'.",
+            )
+    except Exception as e:
+        logger.warning(f"No se pudo enviar notificación de estado: {e}")
+
+
+async def _notify_new_negotiation(db: AsyncSession, negotiation: Negotiation) -> None:
+    """Notifica al vendedor cuando un comprador inicia una negociación (HU 8.2)."""
+    try:
+        from app.services.auth_service import get_user_by_id
+        from app.services.email_service import send_transactional_email
+
+        seller = await get_user_by_id(db, negotiation.seller_id)
+        buyer = await get_user_by_id(db, negotiation.buyer_id)
+        
+        result = await db.execute(select(Product).where(Product.id == negotiation.product_id))
+        product = result.scalar_one_or_none()
+        product_name = product.name if product else "un producto"
+
+        if seller and buyer:
+            await send_transactional_email(
+                email=seller.email,
+                subject=f"VeraMarket — ¡Nuevo interés en tu producto! 🛒",
+                body=f"Hola {seller.name},\n\n{buyer.name} está interesado en tu producto '{product_name}'.\n\nIngresa a la app para responder al chat y concretar la venta.",
+            )
+    except Exception as e:
+        logger.warning(f"No se pudo enviar notificación de nueva negociación: {e}")
 
 
 # ---------------------------------------------------------------------------
@@ -270,23 +310,32 @@ async def set_payment_method(
     negotiation.payment_method = payment_method
     negotiation.coupon_code = coupon_code
     negotiation.transaction_locked = True
+    negotiation.discount_amount = 0.0
 
     # Validar cupón si existe
     if coupon_code:
         from app.services.coupon_service import validate_coupon
 
+        subtotal = float(negotiation.agreed_price_cop or 0) * negotiation.quantity
         validation = await validate_coupon(
-            db, coupon_code, negotiation.seller_id,
-            float(negotiation.agreed_price_cop or 0) * negotiation.quantity,
+            db,
+            coupon_code,
+            negotiation.seller_id,
+            subtotal,
         )
         if not validation["valid"]:
+            # Resetear cupón si es inválido
+            negotiation.coupon_code = None
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=validation["message"],
             )
+        
+        negotiation.discount_amount = validation["discount_amount"]
 
     await db.flush()
     return negotiation
+
 
 
 # ---------------------------------------------------------------------------
@@ -350,6 +399,16 @@ async def confirm_delivery(
     # Si ambas partes confirmaron → completar transacción + registrar GMV + Transaction
     if negotiation.buyer_confirmed and negotiation.seller_confirmed:
         negotiation.status = "delivered"
+        
+        # --- Descontar Stock (Sprint 5) ---
+        result = await db.execute(select(Product).where(Product.id == negotiation.product_id))
+        product = result.scalar_one_or_none()
+        if product:
+            product.stock = max(0, product.stock - (negotiation.quantity or 1))
+            if product.stock <= 0:
+                product.is_active = False
+            await db.flush()
+
         await _record_gmv(db, negotiation)
         await _record_transaction(db, negotiation)
         await _notify_status_change(db, negotiation, "delivered")
@@ -402,23 +461,20 @@ async def _record_transaction(db: AsyncSession, negotiation: Negotiation) -> Non
     product = result.scalar_one_or_none()
     product_name = product.name if product else None
 
-    unit_price = float(negotiation.agreed_price_cop or (product.price if product else 0))
+    unit_price = float(
+        negotiation.agreed_price_cop or (product.price if product else 0)
+    )
     quantity = negotiation.quantity or 1
     subtotal = round(unit_price * quantity, 2)
 
-    # Calcular descuento si hay cupón
-    discount = 0.0
-    if negotiation.coupon_code:
-        from app.services.coupon_service import redeem_coupon, validate_coupon
-
-        validation = await validate_coupon(
-            db, negotiation.coupon_code, negotiation.seller_id, subtotal
-        )
-        if validation["valid"]:
-            discount = validation["discount_amount"]
-            await redeem_coupon(db, negotiation.coupon_code)
+    # Usar descuento ya calculado en la negociación (Sprint 5)
+    discount = float(negotiation.discount_amount or 0.0)
+    if discount > 0 and negotiation.coupon_code:
+        from app.services.coupon_service import redeem_coupon
+        await redeem_coupon(db, negotiation.coupon_code)
 
     total = round(subtotal - discount, 2)
+
 
     tx = Transaction(
         negotiation_id=negotiation.id,

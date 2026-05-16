@@ -17,7 +17,17 @@ se revelan datos de contacto (email, phone) — cumplimiento Ley 1581/2012.
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import Boolean, CheckConstraint, DateTime, Enum, ForeignKey, Integer, Numeric, String, Text
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Integer,
+    Numeric,
+    String,
+    Text,
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -103,6 +113,12 @@ class Negotiation(Base):
         server_default="false",
         comment="True cuando se ha registrado el pago; impide cierre sin método",
     )
+    discount_amount: Mapped[float] = mapped_column(
+        Numeric(12, 2),
+        server_default="0.00",
+        comment="Descuento aplicado por cupón",
+    )
+
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

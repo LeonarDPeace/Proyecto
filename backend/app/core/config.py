@@ -34,10 +34,11 @@ class Settings(BaseSettings):
     OTP_EXPIRATION_MINUTES: int = 10
     OTP_LENGTH: int = 6
 
-    # --- Integraciones (Sprint 3) ---
-    OPENAI_API_KEY: str = ""
+    # --- NLU / Gemini (Sprint 3 — HU 4.2) ---
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL: str = "gemini-1.5-flash"
+    GEMINI_MODEL: str = "gemini-2-flash"
+
+    # --- Typesense (Sprint 3 — HU 4.1, HU 5.3) ---
     TYPESENSE_API_KEY: str = "xyz-dev-typesense-key"
     TYPESENSE_HOST: str = "localhost"
     TYPESENSE_PORT: int = 8108
@@ -46,6 +47,8 @@ class Settings(BaseSettings):
     TYPESENSE_COLLECTION_PRODUCTS: str = "products"
     SEMANTIC_DAILY_LIMIT: int = 10
     BUSINESS_TIMEZONE: str = "America/Bogota"
+
+    # --- Observabilidad ---
     SENTRY_DSN: str = ""
 
     # --- OAuth ---
