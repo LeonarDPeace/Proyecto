@@ -27,6 +27,7 @@ export default function AuthPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [expiresIn, setExpiresIn] = useState(10);
+  const [isNewUser, setIsNewUser] = useState(false);
 
   // --- Paso 1: Solicitar OTP ---
   async function handleRequestOTP(e: React.FormEvent) {
@@ -37,6 +38,7 @@ export default function AuthPage() {
     try {
       const response = await requestOTP(email.trim().toLowerCase());
       setExpiresIn(response.expires_in_minutes);
+      setIsNewUser(!response.is_registered);
       setStep("otp");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Error al enviar código");
@@ -65,9 +67,7 @@ export default function AuthPage() {
       }
     } catch (err: unknown) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Código inválido o expirado"
+        err instanceof Error ? err.message : "Código inválido o expirado",
       );
     } finally {
       setLoading(false);
@@ -107,18 +107,18 @@ export default function AuthPage() {
           <form onSubmit={handleRequestOTP} className="space-y-4">
             <div>
               <h2 className="text-lg font-semibold text-gray-800">
-                Iniciar sesión
+                Entrar o Registrarse
               </h2>
               <p className="mt-1 text-sm text-gray-500">
-                Ingresa tu correo electrónico y te enviaremos un
-                código de acceso seguro.
+                Ingresa tu correo y te enviaremos un código de
+                acceso seguro.
               </p>
             </div>
 
             <Input
               label="Correo electrónico"
               type="email"
-              placeholder="tu.nombre@ejemplo.com"
+              placeholder="ejemplo@uao.edu.co"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               error={error || undefined}
@@ -132,7 +132,7 @@ export default function AuthPage() {
               className="w-full"
               disabled={loading || !email.trim()}
             >
-              {loading ? "Enviando..." : "Enviar código"}
+              {loading ? "Enviando..." : "Continuar"}
             </Button>
           </form>
         )}
@@ -142,17 +142,19 @@ export default function AuthPage() {
           <form onSubmit={handleVerifyOTP} className="space-y-4">
             <div>
               <h2 className="text-lg font-semibold text-gray-800">
-                Verificar código
+                {isNewUser ? "Crear Cuenta" : "Verificar código"}
               </h2>
               <p className="mt-1 text-sm text-gray-500">
-                Enviamos un código de 6 dígitos a{" "}
+                {isNewUser 
+                  ? "Detectamos que eres nuevo. " 
+                  : "Bienvenido de vuelta. "}
+                Enviamos un código a{" "}
                 <span className="font-medium text-vera-600">{email}</span>.
-                Expira en {expiresIn} minutos.
               </p>
             </div>
 
             <Input
-              label="Código OTP"
+              label="Código de 6 dígitos"
               type="text"
               placeholder="000000"
               value={code}
@@ -173,7 +175,7 @@ export default function AuthPage() {
               className="w-full"
               disabled={loading || code.length !== 6}
             >
-              {loading ? "Verificando..." : "Verificar"}
+              {loading ? "Verificando..." : isNewUser ? "Registrarme" : "Entrar"}
             </Button>
 
             <div className="flex items-center justify-between text-sm">
@@ -202,7 +204,7 @@ export default function AuthPage() {
 
         {/* Footer */}
         <p className="mt-6 text-center text-xs text-gray-400">
-          Al iniciar sesión aceptas los{" "}
+          Al continuar aceptas los{" "}
           <a href="#" className="text-vera-600 hover:underline">
             Términos y Condiciones
           </a>{" "}

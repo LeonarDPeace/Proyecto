@@ -14,8 +14,10 @@ import { useNegotiations, Negotiation } from "@/hooks/useNegotiations";
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   pending: { label: "Pendiente", color: "#f59e0b" },
   accepted: { label: "Aceptada", color: "#10b981" },
+  paused: { label: "Pausada", color: "#8b5cf6" },
   rejected: { label: "Rechazada", color: "#ef4444" },
-  completed: { label: "Completada", color: "#6366f1" },
+  cancelled: { label: "Cancelada", color: "#6b7280" },
+  delivered: { label: "Entregada", color: "#6366f1" },
 };
 
 export default function NegotiationsPage() {
@@ -86,7 +88,15 @@ export default function NegotiationsPage() {
 
         {/* Filtros */}
         <div className="neg-filters">
-          {["all", "pending", "accepted", "completed", "rejected"].map((s) => (
+          {[
+            "all",
+            "pending",
+            "accepted",
+            "paused",
+            "delivered",
+            "rejected",
+            "cancelled",
+          ].map((s) => (
             <button
               key={s}
               className={`neg-filter-btn ${filter === s ? "neg-filter-btn--active" : ""}`}
@@ -111,10 +121,24 @@ export default function NegotiationsPage() {
         {/* Lista vacía */}
         {!loading && filteredNegotiations.length === 0 && (
           <div className="neg-empty">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.4">
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              opacity="0.4"
+            >
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
-            <p>No tienes negociaciones {filter !== "all" ? `con estado "${STATUS_LABELS[filter]?.label}"` : "aún"}.</p>
+            <p>
+              No tienes negociaciones{" "}
+              {filter !== "all"
+                ? `con estado "${STATUS_LABELS[filter]?.label}"`
+                : "aún"}
+              .
+            </p>
             {filter === "all" && (
               <button
                 className="neg-browse-btn"
@@ -149,7 +173,10 @@ export default function NegotiationsPage() {
                 <div className="neg-card-top">
                   <span
                     className="neg-card-badge"
-                    style={{ backgroundColor: statusInfo.color + "20", color: statusInfo.color }}
+                    style={{
+                      backgroundColor: statusInfo.color + "20",
+                      color: statusInfo.color,
+                    }}
                   >
                     {statusInfo.label}
                   </span>
@@ -159,7 +186,9 @@ export default function NegotiationsPage() {
                 </div>
 
                 <div className="neg-card-body">
-                  <p className="neg-card-price">{formatPrice(neg.agreed_price_cop)}</p>
+                  <p className="neg-card-price">
+                    {formatPrice(neg.agreed_price_cop)}
+                  </p>
                   <p className="neg-card-date">{formatDate(neg.updated_at)}</p>
                 </div>
 

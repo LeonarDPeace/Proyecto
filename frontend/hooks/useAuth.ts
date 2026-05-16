@@ -18,10 +18,12 @@ export function useAuth() {
     token,
     isNewUser,
     isHydrated,
+    viewMode,
     login,
     logout,
     setUser,
     setIsNewUser,
+    toggleViewMode,
     hydrate,
   } = useAuthStore();
 
@@ -45,7 +47,9 @@ export function useAuth() {
           name: string;
           email: string;
           role: "vendedor" | "comprador";
+          vendor_status: "pending" | "approved" | "rejected";
           is_verified: boolean;
+
           institutional_id: string;
           phone: string | null;
           show_email: boolean;
@@ -87,10 +91,12 @@ export function useAuth() {
 
   /** Solicita un código OTP al correo institucional */
   async function requestOTP(email: string) {
-    return api.post<{ message: string; email: string; expires_in_minutes: number }>(
-      "/auth/otp/request",
-      { email }
-    );
+    return api.post<{
+      message: string;
+      email: string;
+      expires_in_minutes: number;
+      is_registered: boolean;
+    }>("/auth/otp/request", { email });
   }
 
   /** Verifica el código OTP y obtiene token JWT */
@@ -101,12 +107,19 @@ export function useAuth() {
       is_new_user: boolean;
     }>("/auth/otp/verify", { email, code });
 
-    // Fetch user profile with the new token
+    if (response.is_new_user) {
+      // User not fully registered yet, dummy login with pending token
+      login(response.access_token, { email, role: "comprador" } as any, true);
+      return response;
+    }
+
+    // Fetch user profile with the real token
     const userProfile = await api.get<{
       id: string;
       name: string;
       email: string;
       role: "vendedor" | "comprador";
+      vendor_status: "pending" | "approved" | "rejected";
       is_verified: boolean;
       institutional_id: string;
       phone: string | null;
@@ -114,7 +127,7 @@ export function useAuth() {
       show_phone: boolean;
     }>("/users/me", response.access_token);
 
-    login(response.access_token, userProfile, response.is_new_user);
+    login(response.access_token, userProfile, false);
     return response;
   }
 
@@ -125,21 +138,28 @@ export function useAuth() {
     phone?: string;
     accept_terms: boolean;
   }) {
-    const updatedUser = await api.post<{
+    // This returns the definitive token
+    const tokenResponse = await api.post<{
+      access_token: string;
+      token_type: string;
+      is_new_user: boolean;
+    }>("/auth/profile/complete", data, token || undefined);
+
+    const userProfile = await api.get<{
       id: string;
       name: string;
       email: string;
       role: "vendedor" | "comprador";
+      vendor_status: "pending" | "approved" | "rejected";
       is_verified: boolean;
       institutional_id: string;
       phone: string | null;
       show_email: boolean;
       show_phone: boolean;
-    }>("/auth/profile/complete", data, token || undefined);
+    }>("/users/me", tokenResponse.access_token);
 
-    setUser(updatedUser);
-    setIsNewUser(false);
-    return updatedUser;
+    login(tokenResponse.access_token, userProfile, false);
+    return userProfile;
   }
 
   /** Actualiza la configuración de privacidad */
@@ -150,12 +170,42 @@ export function useAuth() {
     const result = await api.put<{ show_email: boolean; show_phone: boolean }>(
       "/users/me/privacy",
       settings,
-      token || undefined
+      token || undefined,
     );
     if (user) {
       setUser({ ...user, ...result });
     }
     return result;
+  }
+
+  /** Actualiza los datos del perfil (nombre, teléfono) */
+  async function updateProfile(data: {
+    name?: string;
+    phone?: string;
+  }) {
+    const result = await api.patch<{ name: string; phone: string | null }>(
+      "/users/me",
+      data,
+      token || undefined,
+    );
+    if (user) {
+      setUser({ ...user, ...result });
+    }
+    return result;
+  }
+
+  /** Alterna entre modo vendedor y comprador (HU 5.x) */
+  async function switchRole() {
+    const response = await api.post<{
+      access_token: string;
+      token_type: string;
+      is_new_user: boolean;
+    }>("/auth/profile/switch-role", {}, token || undefined);
+
+    const userProfile = await api.get<any>("/users/me", response.access_token);
+
+    login(response.access_token, userProfile, false);
+    return userProfile;
   }
 
   return {
@@ -170,5 +220,10 @@ export function useAuth() {
     verifyOTP,
     completeProfile,
     updatePrivacy,
+    updateProfile,
+    switchRole,
+    viewMode,
+    toggleViewMode,
   };
 }
+

@@ -9,7 +9,7 @@ export default function LoadingDetails() {
 
       {/* Image Gallery */}
       <div className="aspect-[16/9] w-full bg-gray-200 rounded-xl animate-pulse mb-8"></div>
-      
+
       {/* Description */}
       <div className="space-y-3 mb-8">
         <div className="h-4 w-full bg-gray-100 rounded animate-pulse"></div>

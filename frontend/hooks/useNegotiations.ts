@@ -16,10 +16,23 @@ export interface Negotiation {
   buyer_id: string;
   seller_id: string;
   product_id: string;
-  status: "pending" | "accepted" | "rejected" | "completed";
+  status:
+    | "pending"
+    | "accepted"
+    | "paused"
+    | "rejected"
+    | "cancelled"
+    | "delivered";
   buyer_confirmed: boolean;
   seller_confirmed: boolean;
   agreed_price_cop: number | null;
+  // Sprint 5 — HU 8.3: Parámetros extra de compra
+  quantity: number;
+  buyer_note: string | null;
+  // Sprint 5 — HU 8.5: Bloqueo transaccional
+  payment_method: string | null;
+  coupon_code: string | null;
+  transaction_locked: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -61,36 +74,52 @@ export function useNegotiations() {
     }
   }, [token]);
 
-  /** Inicia una nueva negociación */
+  /** Inicia una nueva negociación con opciones avanzadas de checkout (Sprint 5) */
   const createNegotiation = useCallback(
-    async (productId: string, initialMessage?: string) => {
+    async (
+      productId: string, 
+      initialMessage?: string,
+      options?: {
+        quantity?: number;
+        payment_method?: string;
+        coupon_code?: string;
+        buyer_note?: string;
+      }
+    ) => {
       if (!token) throw new Error("No autenticado");
       const data = await api.post<Negotiation>(
         "/negotiations/",
-        { product_id: productId, initial_message: initialMessage },
-        token
+        { 
+          product_id: productId, 
+          initial_message: initialMessage,
+          ...(options || {})
+        },
+        token,
       );
       setNegotiations((prev) => [data, ...prev]);
       return data;
     },
-    [token]
+    [token],
   );
 
   /** Actualiza el estado de una negociación (aceptar/rechazar) */
   const updateStatus = useCallback(
-    async (negotiationId: string, status: "accepted" | "rejected") => {
+    async (
+      negotiationId: string,
+      status: "accepted" | "paused" | "rejected" | "cancelled",
+    ) => {
       if (!token) throw new Error("No autenticado");
       const data = await api.patch<Negotiation>(
         `/negotiations/${negotiationId}/status`,
         { status },
-        token
+        token,
       );
       setNegotiations((prev) =>
-        prev.map((n) => (n.id === negotiationId ? data : n))
+        prev.map((n) => (n.id === negotiationId ? data : n)),
       );
       return data;
     },
-    [token]
+    [token],
   );
 
   /** Confirma entrega (HU 6.4) */
@@ -100,14 +129,14 @@ export function useNegotiations() {
       const data = await api.patch<Negotiation>(
         `/negotiations/${negotiationId}/confirm`,
         {},
-        token
+        token,
       );
       setNegotiations((prev) =>
-        prev.map((n) => (n.id === negotiationId ? data : n))
+        prev.map((n) => (n.id === negotiationId ? data : n)),
       );
       return data;
     },
-    [token]
+    [token],
   );
 
   /** Obtiene mensajes del chat */
@@ -116,10 +145,10 @@ export function useNegotiations() {
       if (!token) throw new Error("No autenticado");
       return api.get<ChatMessage[]>(
         `/negotiations/${negotiationId}/messages`,
-        token
+        token,
       );
     },
-    [token]
+    [token],
   );
 
   /** Envía un mensaje en el chat */
@@ -129,22 +158,45 @@ export function useNegotiations() {
       return api.post<ChatMessage>(
         `/negotiations/${negotiationId}/messages`,
         { content },
-        token
+        token,
       );
     },
-    [token]
+    [token],
   );
 
+  /** Establece el método de pago (HU 8.4/8.5) */
+  const setPaymentMethod = useCallback(
+    async (negotiationId: string, paymentMethod: string, couponCode: string | null = null) => {
+      if (!token) throw new Error("No autenticado");
+      const data = await api.patch<Negotiation>(
+        `/negotiations/${negotiationId}/payment`,
+        { 
+          payment_method: paymentMethod,
+          coupon_code: couponCode
+        },
+        token,
+      );
+      setNegotiations((prev) =>
+        prev.map((n) => (n.id === negotiationId ? data : n)),
+      );
+      return data;
+    },
+    [token],
+  );
+
+
+
   /** Genera deep link de pago (HU 6.2/6.3) */
+
   const getPaymentLink = useCallback(
     async (negotiationId: string, platform: "nequi" | "daviplata") => {
       if (!token) throw new Error("No autenticado");
       return api.get<PaymentDeepLink>(
         `/negotiations/${negotiationId}/payment-link?platform=${platform}`,
-        token
+        token,
       );
     },
-    [token]
+    [token],
   );
 
   return {

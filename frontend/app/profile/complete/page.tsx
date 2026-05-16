@@ -62,7 +62,7 @@ export default function CompleteProfilePage() {
       router.push("/products");
     } catch (err: unknown) {
       setError(
-        err instanceof Error ? err.message : "Error al completar perfil"
+        err instanceof Error ? err.message : "Error al completar perfil",
       );
     } finally {
       setLoading(false);
@@ -77,8 +77,8 @@ export default function CompleteProfilePage() {
             Completa tu perfil
           </h1>
           <p className="mt-2 text-sm text-gray-500">
-            Necesitamos algunos datos para activar tu cuenta en VeraMarket.
-            Tu rol por defecto será <strong>Comprador</strong>.
+            Necesitamos algunos datos para activar tu cuenta en VeraMarket. Tu
+            rol por defecto será <strong>Comprador</strong>.
           </p>
         </div>
 
@@ -135,16 +135,16 @@ export default function CompleteProfilePage() {
             </label>
           </div>
 
-          {error && (
-            <p className="text-sm text-red-600">{error}</p>
-          )}
+          {error && <p className="text-sm text-red-600">{error}</p>}
 
           <Button
             type="submit"
             variant="primary"
             size="lg"
             className="w-full"
-            disabled={loading || !acceptTerms || !name.trim() || !institutionalId.trim()}
+            disabled={
+              loading || !acceptTerms || !name.trim() || !institutionalId.trim()
+            }
           >
             {loading ? "Guardando..." : "Completar registro"}
           </Button>

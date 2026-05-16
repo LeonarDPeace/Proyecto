@@ -5,9 +5,9 @@ declare const self: ServiceWorkerGlobalScope;
 
 // Escuchar eventos de Push enviados por el backend (pywebpush)
 self.addEventListener("push", (event) => {
-  let data = { 
-    title: "VeraMarket", 
-    body: "Tienes una nueva notificación." 
+  let data = {
+    title: "VeraMarket",
+    body: "Tienes una nueva notificación.",
   };
 
   try {
@@ -30,7 +30,7 @@ self.addEventListener("push", (event) => {
       icon: "/icons/icon-192x192.png",
       badge: "/icons/icon-192x192.png",
       data: (data as any).url || "/",
-    })
+    }),
   );
 });
 
@@ -41,7 +41,7 @@ self.addEventListener("notificationclick", (event) => {
     self.clients.matchAll({ type: "window" }).then((clientList) => {
       // Si la app ya está abierta, enfocamos esa pestaña
       for (const client of clientList) {
-        if (client.url === event.notification.data && 'focus' in client) {
+        if (client.url === event.notification.data && "focus" in client) {
           return client.focus();
         }
       }
@@ -49,6 +49,6 @@ self.addEventListener("notificationclick", (event) => {
       if (self.clients.openWindow) {
         return self.clients.openWindow(event.notification.data);
       }
-    })
+    }),
   );
 });

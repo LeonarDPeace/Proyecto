@@ -11,7 +11,11 @@
 }
 
 body {
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
   color: var(--vera-text);
   background-color: var(--vera-bg);
 }
@@ -83,8 +87,13 @@ body {
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .chat-messages {
@@ -117,7 +126,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .chat-system-msg {
@@ -148,8 +159,14 @@ body {
 }
 
 @keyframes slide-up {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .chat-bubble--own {
@@ -227,7 +244,9 @@ body {
   background: linear-gradient(135deg, #2563eb, #3b82f6);
   color: #ffffff;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
 }
 
 .chat-send-btn:hover:not(:disabled) {
@@ -263,7 +282,9 @@ body {
   margin: 0 auto;
 }
 
-.neg-container { width: 100%; }
+.neg-container {
+  width: 100%;
+}
 
 .neg-header {
   margin-bottom: 24px;
@@ -459,7 +480,9 @@ body {
   margin: 0 auto;
 }
 
-.neg-detail-container { width: 100%; }
+.neg-detail-container {
+  width: 100%;
+}
 
 .neg-back-btn {
   background: none;
@@ -485,10 +508,24 @@ body {
   margin-bottom: 20px;
 }
 
-.neg-detail-banner--pending { background: linear-gradient(135deg, #fef3c7, #fde68a); }
-.neg-detail-banner--accepted { background: linear-gradient(135deg, #d1fae5, #a7f3d0); }
-.neg-detail-banner--rejected { background: linear-gradient(135deg, #fee2e2, #fecaca); }
-.neg-detail-banner--completed { background: linear-gradient(135deg, #e0e7ff, #c7d2fe); }
+.neg-detail-banner--pending {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+}
+.neg-detail-banner--accepted {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+}
+.neg-detail-banner--paused {
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+}
+.neg-detail-banner--rejected {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+}
+.neg-detail-banner--cancelled {
+  background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+}
+.neg-detail-banner--delivered {
+  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+}
 
 .neg-detail-status {
   font-size: 1.1rem;
@@ -754,3 +791,107 @@ body {
   font-size: 0.8rem;
   margin: 8px 0 0;
 }
+
+/* Order Timeline (HU 8.1) */
+.order-timeline-container {
+  @apply mb-8 rounded-2xl bg-white p-6 shadow-sm border border-gray-100;
+}
+
+.order-timeline {
+  @apply flex items-center justify-between relative mb-4;
+}
+
+.timeline-step {
+  @apply flex flex-col items-center flex-1 relative z-10;
+}
+
+.step-circle {
+  @apply w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-xl border-4 border-white shadow-sm transition-all;
+}
+
+.step-circle.completed {
+  @apply bg-vera-100 text-vera-700;
+}
+
+.step-circle.current {
+  @apply ring-4 ring-vera-500 ring-offset-2 bg-vera-600 text-white;
+}
+
+.step-circle.paused {
+  @apply ring-4 ring-yellow-500 ring-offset-2 bg-yellow-500 text-white;
+}
+
+.step-label {
+  @apply mt-2 text-xs font-semibold text-gray-500 uppercase tracking-wider;
+}
+
+.step-circle.current + .step-label {
+  @apply text-vera-700;
+}
+
+.step-line {
+  @apply absolute top-6 left-1/2 w-full h-1 bg-gray-100 -z-10;
+}
+
+.step-line.completed {
+  @apply bg-vera-200;
+}
+
+.timeline-negative-status {
+  @apply flex items-center gap-2 p-3 rounded-xl bg-red-50 border border-red-100 text-red-700 text-sm font-medium;
+}
+
+.timeline-info-status {
+  @apply flex items-center gap-2 p-3 rounded-xl bg-yellow-50 border border-yellow-100 text-yellow-700 text-sm font-medium mt-4;
+}
+
+/* Negotiation Invoice (HU 8.4) */
+.negotiation-invoice {
+  @apply mb-4 rounded-xl bg-gray-50 p-5 border border-gray-100 shadow-sm;
+}
+
+.invoice-title {
+  @apply text-sm font-bold text-gray-800 mb-4 uppercase tracking-widest border-b border-gray-200 pb-2;
+}
+
+.invoice-details {
+  @apply space-y-2 mb-4;
+}
+
+.invoice-row {
+  @apply flex justify-between text-sm;
+}
+
+.invoice-row .label {
+  @apply text-gray-500;
+}
+
+.invoice-row .value {
+  @apply text-gray-800 font-medium;
+}
+
+.invoice-divider {
+  @apply border-t border-dashed border-gray-300 my-4;
+}
+
+.invoice-totals {
+  @apply space-y-1;
+}
+
+.invoice-totals .total {
+  @apply pt-2 text-base font-bold text-vera-700;
+}
+
+.invoice-method {
+  @apply mt-4 text-center;
+}
+
+.invoice-method .badge {
+  @apply inline-block px-3 py-1 bg-vera-600 text-white text-[10px] font-bold uppercase rounded-full;
+}
+
+.payment-btn--cash {
+  @apply bg-green-600 hover:bg-green-700 text-white border-none transition-transform active:scale-95;
+}
+
+

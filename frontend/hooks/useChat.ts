@@ -47,7 +47,7 @@ export function useChat({ negotiationId, enabled = true }: UseChatOptions) {
     setConnecting(true);
 
     const ws = new WebSocket(
-      `${WS_BASE_URL}/ws/chat/${negotiationId}?token=${token}`
+      `${WS_BASE_URL}/ws/chat/${negotiationId}?token=${token}`,
     );
 
     ws.onopen = () => {
@@ -74,7 +74,7 @@ export function useChat({ negotiationId, enabled = true }: UseChatOptions) {
       if (enabled && reconnectAttempts.current < maxReconnectAttempts) {
         const delay = Math.min(
           1000 * Math.pow(2, reconnectAttempts.current),
-          30000
+          30000,
         );
         reconnectAttempts.current++;
         reconnectTimerRef.current = setTimeout(connect, delay);
@@ -102,18 +102,11 @@ export function useChat({ negotiationId, enabled = true }: UseChatOptions) {
     setConnecting(false);
   }, []);
 
-  const sendMessage = useCallback(
-    (content: string) => {
-      console.log("Intentando enviar mensaje WS:", content);
-      if (wsRef.current?.readyState === WebSocket.OPEN) {
-        wsRef.current.send(JSON.stringify({ content }));
-        console.log("Mensaje enviado exitosamente al WS");
-      } else {
-        console.warn("No se pudo enviar: WS no está abierto. Estado:", wsRef.current?.readyState);
-      }
-    },
-    []
-  );
+  const sendMessage = useCallback((content: string) => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({ content }));
+    }
+  }, []);
 
   // Conectar solo cuando el token y la ID estén listos y no haya una conexión activa
   useEffect(() => {

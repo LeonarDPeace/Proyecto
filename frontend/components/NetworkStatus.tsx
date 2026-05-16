@@ -33,9 +33,15 @@ export default function NetworkStatus() {
         stroke="currentColor"
         strokeWidth={2}
       >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M13 10V3L4 14h7v7l9-11h-7z"
+        />
       </svg>
-      <span className="font-medium text-sm">Sin conexión a Internet. Estás navegando en modo offline.</span>
+      <span className="font-medium text-sm">
+        Sin conexión a Internet. Estás navegando en modo offline.
+      </span>
     </div>
   );
 }

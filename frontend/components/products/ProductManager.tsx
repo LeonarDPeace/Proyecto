@@ -55,10 +55,12 @@ export default function ProductManager() {
       const updated = await api.patch<Product>(
         `/products/${productId}/status`,
         undefined,
-        token
+        token,
       );
       setProducts((prev) =>
-        prev.map((p) => (p.id === productId ? { ...p, is_active: updated.is_active } : p))
+        prev.map((p) =>
+          p.id === productId ? { ...p, is_active: updated.is_active } : p,
+        ),
       );
     } catch (err) {
       alert(err instanceof Error ? err.message : "Error al cambiar estado.");
@@ -93,7 +95,10 @@ export default function ProductManager() {
     return (
       <div className="space-y-3">
         {[1, 2].map((i) => (
-          <div key={i} className="flex items-center gap-4 rounded-lg border border-gray-100 p-4 animate-pulse">
+          <div
+            key={i}
+            className="flex items-center gap-4 rounded-lg border border-gray-100 p-4 animate-pulse"
+          >
             <div className="h-12 w-12 rounded bg-gray-200" />
             <div className="flex-1">
               <div className="h-4 w-1/2 bg-gray-200 rounded mb-2" />
@@ -160,7 +165,9 @@ export default function ProductManager() {
                   product.is_active ? "text-green-600" : "text-red-500"
                 }`}
               >
-                <span className={`h-1.5 w-1.5 rounded-full ${product.is_active ? "bg-green-500" : "bg-red-400"}`} />
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${product.is_active ? "bg-green-500" : "bg-red-400"}`}
+                />
                 {product.is_active ? "Activo" : "Pausado"}
               </span>
             </div>

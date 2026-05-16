@@ -16,13 +16,17 @@ import { useNegotiations, Negotiation } from "@/hooks/useNegotiations";
 import ChatBox from "@/components/chat/ChatBox";
 import PaymentButtons from "@/components/chat/PaymentButtons";
 import DeliveryConfirmation from "@/components/chat/DeliveryConfirmation";
+import OrderTimeline from "@/components/OrderTimeline";
+import NegotiationInvoice from "@/components/chat/NegotiationInvoice";
 import api from "@/lib/api";
 
 const STATUS_LABELS: Record<string, string> = {
   pending: "⏳ Pendiente",
   accepted: "✅ Aceptada",
+  paused: "⏸️ Pausada",
   rejected: "❌ Rechazada",
-  completed: "🎉 Completada",
+  cancelled: "⛔ Cancelada",
+  delivered: "🎉 Entregada",
 };
 
 export default function NegotiationDetailPage() {
@@ -33,6 +37,7 @@ export default function NegotiationDetailPage() {
   const { updateStatus } = useNegotiations();
 
   const [negotiation, setNegotiation] = useState<Negotiation | null>(null);
+  const [productName, setProductName] = useState<string>("Producto");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
@@ -52,9 +57,19 @@ export default function NegotiationDetailPage() {
       try {
         const data = await api.get<Negotiation>(
           `/negotiations/${negotiationId}`,
-          token
+          token,
         );
         setNegotiation(data);
+
+        // Cargar nombre del producto
+        if (data.product_id) {
+          try {
+            const product = await api.get<any>(`/products/${data.product_id}`);
+            setProductName(product.name);
+          } catch {
+            // Fallback al nombre genérico
+          }
+        }
       } catch (err: any) {
         setError(err.message || "Error al cargar la negociación");
       } finally {
@@ -65,7 +80,9 @@ export default function NegotiationDetailPage() {
     fetchDetail();
   }, [token, negotiationId]);
 
-  const handleAcceptReject = async (status: "accepted" | "rejected") => {
+  const handleAcceptReject = async (
+    status: "accepted" | "paused" | "rejected" | "cancelled",
+  ) => {
     setActionLoading(true);
     try {
       const updated = await updateStatus(negotiationId, status);
@@ -83,7 +100,7 @@ export default function NegotiationDetailPage() {
     try {
       const data = await api.get<Negotiation>(
         `/negotiations/${negotiationId}`,
-        token
+        token,
       );
       setNegotiation(data);
     } catch {
@@ -143,42 +160,70 @@ export default function NegotiationDetailPage() {
           ← Mis Negociaciones
         </button>
 
-        {/* Status Banner */}
-        <div className={`neg-detail-banner neg-detail-banner--${negotiation.status}`}>
-          <div className="neg-detail-banner-left">
-            <span className="neg-detail-status">
-              {STATUS_LABELS[negotiation.status] || negotiation.status}
-            </span>
-            <span className="neg-detail-price">
-              {formatPrice(negotiation.agreed_price_cop)}
-            </span>
-          </div>
-          <div className="neg-detail-banner-right">
-            <span className="neg-detail-role">
-              {isBuyer ? "🛒 Eres el Comprador" : "🏪 Eres el Vendedor"}
-            </span>
-          </div>
-        </div>
+        {/* Order Timeline (HU 8.1) */}
+        <OrderTimeline status={negotiation.status} />
 
-        {/* Action Buttons (Vendedor: Aceptar/Rechazar) */}
-        {isSeller && negotiation.status === "pending" && (
-          <div className="neg-actions">
-            <button
-              className="neg-action-btn neg-action-btn--accept"
-              onClick={() => handleAcceptReject("accepted")}
-              disabled={actionLoading}
-            >
-              {actionLoading ? "Procesando…" : "✓ Aceptar Negociación"}
-            </button>
-            <button
-              className="neg-action-btn neg-action-btn--reject"
-              onClick={() => handleAcceptReject("rejected")}
-              disabled={actionLoading}
-            >
-              ✗ Rechazar
-            </button>
-          </div>
-        )}
+        {/* Action Buttons (HU 8.1) */}
+        <div className="neg-actions mb-6">
+          {/* Acciones del Vendedor */}
+          {isSeller && (
+            <div className="flex flex-wrap gap-2">
+              {negotiation.status === "pending" && (
+                <>
+                  <button
+                    className="neg-action-btn neg-action-btn--accept"
+                    onClick={() => handleAcceptReject("accepted")}
+                    disabled={actionLoading}
+                  >
+                    {actionLoading ? "Procesando…" : "✓ Aceptar Pedido"}
+                  </button>
+                  <button
+                    className="neg-action-btn neg-action-btn--reject"
+                    onClick={() => handleAcceptReject("rejected")}
+                    disabled={actionLoading}
+                  >
+                    ✗ Rechazar
+                  </button>
+                </>
+              )}
+              {negotiation.status === "accepted" && (
+                <button
+                  className="neg-action-btn neg-action-btn--pause"
+                  onClick={() => handleAcceptReject("paused")}
+                  disabled={actionLoading}
+                >
+                  {actionLoading ? "Procesando…" : "⏸️ Pausar Pedido"}
+                </button>
+              )}
+              {negotiation.status === "paused" && (
+                <button
+                  className="neg-action-btn neg-action-btn--accept"
+                  onClick={() => handleAcceptReject("accepted")}
+                  disabled={actionLoading}
+                >
+                  {actionLoading ? "Procesando…" : "▶️ Reanudar Pedido"}
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Acciones del Comprador */}
+          {isBuyer && (
+            <div className="flex flex-wrap gap-2">
+              {(negotiation.status === "pending" ||
+                negotiation.status === "accepted" ||
+                negotiation.status === "paused") && (
+                <button
+                  className="neg-action-btn neg-action-btn--cancel"
+                  onClick={() => handleAcceptReject("cancelled")}
+                  disabled={actionLoading}
+                >
+                  {actionLoading ? "Procesando…" : "🚫 Cancelar Pedido"}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Main Content Grid */}
         <div className="neg-detail-grid">
@@ -188,13 +233,23 @@ export default function NegotiationDetailPage() {
               <ChatBox negotiationId={negotiationId} />
             ) : (
               <div className="chat-closed">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.4">
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  opacity="0.4"
+                >
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                 </svg>
                 <p>
-                  {negotiation.status === "completed"
+                  {negotiation.status === "delivered"
                     ? "Transacción completada. El chat está cerrado."
-                    : "Esta negociación fue rechazada. El chat está cerrado."}
+                    : negotiation.status === "cancelled"
+                      ? "Esta negociación fue cancelada. El chat está cerrado."
+                      : "Esta negociación fue rechazada. El chat está cerrado."}
                 </p>
               </div>
             )}
@@ -202,13 +257,23 @@ export default function NegotiationDetailPage() {
 
           {/* Sidebar: Payment + Delivery */}
           <div className="neg-detail-sidebar">
+            {/* Factura Detallada (HU 8.4) */}
+            <NegotiationInvoice
+              negotiation={negotiation}
+              productName={productName}
+            />
+
             {/* Deep Links de pago (HU 6.2/6.3) */}
             {negotiation.status === "accepted" && isBuyer && (
               <PaymentButtons
                 negotiationId={negotiationId}
                 disabled={negotiation.status !== "accepted"}
+                selectedMethod={negotiation.payment_method}
+                onUpdate={(updated) => setNegotiation(updated)}
               />
+
             )}
+
 
             {/* Confirmación de entrega (HU 6.4) */}
             <DeliveryConfirmation

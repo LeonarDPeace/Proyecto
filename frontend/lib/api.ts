@@ -24,7 +24,7 @@ class ApiClient {
 
   private async request<T>(
     endpoint: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<T> {
     const { body, token, headers: customHeaders, ...restOptions } = options;
 
@@ -45,11 +45,14 @@ class ApiClient {
       response = await fetch(`${this.baseUrl}${endpoint}`, {
         ...restOptions,
         headers,
-        body: body !== undefined && body !== null ? JSON.stringify(body) : undefined,
+        body:
+          body !== undefined && body !== null
+            ? JSON.stringify(body)
+            : undefined,
       });
     } catch {
       throw new Error(
-        `No se pudo conectar con la API (${this.baseUrl}${endpoint}). Verifica backend, URL y CORS.`
+        `No se pudo conectar con la API (${this.baseUrl}${endpoint}). Verifica backend, URL y CORS.`,
       );
     }
 
@@ -62,7 +65,7 @@ class ApiClient {
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(
-        error.detail || `Error HTTP ${response.status}: ${response.statusText}`
+        error.detail || `Error HTTP ${response.status}: ${response.statusText}`,
       );
     }
 

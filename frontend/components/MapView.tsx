@@ -42,8 +42,12 @@ export default function MapView({
   onSelectLocation,
   radiusMeters,
 }: MapViewProps) {
-  const defaultLat = parseFloat(process.env.NEXT_PUBLIC_DEFAULT_LAT || "3.3516");
-  const defaultLng = parseFloat(process.env.NEXT_PUBLIC_DEFAULT_LNG || "-76.5320");
+  const defaultLat = parseFloat(
+    process.env.NEXT_PUBLIC_DEFAULT_LAT || "3.3516",
+  );
+  const defaultLng = parseFloat(
+    process.env.NEXT_PUBLIC_DEFAULT_LNG || "-76.5320",
+  );
 
   return (
     <LeafletMap

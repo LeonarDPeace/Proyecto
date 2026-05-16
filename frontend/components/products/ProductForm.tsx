@@ -22,12 +22,17 @@ interface ProductFormData {
   description: string;
   price: string;
   category: string;
+  stock: string;
+  discount_percentage: string;
+  warranty_days: string;
+  is_returnable: boolean;
+  fulfillment_type: string;
 }
 
 interface ProductFormProps {
   mode: "create" | "edit";
   productId?: string;
-  initialData?: ProductFormData & { image_urls?: string };
+  initialData?: ProductFormData & { image_urls?: string, payment_methods?: string[] };
 }
 
 const CATEGORIES = [
@@ -61,7 +66,14 @@ export default function ProductForm({
     description: initialData?.description || "",
     price: initialData?.price || "",
     category: initialData?.category || "comida",
+    stock: initialData?.stock || "1",
+    discount_percentage: initialData?.discount_percentage || "0",
+    warranty_days: initialData?.warranty_days || "0",
+    is_returnable: initialData?.is_returnable || false,
+    fulfillment_type: initialData?.fulfillment_type || "merchant",
   });
+  
+  const [paymentMethods, setPaymentMethods] = useState<string[]>(initialData?.payment_methods || ["efectivo"]);
 
   // Image management: list of URLs (can be external URLs or base64 data URIs)
   const [imageUrls, setImageUrls] = useState<string[]>(() => {
@@ -79,9 +91,18 @@ export default function ProductForm({
   const [error, setError] = useState<string | null>(null);
 
   function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const value = e.target.type === "checkbox" ? (e.target as HTMLInputElement).checked : e.target.value;
+    setForm((prev) => ({ ...prev, [e.target.name]: value }));
+  }
+
+  function handlePaymentMethodToggle(method: string) {
+    setPaymentMethods(prev => 
+      prev.includes(method) ? prev.filter(m => m !== method) : [...prev, method]
+    );
   }
 
   // --- Image handling ---
@@ -117,7 +138,9 @@ export default function ProductForm({
 
     for (const file of filesToProcess) {
       if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-        setError(`"${file.name}" excede ${MAX_FILE_SIZE_MB}MB. Usa una imagen más liviana.`);
+        setError(
+          `"${file.name}" excede ${MAX_FILE_SIZE_MB}MB. Usa una imagen más liviana.`,
+        );
         continue;
       }
 
@@ -166,6 +189,12 @@ export default function ProductForm({
       price,
       category: form.category || null,
       image_urls: imageUrls,
+      stock: parseInt(form.stock) || 0,
+      discount_percentage: parseFloat(form.discount_percentage) || 0.0,
+      warranty_days: parseInt(form.warranty_days) || 0,
+      is_returnable: form.is_returnable,
+      fulfillment_type: form.fulfillment_type,
+      payment_methods: paymentMethods,
     };
 
     try {
@@ -177,7 +206,9 @@ export default function ProductForm({
       router.push("/products");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al guardar el producto.");
+      setError(
+        err instanceof Error ? err.message : "Error al guardar el producto.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -231,7 +262,10 @@ export default function ProductForm({
             required
           />
           <p className="mt-1 text-xs text-gray-400">
-            Vista previa: <span className="font-semibold text-vera-600">{formattedPreview}</span>
+            Vista previa:{" "}
+            <span className="font-semibold text-vera-600">
+              {formattedPreview}
+            </span>
           </p>
         </div>
 
@@ -251,6 +285,79 @@ export default function ProductForm({
               </option>
             ))}
           </select>
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Input
+          label="Stock disponible"
+          name="stock"
+          type="number"
+          min="0"
+          value={form.stock}
+          onChange={handleChange}
+          required
+        />
+        <Input
+          label="Descuento (%)"
+          name="discount_percentage"
+          type="number"
+          min="0"
+          max="100"
+          step="0.1"
+          value={form.discount_percentage}
+          onChange={handleChange}
+        />
+        <Input
+          label="Garantía (días)"
+          name="warranty_days"
+          type="number"
+          min="0"
+          value={form.warranty_days}
+          onChange={handleChange}
+        />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <div>
+          <label className="flex items-center gap-2 cursor-pointer mb-2">
+            <input 
+              type="checkbox"
+              name="is_returnable"
+              checked={form.is_returnable}
+              onChange={handleChange}
+              className="text-vera-600 focus:ring-vera-500 rounded"
+            />
+            <span className="text-sm font-medium text-gray-700">Acepta devoluciones</span>
+          </label>
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Entrega</label>
+            <select
+              name="fulfillment_type"
+              value={form.fulfillment_type}
+              onChange={handleChange}
+              className="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-vera-500 focus:outline-none focus:ring-1 focus:ring-vera-500"
+            >
+              <option value="merchant">Acordar con vendedor</option>
+              <option value="veramarket">VeraMarket Delivery</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Medios de Pago</label>
+          <div className="space-y-2">
+            {["efectivo", "transferencia", "tarjeta"].map(method => (
+              <label key={method} className="flex items-center gap-2 cursor-pointer">
+                <input 
+                  type="checkbox"
+                  checked={paymentMethods.includes(method)}
+                  onChange={() => handlePaymentMethodToggle(method)}
+                  className="text-vera-600 focus:ring-vera-500 rounded"
+                />
+                <span className="text-sm text-gray-600 capitalize">{method}</span>
+              </label>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -303,8 +410,17 @@ export default function ProductForm({
               htmlFor="image-upload"
               className="inline-flex cursor-pointer items-center gap-2 rounded-lg border-2 border-dashed border-vera-300 bg-vera-50/50 px-4 py-3 text-sm font-medium text-vera-700 transition-colors hover:bg-vera-100 hover:border-vera-400"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
-                <path fillRule="evenodd" d="M1 8a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 018.07 3h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0016.07 6H17a2 2 0 012 2v7a2 2 0 01-2 2H3a2 2 0 01-2-2V8zm13.5 3a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM10 14a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="h-5 w-5"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M1 8a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 018.07 3h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0016.07 6H17a2 2 0 012 2v7a2 2 0 01-2 2H3a2 2 0 01-2-2V8zm13.5 3a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM10 14a3 3 0 100-6 3 3 0 000 6z"
+                  clipRule="evenodd"
+                />
               </svg>
               Subir desde dispositivo
             </label>
@@ -353,8 +469,8 @@ export default function ProductForm({
           {submitting
             ? "Guardando…"
             : mode === "create"
-            ? "Publicar Producto"
-            : "Guardar Cambios"}
+              ? "Publicar Producto"
+              : "Guardar Cambios"}
         </Button>
         <Button
           type="button"

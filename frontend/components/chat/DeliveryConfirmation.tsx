@@ -39,7 +39,7 @@ export default function DeliveryConfirmation({
   const isSeller = user?.id === sellerId;
   const myConfirmed = isBuyer ? buyerConfirmed : sellerConfirmed;
   const otherConfirmed = isBuyer ? sellerConfirmed : buyerConfirmed;
-  const isCompleted = status === "completed";
+  const isCompleted = status === "delivered";
 
   const handleConfirm = async () => {
     setLoading(true);
@@ -57,10 +57,19 @@ export default function DeliveryConfirmation({
   if (status !== "accepted" && !isCompleted) return null;
 
   return (
-    <div className={`delivery-confirmation ${isCompleted ? "delivery-confirmation--completed" : ""}`}>
+    <div
+      className={`delivery-confirmation ${isCompleted ? "delivery-confirmation--completed" : ""}`}
+    >
       {isCompleted ? (
         <div className="delivery-completed">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
             <polyline points="22 4 12 14.01 9 11.01" />
           </svg>
@@ -79,10 +88,14 @@ export default function DeliveryConfirmation({
           </p>
 
           <div className="delivery-status-row">
-            <div className={`delivery-check ${buyerConfirmed ? "delivery-check--done" : ""}`}>
+            <div
+              className={`delivery-check ${buyerConfirmed ? "delivery-check--done" : ""}`}
+            >
               {buyerConfirmed ? "✓" : "○"} Comprador
             </div>
-            <div className={`delivery-check ${sellerConfirmed ? "delivery-check--done" : ""}`}>
+            <div
+              className={`delivery-check ${sellerConfirmed ? "delivery-check--done" : ""}`}
+            >
               {sellerConfirmed ? "✓" : "○"} Vendedor
             </div>
           </div>

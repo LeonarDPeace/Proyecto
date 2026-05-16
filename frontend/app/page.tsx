@@ -58,9 +58,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="mt-16 text-center text-xs text-gray-400">
-        <p>
-          VeraMarket &copy; {new Date().getFullYear()} — Sprint 1
-        </p>
+        <p>VeraMarket &copy; {new Date().getFullYear()} — Sprint 5</p>
         <p className="mt-1">
           Campus piloto: Universidad Autónoma de Occidente (UAO)
         </p>

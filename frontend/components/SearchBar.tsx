@@ -5,20 +5,26 @@ import Input from "@/components/ui/Input";
 
 interface SearchBarProps {
   onSearch?: (query: string) => void;
+  onSmartSearch?: (query: string) => void;
   placeholder?: string;
   value?: string;
   onChange?: (query: string) => void;
   loading?: boolean;
+  smartLoading?: boolean;
   onClear?: () => void;
+  smartLabel?: string;
 }
 
 export default function SearchBar({
   onSearch,
+  onSmartSearch,
   placeholder = "Buscar productos en tu campus...",
   value,
   onChange,
   loading = false,
+  smartLoading = false,
   onClear,
+  smartLabel = "Busqueda inteligente",
 }: SearchBarProps) {
   const [internalQuery, setInternalQuery] = useState(value ?? "");
 
@@ -41,6 +47,12 @@ export default function SearchBar({
     e.preventDefault();
     if (onSearch && query.trim()) {
       onSearch(query.trim());
+    }
+  };
+
+  const handleSmartSearch = () => {
+    if (onSmartSearch && query.trim()) {
+      onSmartSearch(query.trim());
     }
   };
 
@@ -69,6 +81,16 @@ export default function SearchBar({
       >
         {loading ? "Buscando..." : "Buscar"}
       </button>
+      {onSmartSearch && (
+        <button
+          type="button"
+          onClick={handleSmartSearch}
+          disabled={loading || smartLoading}
+          className="rounded-lg border border-vera-200 bg-white px-4 py-2 text-sm font-semibold text-vera-700 hover:bg-vera-50 transition-colors"
+        >
+          {smartLoading ? "Analizando..." : smartLabel}
+        </button>
+      )}
     </form>
   );
 }

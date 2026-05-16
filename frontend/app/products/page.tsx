@@ -1,14 +1,8 @@
 "use client";
 
-/**
- * Página — Catálogo de Productos (Sprint 3).
- *
- * Obtiene los productos activos de la API y los muestra en un grid.
- * Incluye filtro por categoría y enlace à "Publicar" para vendedores.
- */
-
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 
 import api from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
@@ -26,9 +20,9 @@ interface Product {
   seller_id: string;
   created_at: string;
   updated_at: string;
-  seller_lat?: number | null;
-  seller_lng?: number | null;
-  seller_location_label?: string | null;
+  discount_percentage?: number;
+  stock?: number;
+  is_returnable?: boolean;
 }
 
 interface ProductSearchMeta {
@@ -36,6 +30,14 @@ interface ProductSearchMeta {
   reason: string | null;
   quota_remaining: number | null;
   quota_limit: number | null;
+  category_applied?: string | null;
+  subcategory_applied?: string | null;
+  condition_applied?: string | null;
+  brand_applied?: string | null;
+  has_free_shipping_applied?: boolean | null;
+  min_price_applied?: number | null;
+  max_price_applied?: number | null;
+  tags_applied?: string[];
 }
 
 interface ProductSearchResponse {
@@ -51,18 +53,22 @@ interface SearchQuota {
   remaining: number;
 }
 
+interface Filters {
+  category: string;
+  min_price: string;
+  max_price: string;
+  availability: string;
+  warranty: string;
+  payment_methods: string[];
+}
+
 const CATEGORIES = [
   { value: "", label: "Todas" },
-  { value: "comida", label: "🍔 Comida/Supermercado" },
+  { value: "comida", label: "🍔 Comida" },
   { value: "tecnologia", label: "💻 Tecnología" },
   { value: "moda", label: "👕 Moda" },
-  { value: "hogar", label: "🛋️ Hogar" },
-  { value: "deportes", label: "⚽ Deportes" },
-  { value: "belleza", label: "💅 Belleza" },
   { value: "academico", label: "📚 Académico" },
-  { value: "entretenimiento", label: "🎮 Entretenimiento" },
   { value: "servicios", label: "🔧 Servicios" },
-  { value: "vehiculos", label: "🚗 Vehículos" },
   { value: "otros", label: "📦 Otros" },
 ];
 
@@ -73,23 +79,53 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [category, setCategory] = useState("");
+  
   const [queryInput, setQueryInput] = useState("");
   const [query, setQuery] = useState("");
+  const [searchMode, setSearchMode] = useState<"standard" | "smart" | null>(null);
+  
+  const [filters, setFilters] = useState<Filters>({
+    category: "",
+    min_price: "",
+    max_price: "",
+    availability: "",
+    warranty: "",
+    payment_methods: [],
+  });
+
   const [searchMeta, setSearchMeta] = useState<ProductSearchMeta | null>(null);
   const [quota, setQuota] = useState<SearchQuota | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [isMounted, setIsMounted] = useState(false);
+
+  // HU 8.8: Persistencia del modo de visualización
+  useEffect(() => {
+    setIsMounted(true);
+    const saved = localStorage.getItem("veramarket_catalog_view");
+
+    if (saved === "grid" || saved === "list") setViewMode(saved);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("veramarket_catalog_view", viewMode);
+  }, [viewMode]);
+
+  // Sincronización reactiva: si el input está vacío, limpiar la búsqueda automáticamente
+  useEffect(() => {
+    if (queryInput === "" && query !== "") {
+      setQuery("");
+      setSearchMode(null);
+    }
+  }, [queryInput, query]);
 
   const fetchQuota = useCallback(async () => {
-    if (!token) {
-      setQuota(null);
-      return;
-    }
 
+    if (!token) return;
     try {
       const data = await api.get<SearchQuota>("/users/me/search-quota", token);
       setQuota(data);
     } catch {
-      // Si falla, solo ocultamos indicador para no bloquear catálogo.
       setQuota(null);
     }
   }, [token]);
@@ -99,16 +135,43 @@ export default function ProductsPage() {
     setError(null);
 
     try {
-      if (query.trim()) {
-        const params = new URLSearchParams({ q: query.trim(), limit: "50" });
-        if (category) {
-          params.set("category", category);
-        }
+      let activeFilters: any = {};
+      if (filters.category) activeFilters.category = filters.category;
+      if (filters.min_price) activeFilters.min_price = parseFloat(filters.min_price);
+      if (filters.max_price) activeFilters.max_price = parseFloat(filters.max_price);
+      if (filters.availability) activeFilters.availability = filters.availability;
+      if (filters.warranty) activeFilters.warranty = filters.warranty;
+      if (filters.payment_methods.length > 0) activeFilters.payment_methods = filters.payment_methods;
 
-        const data = await api.get<ProductSearchResponse>(
-          `/products/search?${params.toString()}`,
-          token || undefined
-        );
+      if (query.trim() || Object.keys(activeFilters).length > 0) {
+        let data: ProductSearchResponse;
+
+        if (searchMode === "smart") {
+          data = await api.post<ProductSearchResponse>(
+            "/products/search/intelligent",
+            {
+              query: query.trim() || "all",
+              filters: activeFilters,
+              limit: 50,
+            },
+            token || undefined,
+          );
+        } else {
+          const params = new URLSearchParams({
+            q: query.trim() || "*",
+            limit: "50",
+            use_semantic: "false",
+          });
+          Object.entries(activeFilters).forEach(([k, v]) => {
+            if (Array.isArray(v)) v.forEach(val => params.append(k, val));
+            else params.set(k, String(v));
+          });
+
+          data = await api.get<ProductSearchResponse>(
+            `/products/search?${params.toString()}`,
+            token || undefined,
+          );
+        }
 
         setProducts(data.items);
         setSearchMeta(data.meta);
@@ -117,15 +180,12 @@ export default function ProductsPage() {
           setQuota((prev) => ({
             business_date: prev?.business_date || new Date().toISOString().slice(0, 10),
             daily_limit: data.meta.quota_limit as number,
-            searches_used: prev?.daily_limit
-              ? Math.max(0, (data.meta.quota_limit as number) - (data.meta.quota_remaining as number))
-              : Math.max(0, (data.meta.quota_limit as number) - (data.meta.quota_remaining as number)),
+            searches_used: (data.meta.quota_limit as number) - (data.meta.quota_remaining as number),
             remaining: data.meta.quota_remaining as number,
           }));
         }
       } else {
-        const listQuery = category ? `?category=${category}&limit=50` : "?limit=50";
-        const data = await api.get<Product[]>(`/products/${listQuery}`);
+        const data = await api.get<Product[]>("/products/?limit=50");
         setProducts(data);
         setSearchMeta(null);
       }
@@ -134,171 +194,265 @@ export default function ProductsPage() {
     } finally {
       setLoading(false);
     }
-  }, [category, query, token]);
+  }, [filters, query, searchMode, token]);
 
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchQuota();
-    } else {
-      setQuota(null);
-    }
+    if (isAuthenticated) fetchQuota();
+    else setQuota(null);
   }, [fetchQuota, isAuthenticated]);
 
-  const searchBanner =
-    searchMeta?.search_mode === "semantic"
-      ? "Búsqueda inteligente activada"
-      : searchMeta?.search_mode === "fallback_fulltext"
-      ? "Búsqueda inteligente no disponible, usando full-text"
-      : null;
+  const togglePaymentMethod = (method: string) => {
+    setFilters(prev => ({
+      ...prev,
+      payment_methods: prev.payment_methods.includes(method)
+        ? prev.payment_methods.filter(m => m !== method)
+        : [...prev.payment_methods, method]
+    }));
+  };
+
+  const applySearch = (nextQuery: string, mode: "standard" | "smart") => {
+    setSearchMode(mode);
+    setQuery(nextQuery);
+  };
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8 flex flex-col md:flex-row gap-6">
+        
+        {/* Mobile Sidebar Toggle */}
+        <div className="md:hidden flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold text-gray-900">Catálogo</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Productos disponibles en tu campus
-          </p>
-        </div>
-
-        {isAuthenticated && isSeller && (
-          <Link
-            href="/products/new"
-            className="inline-flex items-center gap-2 rounded-lg bg-vera-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-vera-700 transition-colors"
+          <button 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="p-2 bg-white rounded-md shadow-sm border border-gray-200"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
-              <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-            </svg>
-            Publicar Producto
-          </Link>
-        )}
-      </div>
-
-      {/* Búsqueda */}
-      <div className="mt-6">
-        <SearchBar
-          value={queryInput}
-          onChange={setQueryInput}
-          onSearch={(nextQuery) => setQuery(nextQuery)}
-          onClear={() => {
-            setQueryInput("");
-            setQuery("");
-          }}
-          loading={loading}
-          placeholder="Busca por texto natural: 'algo pa picar', 'mecato', 'audífonos baratos'"
-        />
-      </div>
-
-      {/* Estado de búsqueda/cuota */}
-      {(searchBanner || (isAuthenticated && quota)) && (
-        <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          {searchBanner ? (
-            <p
-              className={`text-xs font-medium ${
-                searchMeta?.search_mode === "semantic"
-                  ? "text-emerald-700"
-                  : "text-amber-700"
-              }`}
-            >
-              {searchBanner}
-            </p>
-          ) : (
-            <span />
-          )}
-
-          {isAuthenticated && quota && (
-            <p className="text-xs text-gray-600">
-              Quedan <span className="font-semibold text-vera-700">{quota.remaining}</span> búsquedas inteligentes hoy
-            </p>
-          )}
-        </div>
-      )}
-
-      {/* Filtro de Categoría por Menú Desplegable */}
-      <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-3">
-        <label htmlFor="category-select" className="text-sm font-medium text-gray-700">
-          Explorar por categoría:
-        </label>
-        <div className="relative max-w-sm w-full">
-          <select
-            id="category-select"
-            value={category}
-            onChange={(e) => {
-              setCategory(e.target.value);
-              setQuery(""); // Resetea el texto para evitar colisiones
-              setQueryInput("");
-            }}
-            className="block w-full appearance-none rounded-lg border border-gray-300 bg-white px-4 py-2.5 pr-10 text-sm font-medium text-gray-700 shadow-sm transition-all focus:border-vera-500 focus:outline-none focus:ring-2 focus:ring-vera-500/20"
-          >
-            {CATEGORIES.map((cat) => (
-              <option key={cat.value} value={cat.value}>
-                {cat.label}
-              </option>
-            ))}
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
-              <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
-            </svg>
-          </div>
-        </div>
-      </div>
-
-      {/* Error */}
-      {error && (
-        <div className="mt-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-          {error}
-          <button onClick={fetchProducts} className="ml-2 underline">
-            Reintentar
+            Filtros
           </button>
         </div>
-      )}
 
-      {/* Grid de productos */}
-      {loading ? (
-        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="rounded-lg border border-gray-100 p-4 shadow-sm">
-              <div className="aspect-[4/3] w-full bg-gray-200 rounded-md animate-pulse mb-4" />
-              <div className="h-5 w-3/4 bg-gray-200 rounded animate-pulse mb-3" />
-              <div className="h-4 w-1/2 bg-gray-100 rounded animate-pulse mb-4" />
-              <div className="h-6 w-1/3 bg-gray-300 rounded animate-pulse" />
-            </div>
-          ))}
-        </div>
-      ) : products.length === 0 ? (
-        <div className="mt-8 rounded-lg border border-dashed border-gray-300 p-12 text-center">
-          <p className="text-3xl mb-3">📦</p>
-          <p className="text-gray-500 text-sm">
-            {query
-              ? "No encontramos resultados para esa búsqueda."
-              : category
-              ? "No hay productos en esta categoría."
-              : "No hay productos publicados aún."}
-          </p>
-          {isAuthenticated && isSeller && (
-            <Link
-              href="/products/new"
-              className="mt-4 inline-block text-sm font-medium text-vera-600 hover:underline"
+        {/* Sidebar Filters */}
+        <AnimatePresence>
+          {isMounted && (isSidebarOpen || window.innerWidth >= 768) && (
+            <motion.aside 
+              initial={{ x: -300, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -300, opacity: 0 }}
+              className={`fixed md:relative z-40 inset-y-0 left-0 w-64 bg-white/80 backdrop-blur-xl border-r md:border border-gray-200 p-6 md:rounded-2xl shadow-xl md:shadow-sm overflow-y-auto ${!isSidebarOpen && 'hidden md:block'}`}
             >
-              ¡Sé el primero en publicar!
-            </Link>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-lg font-bold text-gray-900">Filtros</h2>
+                <button className="md:hidden" onClick={() => setIsSidebarOpen(false)}>✕</button>
+              </div>
+
+              {/* Categorías */}
+              <div className="mb-6">
+                <h3 className="font-semibold text-sm text-gray-700 mb-3">Categoría</h3>
+                <div className="space-y-2">
+                  {CATEGORIES.map(cat => (
+                    <label key={cat.value} className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="radio" 
+                        name="category"
+                        checked={filters.category === cat.value}
+                        onChange={() => setFilters({ ...filters, category: cat.value })}
+                        className="text-vera-600 focus:ring-vera-500"
+                      />
+                      <span className="text-sm text-gray-700">{cat.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Precio */}
+              <div className="mb-6">
+                <h3 className="font-semibold text-sm text-gray-700 mb-3">Precio (COP)</h3>
+                <div className="flex gap-2">
+                  <input 
+                    type="number" 
+                    placeholder="Min" 
+                    value={filters.min_price}
+                    onChange={(e) => setFilters({ ...filters, min_price: e.target.value })}
+                    className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded-md focus:ring-1 focus:ring-vera-500"
+                  />
+                  <input 
+                    type="number" 
+                    placeholder="Max" 
+                    value={filters.max_price}
+                    onChange={(e) => setFilters({ ...filters, max_price: e.target.value })}
+                    className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded-md focus:ring-1 focus:ring-vera-500"
+                  />
+                </div>
+              </div>
+
+              {/* Disponibilidad */}
+              <div className="mb-6">
+                <h3 className="font-semibold text-sm text-gray-700 mb-3">Disponibilidad</h3>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    checked={filters.availability === "in_stock"}
+                    onChange={(e) => setFilters({ ...filters, availability: e.target.checked ? "in_stock" : "" })}
+                    className="rounded text-vera-600 focus:ring-vera-500"
+                  />
+                  <span className="text-sm text-gray-700">En stock</span>
+                </label>
+              </div>
+
+              {/* Métodos de Pago */}
+              <div className="mb-6">
+                <h3 className="font-semibold text-sm text-gray-700 mb-3">Medios de Pago</h3>
+                <div className="space-y-2">
+                  {["efectivo", "transferencia", "tarjeta"].map(method => (
+                    <label key={method} className="flex items-center gap-2 cursor-pointer">
+                      <input 
+                        type="checkbox"
+                        checked={filters.payment_methods.includes(method)}
+                        onChange={() => togglePaymentMethod(method)}
+                        className="rounded text-vera-600 focus:ring-vera-500"
+                      />
+                      <span className="text-sm text-gray-700 capitalize">{method}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <button 
+                onClick={() => {
+                  setFilters({ category: "", min_price: "", max_price: "", availability: "", warranty: "", payment_methods: [] });
+                  setQuery("");
+                  setQueryInput("");
+                  setSearchMode(null);
+                }}
+                className="w-full mt-4 py-2 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+              >
+                Limpiar Filtros
+              </button>
+            </motion.aside>
           )}
+        </AnimatePresence>
+
+        {/* Content Area */}
+        <div className="flex-1 w-full">
+          <div className="hidden md:flex justify-between items-center mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Catálogo P2P</h1>
+              <p className="mt-1 text-sm text-gray-500">Encuentra productos cerca de ti.</p>
+            </div>
+            <div className="flex items-center gap-4">
+              {/* HU 8.8: Layout Toggle */}
+              <div className="flex bg-gray-100 p-1 rounded-xl border border-gray-200">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`p-2 rounded-lg transition-all ${viewMode === "grid" ? "bg-white shadow-sm text-vera-600" : "text-gray-400 hover:text-gray-600"}`}
+                  title="Vista Cuadrícula"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="3" width="7" height="7" rx="1" />
+                    <rect x="14" y="14" width="7" height="7" rx="1" />
+                    <rect x="3" y="14" width="7" height="7" rx="1" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`p-2 rounded-lg transition-all ${viewMode === "list" ? "bg-white shadow-sm text-vera-600" : "text-gray-400 hover:text-gray-600"}`}
+                  title="Vista Lista"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="8" y1="6" x2="21" y2="6" />
+                    <line x1="8" y1="12" x2="21" y2="12" />
+                    <line x1="8" y1="18" x2="21" y2="18" />
+                    <line x1="3" y1="6" x2="3.01" y2="6" />
+                    <line x1="3" y1="12" x2="3.01" y2="12" />
+                    <line x1="3" y1="18" x2="3.01" y2="18" />
+                  </svg>
+                </button>
+              </div>
+
+              {isAuthenticated && isSeller && (
+                <Link href="/products/new">
+                  <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="bg-vera-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-vera-600/30"
+                  >
+                    + Publicar Producto
+                  </motion.button>
+                </Link>
+              )}
+            </div>
+          </div>
+
+          <SearchBar
+            value={queryInput}
+            onChange={setQueryInput}
+            onSearch={(nextQuery) => applySearch(nextQuery, "standard")}
+            onSmartSearch={(nextQuery) => applySearch(nextQuery, "smart")}
+            smartLoading={loading && searchMode === "smart"}
+            onClear={() => { setQueryInput(""); setQuery(""); setSearchMode(null); }}
+            loading={loading}
+            placeholder="Ej: audífonos baratos, mecato con transferencia..."
+          />
+
+          {/* Quota & Meta */}
+          <div className="mt-4 flex flex-wrap justify-between items-center gap-2">
+            {searchMeta?.search_mode === "semantic" && (
+               <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                 ✨ Búsqueda Inteligente (Gemini AI)
+               </span>
+            )}
+            {isAuthenticated && quota && (
+              <span className="text-xs text-gray-500">
+                Cuota IA: <strong className="text-vera-600">{quota.remaining}</strong> restantes hoy
+              </span>
+            )}
+          </div>
+
+          {error && (
+            <div className="mt-6 p-4 bg-red-50 text-red-700 text-sm rounded-xl border border-red-100">
+              {error}
+            </div>
+          )}
+
+          {/* Grid/List Container */}
+          {loading ? (
+            <div className={`mt-8 ${viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}`}>
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className={`bg-gray-100 rounded-2xl animate-pulse ${viewMode === "grid" ? "h-64" : "h-32"}`} />
+              ))}
+            </div>
+          ) : products.length === 0 ? (
+            <div className="mt-12 text-center">
+              <span className="text-4xl">📭</span>
+              <p className="mt-4 text-gray-500 font-medium">No se encontraron resultados.</p>
+            </div>
+          ) : (
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              className={`mt-8 ${viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" : "flex flex-col gap-4"}`}
+            >
+              {products.map((product, i) => (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                >
+                  <Link href={`/products/${product.id}`}>
+                    <ProductCard product={product} variant={viewMode} />
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+
         </div>
-      ) : (
-        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => (
-            <Link key={product.id} href={`/products/${product.id}`}>
-              <ProductCard product={product} />
-            </Link>
-          ))}
-        </div>
-      )}
-    </main>
+      </main>
+    </div>
   );
 }

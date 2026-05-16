@@ -13,7 +13,9 @@ export interface User {
   name: string;
   email: string;
   role: "vendedor" | "comprador";
+  vendor_status?: "pending" | "approved" | "rejected";
   is_verified: boolean;
+
   institutional_id?: string;
   phone?: string | null;
   show_email?: boolean;
@@ -25,36 +27,43 @@ interface AuthState {
   token: string | null;
   isNewUser: boolean;
   isHydrated: boolean;
+  viewMode: "vendedor" | "comprador" | null;
   login: (token: string, user: User, isNewUser?: boolean) => void;
   logout: () => void;
   setUser: (user: User) => void;
   setIsNewUser: (value: boolean) => void;
+  toggleViewMode: () => void;
   hydrate: () => void;
 }
 
 const TOKEN_KEY = "veramarket_token";
 const USER_KEY = "veramarket_user";
+const VIEW_MODE_KEY = "veramarket_view_mode";
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   token: null,
   isNewUser: false,
   isHydrated: false,
+  viewMode: null,
 
   login: (token: string, user: User, isNewUser = false) => {
+    const viewMode = user.role;
     if (typeof window !== "undefined") {
       localStorage.setItem(TOKEN_KEY, token);
       localStorage.setItem(USER_KEY, JSON.stringify(user));
+      localStorage.setItem(VIEW_MODE_KEY, viewMode);
     }
-    set({ token, user, isNewUser });
+    set({ token, user, isNewUser, viewMode });
   },
 
   logout: () => {
     if (typeof window !== "undefined") {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
+      localStorage.removeItem(VIEW_MODE_KEY);
     }
-    set({ user: null, token: null, isNewUser: false });
+    set({ user: null, token: null, isNewUser: false, viewMode: null });
   },
 
   setUser: (user: User) => {
@@ -64,12 +73,23 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user });
   },
 
+  toggleViewMode: () => {
+    const current = get().viewMode;
+    const next = current === "vendedor" ? "comprador" : "vendedor";
+    if (typeof window !== "undefined") {
+      localStorage.setItem(VIEW_MODE_KEY, next);
+    }
+    set({ viewMode: next });
+  },
+
   setIsNewUser: (value: boolean) => set({ isNewUser: value }),
 
   hydrate: () => {
     if (typeof window === "undefined") return;
     const token = localStorage.getItem(TOKEN_KEY);
     const userStr = localStorage.getItem(USER_KEY);
+    const viewMode = localStorage.getItem(VIEW_MODE_KEY) as any;
+
     let user: User | null = null;
     if (userStr) {
       try {
@@ -78,6 +98,6 @@ export const useAuthStore = create<AuthState>((set) => ({
         localStorage.removeItem(USER_KEY);
       }
     }
-    set({ token, user, isHydrated: true });
+    set({ token, user, viewMode: viewMode || user?.role || null, isHydrated: true });
   },
 }));

@@ -22,7 +22,9 @@ interface SearchResponse {
 }
 
 const DEFAULT_LAT = parseFloat(process.env.NEXT_PUBLIC_DEFAULT_LAT || "3.3516");
-const DEFAULT_LNG = parseFloat(process.env.NEXT_PUBLIC_DEFAULT_LNG || "-76.5320");
+const DEFAULT_LNG = parseFloat(
+  process.env.NEXT_PUBLIC_DEFAULT_LNG || "-76.5320",
+);
 
 export default function MapPage() {
   const { token } = useAuth();
@@ -49,11 +51,13 @@ export default function MapPage() {
 
       const response = await api.get<SearchResponse>(
         `/products/search?${params.toString()}`,
-        token || undefined
+        token || undefined,
       );
       setItems(response.items);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No fue posible cargar el mapa");
+      setError(
+        err instanceof Error ? err.message : "No fue posible cargar el mapa",
+      );
       setItems([]);
     } finally {
       setLoading(false);
@@ -69,24 +73,27 @@ export default function MapPage() {
       items
         .filter(
           (item) =>
-            typeof item.seller_lat === "number" && typeof item.seller_lng === "number"
+            typeof item.seller_lat === "number" &&
+            typeof item.seller_lng === "number",
         )
         .map((item) => ({
           id: item.id,
           lat: item.seller_lat as number,
           lng: item.seller_lng as number,
           label: item.name,
-          subtitle: item.seller_location_label || item.category || "Vendedor en campus",
+          subtitle:
+            item.seller_location_label || item.category || "Vendedor en campus",
           distanceMeters: item.distance_meters ?? null,
         })),
-    [items]
+    [items],
   );
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <h1 className="text-2xl font-bold text-gray-900">Mapa del Campus</h1>
       <p className="mt-2 text-sm text-gray-500">
-        Vendedores cercanos a UAO, Cali. La búsqueda usa el mismo motor del catálogo.
+        Vendedores cercanos a UAO, Cali. La búsqueda usa el mismo motor del
+        catálogo.
       </p>
 
       <div className="mt-6 grid gap-3 lg:grid-cols-[1fr_auto]">
@@ -134,7 +141,8 @@ export default function MapPage() {
       </div>
 
       <p className="mt-3 text-xs text-gray-500">
-        Resultados: {items.length} productos, {mapPoints.length} con coordenadas visibles en mapa.
+        Resultados: {items.length} productos, {mapPoints.length} con coordenadas
+        visibles en mapa.
       </p>
     </main>
   );

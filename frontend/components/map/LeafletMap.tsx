@@ -59,7 +59,9 @@ export default function LeafletMap({
   radiusMeters,
 }: LeafletMapProps) {
   return (
-    <div className={`w-full overflow-hidden rounded-xl border border-gray-200 ${heightClassName}`}>
+    <div
+      className={`w-full overflow-hidden rounded-xl border border-gray-200 ${heightClassName}`}
+    >
       <MapContainer
         center={[centerLat, centerLng]}
         zoom={zoom}
@@ -86,14 +88,24 @@ export default function LeafletMap({
             key={point.id}
             center={[point.lat, point.lng]}
             radius={8}
-            pathOptions={{ color: "#1d4ed8", fillColor: "#2563eb", fillOpacity: 0.85 }}
+            pathOptions={{
+              color: "#1d4ed8",
+              fillColor: "#2563eb",
+              fillOpacity: 0.85,
+            }}
           >
             <Popup>
               <div className="space-y-1">
-                <p className="text-sm font-semibold text-gray-900">{point.label}</p>
-                {point.subtitle && <p className="text-xs text-gray-600">{point.subtitle}</p>}
+                <p className="text-sm font-semibold text-gray-900">
+                  {point.label}
+                </p>
+                {point.subtitle && (
+                  <p className="text-xs text-gray-600">{point.subtitle}</p>
+                )}
                 {typeof point.distanceMeters === "number" && (
-                  <p className="text-xs text-gray-500">Aprox. {Math.round(point.distanceMeters)} m</p>
+                  <p className="text-xs text-gray-500">
+                    Aprox. {Math.round(point.distanceMeters)} m
+                  </p>
                 )}
               </div>
             </Popup>
@@ -104,12 +116,17 @@ export default function LeafletMap({
           <CircleMarker
             center={[selectedLocation.lat, selectedLocation.lng]}
             radius={10}
-            pathOptions={{ color: "#dc2626", fillColor: "#ef4444", fillOpacity: 0.85 }}
+            pathOptions={{
+              color: "#dc2626",
+              fillColor: "#ef4444",
+              fillOpacity: 0.85,
+            }}
           >
             <Popup>
               <p className="text-sm font-semibold">Tu ubicación seleccionada</p>
               <p className="text-xs text-gray-600">
-                {selectedLocation.lat.toFixed(5)}, {selectedLocation.lng.toFixed(5)}
+                {selectedLocation.lat.toFixed(5)},{" "}
+                {selectedLocation.lng.toFixed(5)}
               </p>
             </Popup>
           </CircleMarker>

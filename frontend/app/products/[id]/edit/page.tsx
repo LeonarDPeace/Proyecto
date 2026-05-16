@@ -23,6 +23,12 @@ interface Product {
   image_urls: string[];
   is_active: boolean;
   seller_id: string;
+  stock?: number;
+  discount_percentage?: number;
+  warranty_days?: number;
+  is_returnable?: boolean;
+  fulfillment_type?: string;
+  payment_methods?: string[];
 }
 
 export default function EditProductPage({
@@ -44,7 +50,7 @@ export default function EditProductPage({
         setProduct(data);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "No se pudo cargar el producto."
+          err instanceof Error ? err.message : "No se pudo cargar el producto.",
         );
       } finally {
         setLoading(false);
@@ -87,9 +93,7 @@ export default function EditProductPage({
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">
-        Editar Producto
-      </h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-2">Editar Producto</h1>
       <p className="text-sm text-gray-500 mb-8">
         Modifica los campos que necesites y guarda tus cambios.
       </p>
@@ -102,7 +106,13 @@ export default function EditProductPage({
           description: product.description || "",
           price: String(product.price),
           category: product.category || "otros",
+          stock: String(product.stock ?? 1),
+          discount_percentage: String(product.discount_percentage ?? 0),
+          warranty_days: String(product.warranty_days ?? 0),
+          is_returnable: product.is_returnable ?? false,
+          fulfillment_type: product.fulfillment_type ?? "merchant",
           image_urls: product.image_urls.join(", "),
+          payment_methods: product.payment_methods ?? ["efectivo"],
         }}
       />
     </main>
