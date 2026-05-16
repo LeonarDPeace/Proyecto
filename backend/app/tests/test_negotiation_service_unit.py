@@ -227,7 +227,9 @@ async def test_update_negotiation_status_logic():
     db = AsyncMock()
     seller_id = uuid.uuid4()
     neg_id = uuid.uuid4()
-    fake_neg = MagicMock(spec=Negotiation, seller_id=seller_id, buyer_id=uuid.uuid4(), status="pending")
+    fake_neg = MagicMock(
+        spec=Negotiation, seller_id=seller_id, buyer_id=uuid.uuid4(), status="pending"
+    )
 
     mock_result = MagicMock()
     mock_result.scalar_one_or_none.return_value = fake_neg

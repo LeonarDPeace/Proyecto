@@ -53,7 +53,11 @@ async def test_create_rating():
         async with AsyncClient(transport=transport, base_url="http://test") as client:
             response = await client.post(
                 "/api/v1/ratings/",
-                json={"negotiation_id": str(neg_id), "stars": 5, "comment": "Excelente!"},
+                json={
+                    "negotiation_id": str(neg_id),
+                    "stars": 5,
+                    "comment": "Excelente!",
+                },
             )
 
     app.dependency_overrides.clear()
@@ -101,7 +105,8 @@ async def test_list_user_ratings():
     app.dependency_overrides[get_db] = override_get_db
 
     with patch(
-        "app.routers.ratings.rating_service.list_ratings_for_user", new_callable=AsyncMock
+        "app.routers.ratings.rating_service.list_ratings_for_user",
+        new_callable=AsyncMock,
     ) as mock_list:
         mock_list.return_value = [fake_rating]
         transport = ASGITransport(app=app)

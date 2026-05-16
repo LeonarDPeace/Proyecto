@@ -67,15 +67,17 @@ async def test_create_coupon():
 async def test_create_coupon_forbidden_for_buyer():
     """Un comprador no puede crear cupones."""
     buyer_id = uuid.uuid4()
-    app.dependency_overrides[get_current_user] = lambda: _mock_user(buyer_id, role="comprador")
-    
+    app.dependency_overrides[get_current_user] = lambda: _mock_user(
+        buyer_id, role="comprador"
+    )
+
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         response = await client.post(
             "/api/v1/coupons/",
             json={"code": "DESC10", "discount_percent": 10.0},
         )
-    
+
     app.dependency_overrides.clear()
     assert response.status_code == 403
 
@@ -98,7 +100,11 @@ async def test_validate_coupon():
         async with AsyncClient(transport=transport, base_url="http://test") as client:
             response = await client.get(
                 "/api/v1/coupons/validate",
-                params={"code": "DESC10", "seller_id": str(uuid.uuid4()), "subtotal": 50000},
+                params={
+                    "code": "DESC10",
+                    "seller_id": str(uuid.uuid4()),
+                    "subtotal": 50000,
+                },
             )
 
     app.dependency_overrides.clear()

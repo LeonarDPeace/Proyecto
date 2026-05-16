@@ -26,7 +26,8 @@ async def test_get_analytics_summary():
     app.dependency_overrides[get_db] = override_get_db
 
     with patch(
-        "app.routers.analytics.analytics_service.get_seller_summary", new_callable=AsyncMock
+        "app.routers.analytics.analytics_service.get_seller_summary",
+        new_callable=AsyncMock,
     ) as mock_summary:
         mock_summary.return_value = {
             "seller_id": user_id,
@@ -39,7 +40,9 @@ async def test_get_analytics_summary():
         }
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            response = await client.get("/api/v1/analytics/summary", params={"period": "month"})
+            response = await client.get(
+                "/api/v1/analytics/summary", params={"period": "month"}
+            )
 
     app.dependency_overrides.clear()
     assert response.status_code == 200
@@ -54,7 +57,8 @@ async def test_get_analytics_timeline():
     app.dependency_overrides[get_db] = override_get_db
 
     with patch(
-        "app.routers.analytics.analytics_service.get_seller_timeline", new_callable=AsyncMock
+        "app.routers.analytics.analytics_service.get_seller_timeline",
+        new_callable=AsyncMock,
     ) as mock_timeline:
         mock_timeline.return_value = [
             {"date": "2023-10-01", "revenue_cop": 50000.0, "transaction_count": 2},
@@ -62,10 +66,11 @@ async def test_get_analytics_timeline():
         ]
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            response = await client.get("/api/v1/analytics/timeline", params={"period": "month"})
+            response = await client.get(
+                "/api/v1/analytics/timeline", params={"period": "month"}
+            )
 
     app.dependency_overrides.clear()
-    from app.models.user import User # fix for missing mock import if needed later
     assert response.status_code == 200
     assert len(response.json()) == 2
     assert response.json()[0]["revenue_cop"] == 50000.0
