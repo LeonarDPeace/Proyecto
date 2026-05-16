@@ -254,9 +254,9 @@ El pipeline de GitHub Actions (`.github/workflows/ci-cd.yml`) ejecuta:
 | 0      | Setup monorepo, modelos, esqueletos, CI/CD           | ✅ Finalizado |
 | 1      | Auth (OTP, Sinapsis), CRUD productos, perfil usuario | ✅ Finalizado |
 | 2      | Core PWA, notificaciones push, UX Offline loaders    | ✅ Finalizado |
-| 3      | Catálogo inteligente híbrido + mapa interactivo       | 🟡 En curso |
-| 4      | Recomendaciones IA (VeraMatch) + mejoras de ranking   | 🔲        |
-| 5      | QA, tests E2E, deploy producción, reputación         | 🔲        |
+| 3      | Búsqueda híbrida (Gemini + Typesense), mapa interactivo (PostGIS)        | ✅ Finalizado |
+| 4      | Chat P2P (WebSockets), Deep Links Nequi/DaviPlata, GMV                   | ✅ Finalizado |
+| 5      | Moderación, reputación, pedidos avanzados, cupones, dashboard financiero  | ✅ Finalizado |
 
 ---
 
