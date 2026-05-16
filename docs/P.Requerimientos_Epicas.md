@@ -218,9 +218,9 @@
 
 **Criterios de Aceptación:**
 
-- Se envía la consulta a la API de OpenAI (GPT-4o-mini).
+- Se envía la consulta a la API de Google Gemini (Gemini 2 Flash) para interpretación NLU, que extrae intención y categoría.
 
-- *Arquitectura:* Si la API de OpenAI falla o hay límite de uso, el sistema hace un *fallback* automático a la búsqueda tradicional de la HU 4.1.
+- *Arquitectura:* Si la API de Gemini falla o hay límite de uso, el sistema hace un *fallback* automático a la búsqueda tradicional de la HU 4.1 (Typesense Full-Text Search).
 
 <!-- -->
 
@@ -461,9 +461,9 @@
 
 - **RF-07 (Enlaces de Pago Externos):** El sistema debe generar botones que abran directamente las aplicaciones de billeteras digitales (Nequi/DaviPlata) instaladas en el dispositivo del usuario.
 
-- [**RF-08 (Calificación):** El sistema debe permitir a las partes evaluarse mutuamente (1 a 5 estrellas) una vez concluida una transacción.]{.mark}
+- **RF-08 (Calificación):** El sistema debe permitir a las partes evaluarse mutuamente (1 a 5 estrellas) una vez concluida una transacción.
 
-- [**RF-09 (Tracking de Transacciones y GMV):** El sistema debe registrar cada cambio de estado a "Transacción Completada" y almacenar en una tabla de analíticas el precio listado del producto en ese momento, permitiendo calcular el volumen total transaccionado (GMV) diario y mensual.]{.mark}
+- **RF-09 (Tracking de Transacciones y GMV):** El sistema debe registrar cada cambio de estado a "Transacción Completada" y almacenar en una tabla de analíticas el precio listado del producto en ese momento, permitiendo calcular el volumen total transaccionado (GMV) diario y mensual.
 
 - **RF-10 (Gestión de Pedidos Avanzada):** El sistema debe manejar una máquina de estados estricta para los pedidos (Pendiente, Aceptado, Pausado, Rechazado, Cancelado, Entregado) e integrar un bloqueo transaccional si no se ha definido el método de pago.
 
@@ -483,9 +483,9 @@ La arquitectura backend (FastAPI) debe soportar 500 usuarios concurrentes y pico
 
 La interfaz frontend (Next.js) debe cumplir con los estándares de Progressive Web App (Service Worker base, manifest.json) para permitir su instalación en iOS y Android.
 
-- **[RNF-04 (Latencia de Comunicación Verificable):]{.mark}**
+- **RNF-04 (Latencia de Comunicación Verificable):**
 
-[Durante una prueba de carga simulando 500 usuarios concurrentes enviando mensajes simultáneamente, el sistema de WebSockets debe procesar y entregar el 95% de los mensajes (percentil p95) en un tiempo de viaje de ida y vuelta (round-trip time) inferior a 500 milisegundos.]{.mark}
+Durante una prueba de carga simulando 500 usuarios concurrentes enviando mensajes simultáneamente, el sistema de WebSockets debe procesar y entregar el 95% de los mensajes (percentil p95) en un tiempo de viaje de ida y vuelta (round-trip time) inferior a 500 milisegundos.
 
 - **RNF-05 (Seguridad y Privacidad):**
 
@@ -495,4 +495,4 @@ Todo dato sensible en la base de datos (PostgreSQL) debe estar encriptado. El si
 
 Si el usuario pierde la conexión a internet de la universidad, la app debe mostrar una advertencia de \"Sin conexión\" de forma controlada y no romper la interfaz gráfica de manera abrupta.
 
-- [**RNF-07 (Escalabilidad de Fases):** La arquitectura de la Fase Piloto debe operar íntegramente en servicios de capa gratuita (Free Tier). El código debe ser agnóstico a la infraestructura (Cloud-Native) para permitir la migración sin reescritura de código hacia servicios pagos (AWS RDS, Vercel Pro) una vez se confirme la escalabilidad futura.]{.mark}
+- **RNF-07 (Escalabilidad de Fases):** La arquitectura de la Fase Piloto debe operar íntegramente en servicios de capa gratuita (Free Tier). El código debe ser agnóstico a la infraestructura (Cloud-Native) para permitir la migración sin reescritura de código hacia servicios pagos (AWS RDS, Vercel Pro) una vez se confirme la escalabilidad futura.

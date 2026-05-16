@@ -40,16 +40,16 @@
         <mxCell id="HYf47puikAZ70yU_mli2-16" value="API Gateway / Reverse Proxy&#xa;(Nginx / Traefik)&#xa;&#xa;• Rate Limiting&#xa;• JWT Validation&#xa;• HTTPS / TLS&#xa;• CORS Policy" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" parent="HYf47puikAZ70yU_mli2-15" vertex="1">
           <mxGeometry x="20" y="50" width="220" height="120" as="geometry" />
         </mxCell>
-        <mxCell id="HYf47puikAZ70yU_mli2-17" value="ZONA BACKEND — Microservicios / Módulos (Node.js / FastAPI)" style="swimlane;startSize=30;fillColor=#f0e6ff;strokeColor=#9673a6;fontStyle=1;fontSize=13;rounded=1;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
+        <mxCell id="HYf47puikAZ70yU_mli2-17" value="ZONA BACKEND — Microservicios / Módulos (FastAPI)" style="swimlane;startSize=30;fillColor=#f0e6ff;strokeColor=#9673a6;fontStyle=1;fontSize=13;rounded=1;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
           <mxGeometry x="960" y="100" width="620" height="520" as="geometry" />
         </mxCell>
-        <mxCell id="HYf47puikAZ70yU_mli2-18" value="Auth Service&lt;br&gt;(Node.js / JWT)&lt;br&gt;• Validar @uni.edu.co&lt;br&gt;• bcrypt + JWT&lt;br&gt;• Refresh Tokens" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-17" vertex="1">
+        <mxCell id="HYf47puikAZ70yU_mli2-18" value="Auth Service&lt;br&gt;(FastAPI / JWT)&lt;br&gt;• Validar @uni.edu.co&lt;br&gt;• bcrypt + JWT&lt;br&gt;• Refresh Tokens" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-17" vertex="1">
           <mxGeometry x="20" y="122" width="165" height="100" as="geometry" />
         </mxCell>
         <mxCell id="HYf47puikAZ70yU_mli2-19" value="Catalog Service&lt;br&gt;(CRUD Productos)&lt;br&gt;• RF02: Crear/Editar/Borrar&lt;br&gt;• Categorías + Imágenes&lt;br&gt;• RNF04: RESTful API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-17" vertex="1">
           <mxGeometry x="210" y="122" width="165" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="HYf47puikAZ70yU_mli2-20" value="Search &amp;amp; AI Service&lt;br&gt;(Patrón: Adapter)&lt;br&gt;• Búsqueda semántica&lt;br&gt;• Primary: Llama 3 local&lt;br&gt;• Fallback: Full-text / API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" parent="HYf47puikAZ70yU_mli2-17" vertex="1">
+        <mxCell id="HYf47puikAZ70yU_mli2-20" value="Search &amp;amp; AI Service&lt;br&gt;(Patrón: Adapter)&lt;br&gt;• Búsqueda semántica&lt;br&gt;• Primary: Gemini 1.5 Flash&lt;br&gt;• Fallback: Full-text / API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" parent="HYf47puikAZ70yU_mli2-17" vertex="1">
           <mxGeometry x="400" y="122" width="195" height="100" as="geometry" />
         </mxCell>
         <mxCell id="HYf47puikAZ70yU_mli2-25" value="ZONA DE DATOS" style="swimlane;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=13;rounded=1;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
@@ -73,13 +73,13 @@
         <mxCell id="HYf47puikAZ70yU_mli2-31" value="AI Adapter Interface&#xa;(Patrón: Adapter + Strategy)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;" parent="HYf47puikAZ70yU_mli2-30" vertex="1">
           <mxGeometry x="90" y="40" width="200" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="HYf47puikAZ70yU_mli2-32" value="PRIMARY&lt;br&gt;OpenAI (GPT-4o-mini)&lt;br&gt;(Ollama / Render.com)&lt;br&gt;Búsqueda semántica" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-30" vertex="1">
+        <mxCell id="HYf47puikAZ70yU_mli2-32" value="PRIMARY&lt;br&gt;Gemini 1.5 Flash&lt;br&gt;(Google API)&lt;br&gt;Búsqueda semántica" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" parent="HYf47puikAZ70yU_mli2-30" vertex="1">
           <mxGeometry x="20" y="120" width="155" height="90" as="geometry" />
         </mxCell>
         <mxCell id="HYf47puikAZ70yU_mli2-33" value="FALLBACK 1&lt;br&gt;Full-Text Search&lt;br&gt;(PostgreSQL tsvector)&lt;br&gt;Sin latencia de IA" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="HYf47puikAZ70yU_mli2-30" vertex="1">
           <mxGeometry x="195" y="120" width="155" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="HYf47puikAZ70yU_mli2-34" value="Circuit Breaker&lt;br&gt;Auto-fallback si Llama falla" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;fontStyle=2;" parent="HYf47puikAZ70yU_mli2-30" vertex="1">
+        <mxCell id="HYf47puikAZ70yU_mli2-34" value="Circuit Breaker&lt;br&gt;Auto-fallback si Gemini falla" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;fontStyle=2;" parent="HYf47puikAZ70yU_mli2-30" vertex="1">
           <mxGeometry x="60" y="220" width="250" height="30" as="geometry" />
         </mxCell>
         <mxCell id="HYf47puikAZ70yU_mli2-35" value="CI/CD &amp; INFRA (Free Tier)" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;rounded=1;" parent="HYf47puikAZ70yU_mli2-63" vertex="1">
@@ -88,7 +88,7 @@
         <mxCell id="HYf47puikAZ70yU_mli2-36" value="GitHub&#xa;(Source Control&#xa;+ Actions CI/CD)" style="shape=mxgraph.logos.github;fillColor=#24292e;strokeColor=none;fontSize=10;fontColor=#ffffff;whiteSpace=wrap;html=1;" parent="HYf47puikAZ70yU_mli2-35" vertex="1">
           <mxGeometry x="80" y="50" width="100" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="HYf47puikAZ70yU_mli2-37" value="Render.com&lt;br&gt;(Free Tier)&lt;br&gt;Backend Deploy&lt;br&gt;+ OpenAI (GPT-4o-mini)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="HYf47puikAZ70yU_mli2-35" vertex="1">
+        <mxCell id="HYf47puikAZ70yU_mli2-37" value="Render.com&lt;br&gt;(Free Tier)&lt;br&gt;Backend Deploy&lt;br&gt;+ Gemini Integration" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="HYf47puikAZ70yU_mli2-35" vertex="1">
           <mxGeometry x="65" y="150" width="130" height="80" as="geometry" />
         </mxCell>
         <mxCell id="HYf47puikAZ70yU_mli2-38" value="Vercel / Netlify&lt;br&gt;(Free Tier)&lt;br&gt;PWA Frontend&lt;br&gt;+ CDN Global" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="HYf47puikAZ70yU_mli2-35" vertex="1">
