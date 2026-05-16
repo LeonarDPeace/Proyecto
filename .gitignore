@@ -55,3 +55,26 @@ coverage/
 *.tmp
 *.bkp
 .$*
+fix_products.sql
+
+# --- AI Agent Configs (local tooling, not project source) ---
+.agents/
+.clinerules/
+.cursor/
+.opencode/
+.windsurf/
+.github/copilot-instructions.md
+AGENTS.md
+skills-lock.json
+
+# --- Graphify (generated knowledge graph, not source) ---
+graphify-out/
+
+# --- Backend scratch & ad-hoc scripts ---
+backend/scratch/
+
+# --- Frontend build artifacts ---
+frontend/tsconfig.tsbuildinfo
+frontend/public/workbox-*.js
+frontend/public/swe-worker-*.js
+frontend/public/worker-*.js
