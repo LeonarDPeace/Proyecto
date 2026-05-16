@@ -1,0 +1,59 @@
+<mxfile host="Electron" modified="2026-05-15T23:15:00.000Z" agent="Mozilla/5.0" version="21.2.8" type="device">
+  <diagram id="slide8" name="Testing_Coverage">
+    <mxGraphModel dx="1000" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="800" pageHeight="600" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="t1" value="Calidad Técnica y Testing (Mitigación de Deuda Técnica)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="100" y="40" width="600" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Base Node -->
+        <mxCell id="base" value="Total Líneas de Código&#10;Servicios Core: 965" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontFamily=Helvetica;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="300" y="120" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Covered Node -->
+        <mxCell id="covered" value="Líneas Cubiertas&#10;731 (76%)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Helvetica;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="160" y="260" width="200" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Missed Node -->
+        <mxCell id="missed" value="Líneas Sin Cubrir&#10;234 (24%)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Helvetica;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="440" y="260" width="200" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="e1" edge="1" parent="1" source="base" target="covered">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="220" />
+              <mxPoint x="260" y="220" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e2" edge="1" parent="1" source="base" target="missed">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="220" />
+              <mxPoint x="540" y="220" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Explanations -->
+        <mxCell id="exp_cov" value="Cobertura supera el umbral del 70%.&#10;Módulos testeados: Reportes,&#10;Cupones, Analítica, Reputación." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="160" y="380" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="exp_mis" value="Integraciones Legacy&#10;y Errores de Conexión Externa." style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="440" y="380" width="200" height="60" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

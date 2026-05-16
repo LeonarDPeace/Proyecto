@@ -1,0 +1,40 @@
+<mxfile host="Electron" modified="2026-05-15T23:15:00.000Z" agent="Mozilla/5.0" version="21.2.8" type="device">
+  <diagram id="slide7" name="Features_Pendientes">
+    <mxGraphModel dx="1000" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="800" pageHeight="400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="t1" value="Deuda Funcional: Integración Fintech (Pasarelas de Pago)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="100" y="40" width="600" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Feature Planned -->
+        <mxCell id="b1" value="Pago Directo Nequi / Daviplata&#10;(Transacción Automatizada)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Helvetica;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="60" y="140" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Restriction -->
+        <mxCell id="b2" value="Restricción:&#10;Licencias Fintech, Costos de API&#10;y Sandbox limitado" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#fff2cc;strokeColor=#d6b656;fontFamily=Helvetica;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="300" y="130" width="200" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Solution Phase 2 -->
+        <mxCell id="b3" value="Siguiente Paso (Fase 2)&#10;Integrar Agregador:&#10;Wompi o ePayco" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="540" y="140" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="e1" edge="1" parent="1" source="b1" target="b2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e2" edge="1" parent="1" source="b2" target="b3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

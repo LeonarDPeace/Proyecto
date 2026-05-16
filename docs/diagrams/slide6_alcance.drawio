@@ -1,0 +1,59 @@
+<mxfile host="Electron" modified="2026-05-15T23:15:00.000Z" agent="Mozilla/5.0" version="21.2.8" type="device">
+  <diagram id="slide6" name="Alcance_Funcional">
+    <mxGraphModel dx="1000" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="800" pageHeight="500" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="t1" value="Cumplimiento del Project Charter (Alcance Funcional)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="150" y="40" width="500" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Total Planned Box -->
+        <mxCell id="total" value="Requisitos Planeados&#10;Total: 12 (100%)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontFamily=Helvetica;fontSize=16;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="300" y="120" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Delivered Box -->
+        <mxCell id="delivered" value="Completados&#10;11 (91%)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontFamily=Helvetica;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="160" y="280" width="200" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Pending Box -->
+        <mxCell id="pending" value="Pendientes&#10;1 (9%)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontFamily=Helvetica;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="440" y="280" width="200" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="e1" edge="1" parent="1" source="total" target="delivered">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="240" />
+              <mxPoint x="260" y="240" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e2" edge="1" parent="1" source="total" target="pending">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="240" />
+              <mxPoint x="540" y="240" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Detail Texts -->
+        <mxCell id="text_del" value="Auth, Catálogo, Chat P2P,&#10;Geoespacial, Analytics, IA" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="160" y="390" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="text_pen" value="Integración Directa&#10;de Pasarela Fintech" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="440" y="390" width="200" height="60" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
