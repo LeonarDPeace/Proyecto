@@ -7,7 +7,7 @@ Fix: test_confirm_delivery_logic_flow — el mock del producto en _record_gmv
 """
 
 import uuid
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi import HTTPException
@@ -35,6 +35,7 @@ async def test_create_negotiation_logic_success():
     fake_product.price = 10000.0
     fake_product.is_active = True
     fake_product.is_deleted = False
+    fake_product.stock = 10  # Sprint 5: stock check
 
     mock_result_product = MagicMock()
     mock_result_product.scalar_one_or_none.return_value = fake_product
@@ -44,9 +45,10 @@ async def test_create_negotiation_logic_success():
 
     db.execute.side_effect = [mock_result_product, mock_result_existing]
 
-    neg = await negotiation_service.create_negotiation(
-        db, buyer_id, product_id, initial_message="Hola"
-    )
+    with patch.object(negotiation_service, "_notify_new_negotiation", new_callable=AsyncMock):
+        neg = await negotiation_service.create_negotiation(
+            db, buyer_id, product_id, initial_message="Hola"
+        )
 
     assert neg.buyer_id == buyer_id
     assert neg.seller_id == seller_id
@@ -111,32 +113,41 @@ async def test_confirm_delivery_logic_flow():
     fake_neg.transaction_locked = True
     fake_neg.coupon_code = None
     fake_neg.quantity = 1
+    fake_neg.discount_amount = 0.0
+    fake_neg.payment_method = "efectivo"
+    fake_neg.buyer_note = None
 
-    # --- Product mock (para _record_gmv) ---
+    # --- Product mock (para _record_gmv + stock deduction) ---
     fake_product = MagicMock(spec=Product)
     fake_product.name = "Camiseta de Prueba"
     fake_product.price = 5000.0
+    fake_product.stock = 10
+    fake_product.is_active = True
 
-    # DB devuelve la negociación en todas las consultas de negociación,
-    # y el producto cuando _record_gmv lo consulta.
     mock_result_neg = MagicMock()
     mock_result_neg.scalar_one_or_none.return_value = fake_neg
 
     mock_result_product = MagicMock()
     mock_result_product.scalar_one_or_none.return_value = fake_product
 
-    # Primera llamada → negociación (buyer confirm)
-    db.execute.side_effect = [mock_result_neg]
-    await negotiation_service.confirm_delivery(db, neg_id, buyer_id)
-    assert fake_neg.buyer_confirmed is True
-    assert fake_neg.status == "accepted"  # Aún no completa
+    with patch.object(negotiation_service, "_notify_status_change", new_callable=AsyncMock):
+        # Primera llamada → buyer confirm (solo negociación)
+        db.execute.side_effect = [mock_result_neg]
+        await negotiation_service.confirm_delivery(db, neg_id, buyer_id)
+        assert fake_neg.buyer_confirmed is True
+        assert fake_neg.status == "accepted"  # Aún no completa
 
-    # Segunda llamada → negociación + producto (para _record_gmv) + producto (para _record_transaction)
-    fake_neg.buyer_confirmed = True  # simular estado previo guardado
-    db.execute.side_effect = [mock_result_neg, mock_result_product, mock_result_product]
-    await negotiation_service.confirm_delivery(db, neg_id, seller_id)
-    assert fake_neg.seller_confirmed is True
-    assert fake_neg.status == "delivered"
+        # Segunda llamada → seller confirm → triggers delivered + GMV + Transaction
+        fake_neg.buyer_confirmed = True
+        db.execute.side_effect = [
+            mock_result_neg,      # get_negotiation_by_id
+            mock_result_product,  # stock deduction
+            mock_result_product,  # _record_gmv
+            mock_result_product,  # _record_transaction
+        ]
+        await negotiation_service.confirm_delivery(db, neg_id, seller_id)
+        assert fake_neg.seller_confirmed is True
+        assert fake_neg.status == "delivered"
 
 
 @pytest.mark.asyncio

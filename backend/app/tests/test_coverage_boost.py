@@ -134,15 +134,18 @@ async def test_sinapsis_service_logic():
     user = MagicMock(spec=User)
     user.role = "comprador"
     user.vendor_status = "pending"
+    user.email = "test@uao.edu.co"
 
     with patch("app.services.sinapsis_service.load_sinapsis_whitelist") as mock_load:
-        mock_load.return_value = {"VAL-123"}
+        # load_sinapsis_whitelist now returns dict[str, str] {code: email}
+        mock_load.return_value = {"VAL-123": "test@uao.edu.co"}
 
-        status, role = await sinapsis_service.request_vendor_role(db, user, "VAL-123")
-        assert status == "approved"
+        vendor_status, role = await sinapsis_service.request_vendor_role(db, user, "VAL-123")
+        assert vendor_status == "approved"
         assert role == "vendedor"
 
         user.role = "vendedor"
+        user.vendor_status = "approved"
         with pytest.raises(HTTPException) as exc:
             await sinapsis_service.request_vendor_role(db, user, "VAL-123")
         assert exc.value.status_code == 400
