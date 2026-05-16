@@ -5,15 +5,22 @@ Usa la conexión async de SQLAlchemy definida en app.core.database.
 
 from logging.config import fileConfig
 
-from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+from alembic import context
 from app.core.config import settings
 from app.core.database import Base
 
 # Importar todos los modelos para que Alembic los detecte
-from app.models import user, product, negotiation, location, otp, user_search_quota  # noqa: F401
+from app.models import (  # noqa: F401
+    location,
+    negotiation,
+    otp,
+    product,
+    user,
+    user_search_quota,
+)
 
 config = context.config
 

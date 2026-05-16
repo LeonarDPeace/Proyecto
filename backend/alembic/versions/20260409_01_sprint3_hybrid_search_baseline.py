@@ -15,7 +15,9 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.execute("ALTER TABLE products ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE")
+    op.execute(
+        "ALTER TABLE products ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE"
+    )
     op.execute(
         """
         CREATE TABLE IF NOT EXISTS user_search_quotas (
