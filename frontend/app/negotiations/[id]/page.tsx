@@ -263,7 +263,7 @@ export default function NegotiationDetailPage() {
               productName={productName}
             />
 
-            {/* Deep Links de pago (HU 6.2/6.3) */}
+            {/* Deep Links de pago (HU 6.2/6.3) — Buyer selects method */}
             {negotiation.status === "accepted" && isBuyer && (
               <PaymentButtons
                 negotiationId={negotiationId}
@@ -271,11 +271,60 @@ export default function NegotiationDetailPage() {
                 selectedMethod={negotiation.payment_method}
                 onUpdate={(updated) => setNegotiation(updated)}
               />
-
             )}
 
+            {/* Seller: show the selected payment method (read-only) */}
+            {negotiation.status === "accepted" && isSeller && negotiation.payment_method && (
+              <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 mb-4">
+                <p className="text-xs font-bold uppercase text-emerald-700 mb-1">Metodo de Pago Seleccionado</p>
+                <p className="text-sm font-semibold text-emerald-800 capitalize">
+                  {negotiation.payment_method === "nequi" ? "Nequi (Transferencia)" : 
+                   negotiation.payment_method === "daviplata" ? "DaviPlata (Transferencia)" :
+                   negotiation.payment_method === "efectivo" ? "Efectivo" : negotiation.payment_method}
+                </p>
+                <p className="text-xs text-emerald-600 mt-1">
+                  El comprador ya selecciono el metodo de pago. Coordinen la entrega por el chat.
+                </p>
+              </div>
+            )}
 
-            {/* Confirmación de entrega (HU 6.4) */}
+            {/* Seller: waiting for buyer to select payment */}
+            {negotiation.status === "accepted" && isSeller && !negotiation.payment_method && (
+              <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 mb-4">
+                <p className="text-xs font-bold uppercase text-amber-700 mb-1">Esperando Pago</p>
+                <p className="text-sm text-amber-800">
+                  El comprador aun no ha seleccionado un metodo de pago. Una vez lo haga, ambos podran confirmar la entrega.
+                </p>
+              </div>
+            )}
+
+            {/* Transfer info message for buyer when transfer method selected */}
+            {negotiation.status === "accepted" && isBuyer && negotiation.payment_method && negotiation.payment_method !== "efectivo" && (
+              <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 mb-4">
+                <p className="text-xs font-bold uppercase text-blue-700 mb-1">Informacion de Transferencia</p>
+                <p className="text-sm text-blue-800">
+                  La integracion directa con {negotiation.payment_method === "nequi" ? "Nequi" : "DaviPlata"} no esta 
+                  disponible en este momento (requiere licencia Fintech). Por favor coordina la transferencia 
+                  directamente con el vendedor a traves del chat.
+                </p>
+                <p className="text-xs text-blue-600 mt-2">
+                  Una vez realizado el pago, ambas partes deben confirmar la entrega para completar la transaccion.
+                </p>
+              </div>
+            )}
+
+            {/* Cash info for buyer */}
+            {negotiation.status === "accepted" && isBuyer && negotiation.payment_method === "efectivo" && (
+              <div className="p-4 rounded-xl bg-green-50 border border-green-200 mb-4">
+                <p className="text-xs font-bold uppercase text-green-700 mb-1">Pago en Efectivo</p>
+                <p className="text-sm text-green-800">
+                  Coordina el punto de encuentro con el vendedor a traves del chat. Una vez intercambiado 
+                  el producto y el pago, ambas partes deben confirmar la entrega.
+                </p>
+              </div>
+            )}
+
+            {/* Confirmacion de entrega (HU 6.4) — visible when payment method is set */}
             <DeliveryConfirmation
               negotiationId={negotiationId}
               buyerId={negotiation.buyer_id}

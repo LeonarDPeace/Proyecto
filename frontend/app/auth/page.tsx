@@ -151,6 +151,18 @@ export default function AuthPage() {
                 Enviamos un código a{" "}
                 <span className="font-medium text-vera-600">{email}</span>.
               </p>
+              {isNewUser && (
+                <div className="mt-3 p-3 rounded-lg bg-blue-50 border border-blue-200 text-xs text-blue-800">
+                  <p className="font-semibold mb-1">Registro como Comprador</p>
+                  <p>
+                    Tu cuenta sera creada con rol de <strong>Comprador</strong>. 
+                    Si eres emprendedor registrado en Sinapsis, podras solicitar 
+                    el rol de vendedor desde tu perfil con tu codigo Sinapsis. 
+                    Solo correos vinculados a la whitelist de Sinapsis pueden 
+                    obtener el rol de vendedor.
+                  </p>
+                </div>
+              )}
             </div>
 
             <Input

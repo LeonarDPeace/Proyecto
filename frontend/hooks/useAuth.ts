@@ -35,8 +35,10 @@ export function useAuth() {
   }, [isHydrated, hydrate]);
 
   // Validar token rehidratado para evitar estados inconsistentes en UI.
+  // Skip validation for new/pending users — their token has sub="pending"
+  // and will fail GET /users/me, causing an unwanted logout.
   useEffect(() => {
-    if (!isHydrated || !token) return;
+    if (!isHydrated || !token || isNewUser) return;
 
     let active = true;
 
@@ -71,7 +73,7 @@ export function useAuth() {
     return () => {
       active = false;
     };
-  }, [isHydrated, token, logout, setUser]);
+  }, [isHydrated, token, isNewUser, logout, setUser]);
 
   // Si el backend responde 401 para una petición autenticada, sincronizar estado.
   useEffect(() => {

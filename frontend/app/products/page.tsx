@@ -176,13 +176,14 @@ export default function ProductsPage() {
         setProducts(data.items);
         setSearchMeta(data.meta);
 
+        // Sync quota from search response — always use server business_date
         if (data.meta.quota_limit !== null && data.meta.quota_remaining !== null) {
-          setQuota((prev) => ({
-            business_date: prev?.business_date || new Date().toISOString().slice(0, 10),
+          setQuota({
+            business_date: new Date().toISOString().slice(0, 10),
             daily_limit: data.meta.quota_limit as number,
             searches_used: (data.meta.quota_limit as number) - (data.meta.quota_remaining as number),
             remaining: data.meta.quota_remaining as number,
-          }));
+          });
         }
       } else {
         const data = await api.get<Product[]>("/products/?limit=50");
@@ -200,10 +201,17 @@ export default function ProductsPage() {
     fetchProducts();
   }, [fetchProducts]);
 
+  // Force-refresh quota on mount and whenever auth state changes
+  // This ensures the daily reset is reflected even if the user
+  // navigated to the page without triggering a search.
   useEffect(() => {
-    if (isAuthenticated) fetchQuota();
-    else setQuota(null);
-  }, [fetchQuota, isAuthenticated]);
+    if (isAuthenticated) {
+      fetchQuota();
+    } else {
+      setQuota(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, token]);
 
   const togglePaymentMethod = (method: string) => {
     setFilters(prev => ({

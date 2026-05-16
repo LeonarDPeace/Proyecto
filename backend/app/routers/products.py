@@ -416,6 +416,9 @@ async def list_products(
 async def search_products(
     q: str = Query(..., min_length=1, description="Texto libre de búsqueda"),
     category: str | None = Query(None, description="Filtro opcional por categoría"),
+    min_price: float | None = Query(None, ge=0, description="Precio mínimo COP"),
+    max_price: float | None = Query(None, ge=0, description="Precio máximo COP"),
+    availability: str | None = Query(None, description="Filtro de disponibilidad (in_stock)"),
     lat: float | None = Query(None, ge=-90, le=90),
     lng: float | None = Query(None, ge=-180, le=180),
     radius_meters: int = Query(500, ge=10, le=5000),
@@ -427,6 +430,14 @@ async def search_products(
     db: AsyncSession = Depends(get_db),
 ) -> ProductSearchResponse:
     """Búsqueda híbrida: Gemini (si hay cuota) + Typesense como motor principal."""
+    # Construir filtros de UI para pasar precio y disponibilidad al motor
+    ui_filters = None
+    if min_price is not None or max_price is not None or availability:
+        ui_filters = ProductSearchFilters(
+            min_price=min_price,
+            max_price=max_price,
+            availability=availability,
+        )
     return await _run_hybrid_search(
         query_text=q,
         category=category,
@@ -434,8 +445,8 @@ async def search_products(
         condition=None,
         brand=None,
         has_free_shipping=None,
-        min_price=None,
-        max_price=None,
+        min_price=min_price,
+        max_price=max_price,
         tags=[],
         lat=lat,
         lng=lng,
@@ -444,6 +455,7 @@ async def search_products(
         use_semantic=use_semantic,
         current_user=current_user,
         db=db,
+        ui_filters=ui_filters,
     )
 
 
