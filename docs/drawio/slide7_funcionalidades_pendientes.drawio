@@ -1,0 +1,55 @@
+<mxGraphModel><root><mxCell id="0"/><mxCell id="1" parent="0"/>
+
+<!-- Background -->
+<mxCell id="bg" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="0" y="0" width="1100" height="620" as="geometry"/></mxCell>
+
+<!-- Title -->
+<mxCell id="title" value="Funcionalidades Pendientes — Hoja de Ruta Fase 2" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontColor=#4A4A6A;" vertex="1" parent="1"><mxGeometry x="50" y="18" width="1000" height="40" as="geometry"/></mxCell>
+
+<!-- Subtitle -->
+<mxCell id="sub" value="Decisiones estrategicas de alcance — restricciones de infraestructura y licencias Fintech" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=12;fontColor=#888899;" vertex="1" parent="1"><mxGeometry x="100" y="52" width="900" height="24" as="geometry"/></mxCell>
+
+<!-- ======================= CARD 1: PASARELA ======================= -->
+<mxCell id="c1" value="" style="rounded=2;whiteSpace=wrap;html=1;fillColor=#FFF3EF;strokeColor=#FFCCBC;arcSize=8;" vertex="1" parent="1"><mxGeometry x="40" y="95" width="320" height="370" as="geometry"/></mxCell>
+
+<mxCell id="c1badge" value="Prioritario — Fase 2" style="rounded=2;whiteSpace=wrap;html=1;fillColor=#FFCCBC;strokeColor=#FF8A65;fontSize=10;fontStyle=1;fontColor=#6D1313;" vertex="1" parent="1"><mxGeometry x="80" y="105" width="240" height="26" as="geometry"/></mxCell>
+
+<mxCell id="c1title" value="Pasarela de Pago Digital" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontStyle=1;fontSize=15;fontColor=#6D1313;" vertex="1" parent="1"><mxGeometry x="50" y="138" width="300" height="30" as="geometry"/></mxCell>
+
+<mxCell id="c1desc" value="&lt;b&gt;Que falta:&lt;/b&gt; Conexion automatica con APIs de billeteras digitales (Nequi, Daviplata, PSE).&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Razon de exclusion:&lt;/b&gt; Restricciones de licencias Fintech y requisitos KYC (Know Your Customer) que superan el alcance academico del proyecto.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Implementacion actual:&lt;/b&gt; Los metodos de pago son acordados por chat (Efectivo o Transferencia manual) con confirmacion dual entre las partes.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Siguiente Paso:&lt;/b&gt; Integrar un agregador como Wompi o ePayco, que abstrae la complejidad regulatoria." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=10;fontColor=#4A2020;spacingLeft=10;spacingRight=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="48" y="174" width="304" height="220" as="geometry"/></mxCell>
+
+<mxCell id="c1tech" value="Wompi API / ePayco SDK" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCCBC;strokeColor=#FF8A65;fontSize=10;fontColor=#6D1313;" vertex="1" parent="1"><mxGeometry x="80" y="402" width="240" height="28" as="geometry"/></mxCell>
+
+<!-- ======================= CARD 2: PWA OFFLINE ======================= -->
+<mxCell id="c2" value="" style="rounded=2;whiteSpace=wrap;html=1;fillColor=#FEF6EF;strokeColor=#FFD599;arcSize=8;" vertex="1" parent="1"><mxGeometry x="390" y="95" width="320" height="370" as="geometry"/></mxCell>
+
+<mxCell id="c2badge" value="Mejora UX — Fase 2" style="rounded=2;whiteSpace=wrap;html=1;fillColor=#FFEFD5;strokeColor=#FFD599;fontSize=10;fontStyle=1;fontColor=#8B6914;" vertex="1" parent="1"><mxGeometry x="430" y="105" width="240" height="26" as="geometry"/></mxCell>
+
+<mxCell id="c2title" value="Modo Offline PWA Completo" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontStyle=1;fontSize=15;fontColor=#8B6914;" vertex="1" parent="1"><mxGeometry x="398" y="138" width="304" height="30" as="geometry"/></mxCell>
+
+<mxCell id="c2desc" value="&lt;b&gt;Que falta:&lt;/b&gt; Sincronizacion de cache completo para navegacion offline del catalogo.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Razon de exclusion:&lt;/b&gt; La arquitectura de Service Workers con Background Sync esta implementada, pero la estrategia de cache del catalogo es Network-First (requiere conexion activa para datos frescos).&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Implementacion actual:&lt;/b&gt; La PWA tiene instalacion en dispositivos moviles y el shell de la aplicacion funciona offline.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Siguiente Paso:&lt;/b&gt; Implementar IndexedDB para almacenamiento local del catalogo con Workbox." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=10;fontColor=#5D3E1A;spacingLeft=10;spacingRight=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="398" y="174" width="304" height="220" as="geometry"/></mxCell>
+
+<mxCell id="c2tech" value="Workbox + IndexedDB" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEFD5;strokeColor=#FFD599;fontSize=10;fontColor=#8B6914;" vertex="1" parent="1"><mxGeometry x="430" y="402" width="240" height="28" as="geometry"/></mxCell>
+
+<!-- ======================= CARD 3: NOTIFICACIONES ======================= -->
+<mxCell id="c3" value="" style="rounded=2;whiteSpace=wrap;html=1;fillColor=#F5EFF9;strokeColor=#E8D5F0;arcSize=8;" vertex="1" parent="1"><mxGeometry x="740" y="95" width="320" height="370" as="geometry"/></mxCell>
+
+<mxCell id="c3badge" value="Mejora Engagement — Fase 2" style="rounded=2;whiteSpace=wrap;html=1;fillColor=#E8D5F0;strokeColor=#C9A8E0;fontSize=10;fontStyle=1;fontColor=#3E1A5D;" vertex="1" parent="1"><mxGeometry x="780" y="105" width="240" height="26" as="geometry"/></mxCell>
+
+<mxCell id="c3title" value="Notificaciones Push Nativas" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontStyle=1;fontSize=15;fontColor=#3E1A5D;" vertex="1" parent="1"><mxGeometry x="748" y="138" width="304" height="30" as="geometry"/></mxCell>
+
+<mxCell id="c3desc" value="&lt;b&gt;Que falta:&lt;/b&gt; Envio de notificaciones push al movil cuando llega un mensaje de negociacion o una oferta de precio.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Razon de exclusion:&lt;/b&gt; El servicio de push esta implementado en el backend (push_service.py con 91% de cobertura), pero la integracion con FCM (Firebase Cloud Messaging) y la gestion de subscripciones en el cliente requiere configuracion adicional de produccion.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Implementacion actual:&lt;/b&gt; La logica del servicio esta lista y testeada; solo falta activacion en prod.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Siguiente Paso:&lt;/b&gt; Configurar Firebase Cloud Messaging y los Web Push Service Workers." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=10;fontColor=#3E1A5D;spacingLeft=10;spacingRight=10;spacingTop=8;" vertex="1" parent="1"><mxGeometry x="748" y="174" width="304" height="220" as="geometry"/></mxCell>
+
+<mxCell id="c3tech" value="Firebase FCM + Web Push API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8D5F0;strokeColor=#C9A8E0;fontSize=10;fontColor=#3E1A5D;" vertex="1" parent="1"><mxGeometry x="780" y="402" width="240" height="28" as="geometry"/></mxCell>
+
+<!-- Bottom Summary Bar -->
+<mxCell id="sumbar" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDE7F6;strokeColor=#C5B3E8;" vertex="1" parent="1"><mxGeometry x="40" y="485" width="1020" height="70" as="geometry"/></mxCell>
+<mxCell id="sumtitle" value="Posicion tecnica ante el jurado:" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontStyle=1;fontSize=12;fontColor=#4527A0;" vertex="1" parent="1"><mxGeometry x="60" y="488" width="280" height="30" as="geometry"/></mxCell>
+<mxCell id="sumdesc" value="El equipo conoce exactamente que falta, por que no se implemento y cual es el camino tecnico de Fase 2. Esto demuestra madurez de ingenieria: saber que dejar fuera con criterio es tan valioso como lo que se entrego." style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontColor=#4527A0;spacingLeft=10;" vertex="1" parent="1"><mxGeometry x="300" y="488" width="740" height="60" as="geometry"/></mxCell>
+
+<!-- Impacto label -->
+<mxCell id="imp1" value="Impacto: ALTO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCCBC;strokeColor=#FF8A65;fontSize=10;fontStyle=1;fontColor=#6D1313;" vertex="1" parent="1"><mxGeometry x="90" y="560" width="220" height="24" as="geometry"/></mxCell>
+<mxCell id="imp2" value="Impacto: MEDIO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEFD5;strokeColor=#FFD599;fontSize=10;fontStyle=1;fontColor=#8B6914;" vertex="1" parent="1"><mxGeometry x="440" y="560" width="220" height="24" as="geometry"/></mxCell>
+<mxCell id="imp3" value="Impacto: MEDIO" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8D5F0;strokeColor=#C9A8E0;fontSize=10;fontStyle=1;fontColor=#3E1A5D;" vertex="1" parent="1"><mxGeometry x="790" y="560" width="220" height="24" as="geometry"/></mxCell>
+
+</root></mxGraphModel>

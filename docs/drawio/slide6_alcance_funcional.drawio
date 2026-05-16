@@ -1,0 +1,102 @@
+<mxGraphModel><root><mxCell id="0"/><mxCell id="1" parent="0"/>
+
+<!-- Background -->
+<mxCell id="bg" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="0" y="0" width="1100" height="620" as="geometry"/></mxCell>
+
+<!-- Title -->
+<mxCell id="title" value="Alcance Funcional — Requisitos Planeados vs. Entregados" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontColor=#4A4A6A;" vertex="1" parent="1"><mxGeometry x="50" y="18" width="1000" height="40" as="geometry"/></mxCell>
+
+<!-- ===== TABLE HEADERS ===== -->
+<mxCell id="h_req" value="Requisito Funcional" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C5CAE9;strokeColor=#9FA8DA;fontSize=12;fontStyle=1;fontColor=#283593;" vertex="1" parent="1"><mxGeometry x="40" y="75" width="310" height="36" as="geometry"/></mxCell>
+<mxCell id="h_ep" value="Epica" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C5CAE9;strokeColor=#9FA8DA;fontSize=12;fontStyle=1;fontColor=#283593;" vertex="1" parent="1"><mxGeometry x="355" y="75" width="90" height="36" as="geometry"/></mxCell>
+<mxCell id="h_sprint" value="Sprint" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C5CAE9;strokeColor=#9FA8DA;fontSize=12;fontStyle=1;fontColor=#283593;" vertex="1" parent="1"><mxGeometry x="450" y="75" width="70" height="36" as="geometry"/></mxCell>
+<mxCell id="h_hu" value="HU Entregadas" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C5CAE9;strokeColor=#9FA8DA;fontSize=12;fontStyle=1;fontColor=#283593;" vertex="1" parent="1"><mxGeometry x="525" y="75" width="110" height="36" as="geometry"/></mxCell>
+<mxCell id="h_status" value="Estado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C5CAE9;strokeColor=#9FA8DA;fontSize=12;fontStyle=1;fontColor=#283593;" vertex="1" parent="1"><mxGeometry x="640" y="75" width="120" height="36" as="geometry"/></mxCell>
+<mxCell id="h_note" value="Alcance / Nota" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C5CAE9;strokeColor=#9FA8DA;fontSize=12;fontStyle=1;fontColor=#283593;" vertex="1" parent="1"><mxGeometry x="765" y="75" width="290" height="36" as="geometry"/></mxCell>
+
+<!-- ===== ROWS ===== -->
+
+<!-- RF-01 -->
+<mxCell id="r1a" value="RF-01: Autenticacion OTP Institucional" style="text;html=1;strokeColor=#D4E6F1;fillColor=#EBF5FB;align=left;verticalAlign=middle;fontSize=10;fontColor=#1A3A5C;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="40" y="115" width="310" height="34" as="geometry"/></mxCell>
+<mxCell id="r1b" value="EP-01" style="text;html=1;strokeColor=#D4E6F1;fillColor=#EBF5FB;align=center;verticalAlign=middle;fontSize=10;fontColor=#1A3A5C;" vertex="1" parent="1"><mxGeometry x="355" y="115" width="90" height="34" as="geometry"/></mxCell>
+<mxCell id="r1c" value="1" style="text;html=1;strokeColor=#D4E6F1;fillColor=#EBF5FB;align=center;verticalAlign=middle;fontSize=10;fontColor=#1A3A5C;" vertex="1" parent="1"><mxGeometry x="450" y="115" width="70" height="34" as="geometry"/></mxCell>
+<mxCell id="r1d" value="HU 1.1 - 1.5" style="text;html=1;strokeColor=#D4E6F1;fillColor=#EBF5FB;align=center;verticalAlign=middle;fontSize=10;fontColor=#1A3A5C;" vertex="1" parent="1"><mxGeometry x="525" y="115" width="110" height="34" as="geometry"/></mxCell>
+<mxCell id="r1e" value="Completado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#A5D6A7;fontSize=10;fontStyle=1;fontColor=#1B5E20;" vertex="1" parent="1"><mxGeometry x="648" y="119" width="104" height="26" as="geometry"/></mxCell>
+<mxCell id="r1f" value="Sinapsis whitelist + OTP sin contrasena" style="text;html=1;strokeColor=#D4E6F1;fillColor=#EBF5FB;align=left;verticalAlign=middle;fontSize=10;fontColor=#1A3A5C;spacingLeft=6;" vertex="1" parent="1"><mxGeometry x="765" y="115" width="290" height="34" as="geometry"/></mxCell>
+
+<!-- RF-02 -->
+<mxCell id="r2a" value="RF-02: Gestion de Perfil de Usuario" style="text;html=1;strokeColor=#D4E6F1;fillColor=#FAFAFA;align=left;verticalAlign=middle;fontSize=10;fontColor=#1A3A5C;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="40" y="153" width="310" height="34" as="geometry"/></mxCell>
+<mxCell id="r2b" value="EP-02" style="text;html=1;strokeColor=#D4E6F1;fillColor=#FAFAFA;align=center;verticalAlign=middle;fontSize=10;fontColor=#1A3A5C;" vertex="1" parent="1"><mxGeometry x="355" y="153" width="90" height="34" as="geometry"/></mxCell>
+<mxCell id="r2c" value="1" style="text;html=1;strokeColor=#D4E6F1;fillColor=#FAFAFA;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="450" y="153" width="70" height="34" as="geometry"/></mxCell>
+<mxCell id="r2d" value="HU 2.1 - 2.4" style="text;html=1;strokeColor=#D4E6F1;fillColor=#FAFAFA;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="525" y="153" width="110" height="34" as="geometry"/></mxCell>
+<mxCell id="r2e" value="Completado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#A5D6A7;fontSize=10;fontStyle=1;fontColor=#1B5E20;" vertex="1" parent="1"><mxGeometry x="648" y="157" width="104" height="26" as="geometry"/></mxCell>
+<mxCell id="r2f" value="Roles, privacidad, cambio vendedor/comprador" style="text;html=1;strokeColor=#D4E6F1;fillColor=#FAFAFA;align=left;verticalAlign=middle;fontSize=10;spacingLeft=6;" vertex="1" parent="1"><mxGeometry x="765" y="153" width="290" height="34" as="geometry"/></mxCell>
+
+<!-- RF-03 -->
+<mxCell id="r3a" value="RF-03: Catalogo de Productos P2P" style="text;html=1;strokeColor=#D5E8D4;fillColor=#EBF5EB;align=left;verticalAlign=middle;fontSize=10;fontColor=#1A4A1A;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="40" y="191" width="310" height="34" as="geometry"/></mxCell>
+<mxCell id="r3b" value="EP-03" style="text;html=1;strokeColor=#D5E8D4;fillColor=#EBF5EB;align=center;verticalAlign=middle;fontSize=10;fontColor=#1A4A1A;" vertex="1" parent="1"><mxGeometry x="355" y="191" width="90" height="34" as="geometry"/></mxCell>
+<mxCell id="r3c" value="2" style="text;html=1;strokeColor=#D5E8D4;fillColor=#EBF5EB;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="450" y="191" width="70" height="34" as="geometry"/></mxCell>
+<mxCell id="r3d" value="HU 3.1 - 3.6" style="text;html=1;strokeColor=#D5E8D4;fillColor=#EBF5EB;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="525" y="191" width="110" height="34" as="geometry"/></mxCell>
+<mxCell id="r3e" value="Completado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#A5D6A7;fontSize=10;fontStyle=1;fontColor=#1B5E20;" vertex="1" parent="1"><mxGeometry x="648" y="195" width="104" height="26" as="geometry"/></mxCell>
+<mxCell id="r3f" value="CRUD, soft-delete, stock, imagenes, categorias" style="text;html=1;strokeColor=#D5E8D4;fillColor=#EBF5EB;align=left;verticalAlign=middle;fontSize=10;spacingLeft=6;" vertex="1" parent="1"><mxGeometry x="765" y="191" width="290" height="34" as="geometry"/></mxCell>
+
+<!-- RF-04 -->
+<mxCell id="r4a" value="RF-04: Geolocalizacion de Usuarios" style="text;html=1;strokeColor=#D5E8D4;fillColor=#FAFAFA;align=left;verticalAlign=middle;fontSize=10;fontColor=#1A4A1A;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="40" y="229" width="310" height="34" as="geometry"/></mxCell>
+<mxCell id="r4b" value="EP-04" style="text;html=1;strokeColor=#D5E8D4;fillColor=#FAFAFA;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="355" y="229" width="90" height="34" as="geometry"/></mxCell>
+<mxCell id="r4c" value="2" style="text;html=1;strokeColor=#D5E8D4;fillColor=#FAFAFA;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="450" y="229" width="70" height="34" as="geometry"/></mxCell>
+<mxCell id="r4d" value="HU 4.1 - 4.3" style="text;html=1;strokeColor=#D5E8D4;fillColor=#FAFAFA;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="525" y="229" width="110" height="34" as="geometry"/></mxCell>
+<mxCell id="r4e" value="Completado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#A5D6A7;fontSize=10;fontStyle=1;fontColor=#1B5E20;" vertex="1" parent="1"><mxGeometry x="648" y="233" width="104" height="26" as="geometry"/></mxCell>
+<mxCell id="r4f" value="PostGIS, mapa interactivo, radio de proximidad" style="text;html=1;strokeColor=#D5E8D4;fillColor=#FAFAFA;align=left;verticalAlign=middle;fontSize=10;spacingLeft=6;" vertex="1" parent="1"><mxGeometry x="765" y="229" width="290" height="34" as="geometry"/></mxCell>
+
+<!-- RF-05 -->
+<mxCell id="r5a" value="RF-05: Busqueda Hibrida con IA" style="text;html=1;strokeColor=#FDE8D8;fillColor=#FEF6EF;align=left;verticalAlign=middle;fontSize=10;fontColor=#7A3B10;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="40" y="267" width="310" height="34" as="geometry"/></mxCell>
+<mxCell id="r5b" value="EP-05" style="text;html=1;strokeColor=#FDE8D8;fillColor=#FEF6EF;align=center;verticalAlign=middle;fontSize=10;fontColor=#7A3B10;" vertex="1" parent="1"><mxGeometry x="355" y="267" width="90" height="34" as="geometry"/></mxCell>
+<mxCell id="r5c" value="3" style="text;html=1;strokeColor=#FDE8D8;fillColor=#FEF6EF;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="450" y="267" width="70" height="34" as="geometry"/></mxCell>
+<mxCell id="r5d" value="HU 5.1 - 5.4" style="text;html=1;strokeColor=#FDE8D8;fillColor=#FEF6EF;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="525" y="267" width="110" height="34" as="geometry"/></mxCell>
+<mxCell id="r5e" value="Completado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#A5D6A7;fontSize=10;fontStyle=1;fontColor=#1B5E20;" vertex="1" parent="1"><mxGeometry x="648" y="271" width="104" height="26" as="geometry"/></mxCell>
+<mxCell id="r5f" value="Gemini NLU + Typesense + Fallback PostgreSQL" style="text;html=1;strokeColor=#FDE8D8;fillColor=#FEF6EF;align=left;verticalAlign=middle;fontSize=10;spacingLeft=6;" vertex="1" parent="1"><mxGeometry x="765" y="267" width="290" height="34" as="geometry"/></mxCell>
+
+<!-- RF-06 -->
+<mxCell id="r6a" value="RF-06: Negociacion y Chat P2P" style="text;html=1;strokeColor=#FDE8D8;fillColor=#FAFAFA;align=left;verticalAlign=middle;fontSize=10;fontColor=#7A3B10;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="40" y="305" width="310" height="34" as="geometry"/></mxCell>
+<mxCell id="r6b" value="EP-06" style="text;html=1;strokeColor=#FDE8D8;fillColor=#FAFAFA;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="355" y="305" width="90" height="34" as="geometry"/></mxCell>
+<mxCell id="r6c" value="3" style="text;html=1;strokeColor=#FDE8D8;fillColor=#FAFAFA;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="450" y="305" width="70" height="34" as="geometry"/></mxCell>
+<mxCell id="r6d" value="HU 6.1 - 6.5" style="text;html=1;strokeColor=#FDE8D8;fillColor=#FAFAFA;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="525" y="305" width="110" height="34" as="geometry"/></mxCell>
+<mxCell id="r6e" value="Completado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#A5D6A7;fontSize=10;fontStyle=1;fontColor=#1B5E20;" vertex="1" parent="1"><mxGeometry x="648" y="309" width="104" height="26" as="geometry"/></mxCell>
+<mxCell id="r6f" value="Maquina de estados, bloqueo, metodos de pago" style="text;html=1;strokeColor=#FDE8D8;fillColor=#FAFAFA;align=left;verticalAlign=middle;fontSize=10;spacingLeft=6;" vertex="1" parent="1"><mxGeometry x="765" y="305" width="290" height="34" as="geometry"/></mxCell>
+
+<!-- RF-07 -->
+<mxCell id="r7a" value="RF-07: Moderacion y Reputacion" style="text;html=1;strokeColor=#E8D5F0;fillColor=#F5EFF9;align=left;verticalAlign=middle;fontSize=10;fontColor=#3E1A5D;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="40" y="343" width="310" height="34" as="geometry"/></mxCell>
+<mxCell id="r7b" value="EP-07" style="text;html=1;strokeColor=#E8D5F0;fillColor=#F5EFF9;align=center;verticalAlign=middle;fontSize=10;fontColor=#3E1A5D;" vertex="1" parent="1"><mxGeometry x="355" y="343" width="90" height="34" as="geometry"/></mxCell>
+<mxCell id="r7c" value="4" style="text;html=1;strokeColor=#E8D5F0;fillColor=#F5EFF9;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="450" y="343" width="70" height="34" as="geometry"/></mxCell>
+<mxCell id="r7d" value="HU 7.1 - 7.3" style="text;html=1;strokeColor=#E8D5F0;fillColor=#F5EFF9;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="525" y="343" width="110" height="34" as="geometry"/></mxCell>
+<mxCell id="r7e" value="Completado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#A5D6A7;fontSize=10;fontStyle=1;fontColor=#1B5E20;" vertex="1" parent="1"><mxGeometry x="648" y="347" width="104" height="26" as="geometry"/></mxCell>
+<mxCell id="r7f" value="Calificaciones, reportes, auto-ocultamiento" style="text;html=1;strokeColor=#E8D5F0;fillColor=#F5EFF9;align=left;verticalAlign=middle;fontSize=10;spacingLeft=6;" vertex="1" parent="1"><mxGeometry x="765" y="343" width="290" height="34" as="geometry"/></mxCell>
+
+<!-- RF-08 -->
+<mxCell id="r8a" value="RF-08: Dashboard Analitico (GMV)" style="text;html=1;strokeColor=#E8D5F0;fillColor=#FAFAFA;align=left;verticalAlign=middle;fontSize=10;fontColor=#3E1A5D;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="40" y="381" width="310" height="34" as="geometry"/></mxCell>
+<mxCell id="r8b" value="EP-08" style="text;html=1;strokeColor=#E8D5F0;fillColor=#FAFAFA;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="355" y="381" width="90" height="34" as="geometry"/></mxCell>
+<mxCell id="r8c" value="4" style="text;html=1;strokeColor=#E8D5F0;fillColor=#FAFAFA;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="450" y="381" width="70" height="34" as="geometry"/></mxCell>
+<mxCell id="r8d" value="HU 8.1 - 8.9" style="text;html=1;strokeColor=#E8D5F0;fillColor=#FAFAFA;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="525" y="381" width="110" height="34" as="geometry"/></mxCell>
+<mxCell id="r8e" value="Completado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#A5D6A7;fontSize=10;fontStyle=1;fontColor=#1B5E20;" vertex="1" parent="1"><mxGeometry x="648" y="385" width="104" height="26" as="geometry"/></mxCell>
+<mxCell id="r8f" value="Cupones M2M, transacciones, timeline ventas" style="text;html=1;strokeColor=#E8D5F0;fillColor=#FAFAFA;align=left;verticalAlign=middle;fontSize=10;spacingLeft=6;" vertex="1" parent="1"><mxGeometry x="765" y="381" width="290" height="34" as="geometry"/></mxCell>
+
+<!-- RF-09 PENDIENTE -->
+<mxCell id="r9a" value="RF-09: Integracion Pasarela de Pago" style="text;html=1;strokeColor=#FFCCBC;fillColor=#FFF3EF;align=left;verticalAlign=middle;fontSize=10;fontColor=#6D1313;spacingLeft=8;" vertex="1" parent="1"><mxGeometry x="40" y="419" width="310" height="34" as="geometry"/></mxCell>
+<mxCell id="r9b" value="EP-08" style="text;html=1;strokeColor=#FFCCBC;fillColor=#FFF3EF;align=center;verticalAlign=middle;fontSize=10;fontColor=#6D1313;" vertex="1" parent="1"><mxGeometry x="355" y="419" width="90" height="34" as="geometry"/></mxCell>
+<mxCell id="r9c" value="-" style="text;html=1;strokeColor=#FFCCBC;fillColor=#FFF3EF;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="450" y="419" width="70" height="34" as="geometry"/></mxCell>
+<mxCell id="r9d" value="HU 9.1 (parcial)" style="text;html=1;strokeColor=#FFCCBC;fillColor=#FFF3EF;align=center;verticalAlign=middle;fontSize=10;" vertex="1" parent="1"><mxGeometry x="525" y="419" width="110" height="34" as="geometry"/></mxCell>
+<mxCell id="r9e" value="Fase 2 (Pendiente)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCCBC;strokeColor=#FF8A65;fontSize=10;fontStyle=1;fontColor=#6D1313;" vertex="1" parent="1"><mxGeometry x="648" y="423" width="104" height="26" as="geometry"/></mxCell>
+<mxCell id="r9f" value="Wompi/ePayco — restricciones de licencia Fintech" style="text;html=1;strokeColor=#FFCCBC;fillColor=#FFF3EF;align=left;verticalAlign=middle;fontSize=10;spacingLeft=6;fontColor=#6D1313;" vertex="1" parent="1"><mxGeometry x="765" y="419" width="290" height="34" as="geometry"/></mxCell>
+
+<!-- Summary KPIs -->
+<mxCell id="kpi1" value="11 de 12 Requisitos&lt;br&gt;Funcionales Entregados" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#B2DFDB;strokeColor=#80CBC4;fontSize=13;fontStyle=1;fontColor=#00401A;" vertex="1" parent="1"><mxGeometry x="40" y="475" width="250" height="55" as="geometry"/></mxCell>
+<mxCell id="kpi2" value="8 Epicas&lt;br&gt;52 HU Completadas" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D4E6F1;strokeColor=#A9CCE3;fontSize=13;fontStyle=1;fontColor=#1A3A5C;" vertex="1" parent="1"><mxGeometry x="310" y="475" width="230" height="55" as="geometry"/></mxCell>
+<mxCell id="kpi3" value="Tasa de Entrega:&lt;br&gt;91.7%" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#A3C9A0;fontSize=13;fontStyle=1;fontColor=#1A4A1A;" vertex="1" parent="1"><mxGeometry x="560" y="475" width="200" height="55" as="geometry"/></mxCell>
+<mxCell id="kpi4" value="1 Pendiente: Pasarela de Pagos&lt;br&gt;(Fase 2 — Wompi)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCCBC;strokeColor=#FF8A65;fontSize=11;fontStyle=1;fontColor=#6D1313;" vertex="1" parent="1"><mxGeometry x="780" y="475" width="275" height="55" as="geometry"/></mxCell>
+
+<!-- Legend badges -->
+<mxCell id="leg1" value="Completado" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#A5D6A7;fontSize=10;fontStyle=1;fontColor=#1B5E20;" vertex="1" parent="1"><mxGeometry x="40" y="550" width="120" height="28" as="geometry"/></mxCell>
+<mxCell id="leg2" value="Fase 2 (Pendiente)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCCBC;strokeColor=#FF8A65;fontSize=10;fontStyle=1;fontColor=#6D1313;" vertex="1" parent="1"><mxGeometry x="175" y="550" width="150" height="28" as="geometry"/></mxCell>
+<mxCell id="leg3" value="Colores por Epica para rastreo de sprint" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;fontColor=#555577;" vertex="1" parent="1"><mxGeometry x="340" y="550" width="340" height="28" as="geometry"/></mxCell>
+
+</root></mxGraphModel>

@@ -1,0 +1,91 @@
+<mxGraphModel><root><mxCell id="0"/><mxCell id="1" parent="0"/>
+
+<!-- Background -->
+<mxCell id="bg" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=none;" vertex="1" parent="1"><mxGeometry x="0" y="0" width="1100" height="620" as="geometry"/></mxCell>
+
+<!-- Title -->
+<mxCell id="title" value="Proceso de Desarrollo — Ciclos Iterativos (Sprints 1-5)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=20;fontStyle=1;fontColor=#4A4A6A;" vertex="1" parent="1"><mxGeometry x="50" y="20" width="1000" height="40" as="geometry"/></mxCell>
+
+<!-- Timeline base line -->
+<mxCell id="timeline" value="" style="endArrow=block;endFill=1;strokeColor=#AAAACC;strokeWidth=2;" edge="1" parent="1"><mxGeometry x="80" y="320" width="100" height="100" as="geometry" relative="1"><Array as="points"/></mxGeometry></mxCell>
+<mxCell id="timeline2" value="" style="endArrow=block;endFill=1;strokeColor=#AAAACC;strokeWidth=3;" edge="1" parent="1"><mxGeometry relative="1" as="geometry"><mxPoint x="80" y="320" as="sourcePoint"/><mxPoint x="1060" y="320" as="targetPoint"/></mxGeometry></mxCell>
+
+<!-- Sprint 1 -->
+<mxCell id="s1box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D4E6F1;strokeColor=#A9CCE3;arcSize=10;" vertex="1" parent="1"><mxGeometry x="90" y="220" width="140" height="100" as="geometry"/></mxCell>
+<mxCell id="s1title" value="Sprint 1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontStyle=1;fontSize=13;fontColor=#2C5F82;" vertex="1" parent="1"><mxGeometry x="90" y="225" width="140" height="25" as="geometry"/></mxCell>
+<mxCell id="s1ep" value="EP-01: Autenticacion" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#2C5F82;" vertex="1" parent="1"><mxGeometry x="90" y="250" width="140" height="20" as="geometry"/></mxCell>
+<mxCell id="s1hu" value="EP-02: Perfil de Usuario" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#2C5F82;" vertex="1" parent="1"><mxGeometry x="90" y="268" width="140" height="20" as="geometry"/></mxCell>
+<mxCell id="s1hu2" value="4 HUs completadas" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontStyle=1;fontColor=#1A4971;" vertex="1" parent="1"><mxGeometry x="90" y="288" width="140" height="25" as="geometry"/></mxCell>
+<mxCell id="s1dot" value="" style="ellipse;fillColor=#A9CCE3;strokeColor=#7AA7C0;aspect=fixed;" vertex="1" parent="1"><mxGeometry x="148" y="311" width="24" height="24" as="geometry"/></mxCell>
+
+<!-- Sprint 2 -->
+<mxCell id="s2box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#A3C9A0;arcSize=10;" vertex="1" parent="1"><mxGeometry x="280" y="200" width="150" height="120" as="geometry"/></mxCell>
+<mxCell id="s2title" value="Sprint 2" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontStyle=1;fontSize=13;fontColor=#2D6A2D;" vertex="1" parent="1"><mxGeometry x="280" y="205" width="150" height="25" as="geometry"/></mxCell>
+<mxCell id="s2ep" value="EP-03: Catalogo de Productos" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#2D6A2D;" vertex="1" parent="1"><mxGeometry x="280" y="230" width="150" height="20" as="geometry"/></mxCell>
+<mxCell id="s2hu" value="EP-04: Geolocalizacion" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#2D6A2D;" vertex="1" parent="1"><mxGeometry x="280" y="248" width="150" height="20" as="geometry"/></mxCell>
+<mxCell id="s2hu2" value="Pivot: Motor de Busqueda" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#5D3E1A;" vertex="1" parent="1"><mxGeometry x="280" y="266" width="150" height="20" as="geometry"/></mxCell>
+<mxCell id="s2hu3" value="7 HUs completadas" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontStyle=1;fontColor=#1A4A1A;" vertex="1" parent="1"><mxGeometry x="280" y="288" width="150" height="25" as="geometry"/></mxCell>
+<mxCell id="s2dot" value="" style="ellipse;fillColor=#A3C9A0;strokeColor=#7AAA77;aspect=fixed;" vertex="1" parent="1"><mxGeometry x="343" y="311" width="24" height="24" as="geometry"/></mxCell>
+
+<!-- Sprint 3 -->
+<mxCell id="s3box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDE8D8;strokeColor=#F0C49E;arcSize=10;" vertex="1" parent="1"><mxGeometry x="480" y="175" width="150" height="145" as="geometry"/></mxCell>
+<mxCell id="s3title" value="Sprint 3" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontStyle=1;fontSize=13;fontColor=#8B4513;" vertex="1" parent="1"><mxGeometry x="480" y="180" width="150" height="25" as="geometry"/></mxCell>
+<mxCell id="s3ep" value="EP-05: Busqueda Hibrida IA" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#8B4513;" vertex="1" parent="1"><mxGeometry x="480" y="205" width="150" height="20" as="geometry"/></mxCell>
+<mxCell id="s3hu" value="EP-06: Negociacion P2P" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#8B4513;" vertex="1" parent="1"><mxGeometry x="480" y="223" width="150" height="20" as="geometry"/></mxCell>
+<mxCell id="s3hu2" value="Gemini 1.5 Flash + Typesense" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#5D3E1A;" vertex="1" parent="1"><mxGeometry x="480" y="241" width="150" height="20" as="geometry"/></mxCell>
+<mxCell id="s3hu3" value="Chat Tiempo Real" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#5D3E1A;" vertex="1" parent="1"><mxGeometry x="480" y="259" width="150" height="20" as="geometry"/></mxCell>
+<mxCell id="s3hu4" value="10 HUs completadas" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontStyle=1;fontColor=#7A3B10;" vertex="1" parent="1"><mxGeometry x="480" y="282" width="150" height="25" as="geometry"/></mxCell>
+<mxCell id="s3dot" value="" style="ellipse;fillColor=#F0C49E;strokeColor=#D4956A;aspect=fixed;" vertex="1" parent="1"><mxGeometry x="543" y="311" width="24" height="24" as="geometry"/></mxCell>
+
+<!-- Sprint 4 -->
+<mxCell id="s4box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8D5F0;strokeColor=#C9A8E0;arcSize=10;" vertex="1" parent="1"><mxGeometry x="685" y="155" width="155" height="165" as="geometry"/></mxCell>
+<mxCell id="s4title" value="Sprint 4" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontStyle=1;fontSize=13;fontColor=#5B2C7A;" vertex="1" parent="1"><mxGeometry x="685" y="160" width="155" height="25" as="geometry"/></mxCell>
+<mxCell id="s4ep" value="EP-07: Moderacion" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#5B2C7A;" vertex="1" parent="1"><mxGeometry x="685" y="185" width="155" height="20" as="geometry"/></mxCell>
+<mxCell id="s4hu" value="EP-08: Dashboard Analitico" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#5B2C7A;" vertex="1" parent="1"><mxGeometry x="685" y="203" width="155" height="20" as="geometry"/></mxCell>
+<mxCell id="s4hu2" value="Sistema de Reportes" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#3E1A5D;" vertex="1" parent="1"><mxGeometry x="685" y="221" width="155" height="20" as="geometry"/></mxCell>
+<mxCell id="s4hu3" value="Calificaciones y Reputacion" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#3E1A5D;" vertex="1" parent="1"><mxGeometry x="685" y="239" width="155" height="20" as="geometry"/></mxCell>
+<mxCell id="s4hu4" value="GMV y Transacciones" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#3E1A5D;" vertex="1" parent="1"><mxGeometry x="685" y="257" width="155" height="20" as="geometry"/></mxCell>
+<mxCell id="s4hu5" value="14 HUs completadas" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontStyle=1;fontColor=#3E1A5D;" vertex="1" parent="1"><mxGeometry x="685" y="282" width="155" height="25" as="geometry"/></mxCell>
+<mxCell id="s4dot" value="" style="ellipse;fillColor=#C9A8E0;strokeColor=#A07BC0;aspect=fixed;" vertex="1" parent="1"><mxGeometry x="750" y="311" width="24" height="24" as="geometry"/></mxCell>
+
+<!-- Sprint 5 -->
+<mxCell id="s5box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEFD5;strokeColor=#FFD599;arcSize=10;" vertex="1" parent="1"><mxGeometry x="895" y="130" width="155" height="190" as="geometry"/></mxCell>
+<mxCell id="s5title" value="Sprint 5" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontStyle=1;fontSize=13;fontColor=#8B6914;" vertex="1" parent="1"><mxGeometry x="895" y="135" width="155" height="25" as="geometry"/></mxCell>
+<mxCell id="s5ep" value="Sistema de Cupones M2M" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#8B6914;" vertex="1" parent="1"><mxGeometry x="895" y="160" width="155" height="20" as="geometry"/></mxCell>
+<mxCell id="s5hu" value="Busqueda Avanzada Facetada" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#8B6914;" vertex="1" parent="1"><mxGeometry x="895" y="178" width="155" height="20" as="geometry"/></mxCell>
+<mxCell id="s5hu2" value="Stock y Descuentos" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#5D3E1A;" vertex="1" parent="1"><mxGeometry x="895" y="196" width="155" height="20" as="geometry"/></mxCell>
+<mxCell id="s5hu3" value="Metodos de Pago Exclusivos" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#5D3E1A;" vertex="1" parent="1"><mxGeometry x="895" y="214" width="155" height="20" as="geometry"/></mxCell>
+<mxCell id="s5hu4" value="Cobertura de Pruebas 76%" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#5D3E1A;" vertex="1" parent="1"><mxGeometry x="895" y="232" width="155" height="20" as="geometry"/></mxCell>
+<mxCell id="s5hu5" value="Sinapsis Whitelist" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontColor=#5D3E1A;" vertex="1" parent="1"><mxGeometry x="895" y="250" width="155" height="20" as="geometry"/></mxCell>
+<mxCell id="s5hu6" value="17 HUs completadas" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=10;fontStyle=1;fontColor=#7A5A00;" vertex="1" parent="1"><mxGeometry x="895" y="278" width="155" height="30" as="geometry"/></mxCell>
+<mxCell id="s5dot" value="" style="ellipse;fillColor=#FFD599;strokeColor=#E0AA44;aspect=fixed;" vertex="1" parent="1"><mxGeometry x="960" y="311" width="24" height="24" as="geometry"/></mxCell>
+
+<!-- HU count bars (visual growth) -->
+<mxCell id="bar1" value="4 HU" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D4E6F1;strokeColor=#A9CCE3;fontSize=10;fontStyle=1;fontColor=#2C5F82;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="100" y="360" width="120" height="30" as="geometry"/></mxCell>
+<mxCell id="bar2" value="7 HU" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#A3C9A0;fontSize=10;fontStyle=1;fontColor=#2D6A2D;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="288" y="360" width="135" height="30" as="geometry"/></mxCell>
+<mxCell id="bar3" value="10 HU" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDE8D8;strokeColor=#F0C49E;fontSize=10;fontStyle=1;fontColor=#8B4513;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="488" y="360" width="135" height="30" as="geometry"/></mxCell>
+<mxCell id="bar4" value="14 HU" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8D5F0;strokeColor=#C9A8E0;fontSize=10;fontStyle=1;fontColor=#5B2C7A;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="693" y="360" width="138" height="30" as="geometry"/></mxCell>
+<mxCell id="bar5" value="17 HU" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEFD5;strokeColor=#FFD599;fontSize=10;fontStyle=1;fontColor=#8B6914;verticalAlign=middle;" vertex="1" parent="1"><mxGeometry x="903" y="360" width="138" height="30" as="geometry"/></mxCell>
+
+<!-- Milestones / notes below -->
+<mxCell id="m1" value="Base: Auth + Perfil" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=9;fontColor=#666688;" vertex="1" parent="1"><mxGeometry x="90" y="405" width="140" height="30" as="geometry"/></mxCell>
+<mxCell id="m2" value="Pivot: Motor Hibrido de Busqueda" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=9;fontColor=#666688;" vertex="1" parent="1"><mxGeometry x="278" y="405" width="156" height="30" as="geometry"/></mxCell>
+<mxCell id="m3" value="Nucleo: IA + Gemini + Chat P2P" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=9;fontColor=#666688;" vertex="1" parent="1"><mxGeometry x="478" y="405" width="156" height="30" as="geometry"/></mxCell>
+<mxCell id="m4" value="Finanzas: GMV + Reputacion" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=9;fontColor=#666688;" vertex="1" parent="1"><mxGeometry x="685" y="405" width="158" height="30" as="geometry"/></mxCell>
+<mxCell id="m5" value="Calidad: Pruebas + Robustez" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=9;fontColor=#666688;" vertex="1" parent="1"><mxGeometry x="895" y="405" width="158" height="30" as="geometry"/></mxCell>
+
+<!-- Sprint date labels -->
+<mxCell id="d1" value="Sem 1-2" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=9;fontColor=#888899;" vertex="1" parent="1"><mxGeometry x="100" y="443" width="120" height="20" as="geometry"/></mxCell>
+<mxCell id="d2" value="Sem 3-4" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=9;fontColor=#888899;" vertex="1" parent="1"><mxGeometry x="288" y="443" width="136" height="20" as="geometry"/></mxCell>
+<mxCell id="d3" value="Sem 5-7" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=9;fontColor=#888899;" vertex="1" parent="1"><mxGeometry x="488" y="443" width="136" height="20" as="geometry"/></mxCell>
+<mxCell id="d4" value="Sem 8-10" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=9;fontColor=#888899;" vertex="1" parent="1"><mxGeometry x="685" y="443" width="158" height="20" as="geometry"/></mxCell>
+<mxCell id="d5" value="Sem 11-13" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=9;fontColor=#888899;" vertex="1" parent="1"><mxGeometry x="895" y="443" width="158" height="20" as="geometry"/></mxCell>
+
+<!-- Total at top -->
+<mxCell id="total" value="Total: 52 Historias de Usuario (Epicas EP-01 a EP-08)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDE7F6;strokeColor=#C5B3E8;fontSize=13;fontStyle=1;fontColor=#4527A0;" vertex="1" parent="1"><mxGeometry x="310" y="490" width="480" height="40" as="geometry"/></mxCell>
+
+<!-- Legend: Entregado badge -->
+<mxCell id="leg1" value="Iteracion completada" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#A5D6A7;fontSize=10;fontColor=#1B5E20;" vertex="1" parent="1"><mxGeometry x="90" y="545" width="160" height="30" as="geometry"/></mxCell>
+<mxCell id="leg2" value="Crecimiento acumulado de alcance funcional por sprint" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=10;fontColor=#555577;" vertex="1" parent="1"><mxGeometry x="265" y="545" width="400" height="30" as="geometry"/></mxCell>
+
+</root></mxGraphModel>
